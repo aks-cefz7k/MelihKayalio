@@ -203,7 +203,7 @@ public class ReportService {
 		}
 		
 		String sql = ser.createSql(sqlVO, txcol, tscol, params, release);
-		GridDataCenterContext dc = ser.createDataCenter(sql, sqlVO);
+		GridDataCenterContext dc = ser.createDataCenter(chartJson, sql, sqlVO);
 		cr.setRefDataCenter(dc.getId());
 		dc.getConf().setRefDsource(dsid);
 		if(mv.getGridDataCenters() == null){

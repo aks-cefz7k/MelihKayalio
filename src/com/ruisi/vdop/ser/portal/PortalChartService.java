@@ -117,7 +117,7 @@ public class PortalChartService {
 		}
 		
 		String sql = createSql(sqlVO, txcol, tscol, params, 0);
-		GridDataCenterContext dc = chartser.createDataCenter(sql, sqlVO);
+		GridDataCenterContext dc = chartser.createDataCenter(chartJson, sql, sqlVO);
 		cr.setRefDataCenter(dc.getId());
 		if(mv.getGridDataCenters() == null){
 			mv.setGridDataCenters(new HashMap<String, GridDataCenterContext>());
@@ -342,9 +342,11 @@ public class PortalChartService {
 		
 		//判断曲线图、柱状图是否双坐标轴
 		String typeIndex = (String)chartJson.get("typeIndex");
-		if((chartType.equals("column")||chartType.equals("line")) && "2".equals(typeIndex) && sqlVO.getKpis().size() > 1 && sqlVO.getKpis().get(1) != null){
+		if((chartType.equals("column")||chartType.equals("line")) && ("2".equals(typeIndex) || "4".equals(typeIndex)) && sqlVO.getKpis().size() > 1 && sqlVO.getKpis().get(1) != null){
 			List<KpiInfo> kpis = sqlVO.getKpis();
 			ctx.setY2col(kpis.get(1).getAlias());
+			ctx.setMergeData(kpis.get(1).getMergeData());
+			ctx.setY2Aggre(kpis.get(1).getAggre());
 			String y2unit = formatUnits(kpis.get(1)) + (kpis.get(1).getUnit() == null ? "" : kpis.get(1).getUnit()) ;
 			ChartKeyContext y2desc = new ChartKeyContext("y2desc", kpis.get(1).getYdispName() + (y2unit.length() ==0 ? "" : "("+y2unit+")"));
 			properties.add(y2desc);
@@ -352,9 +354,20 @@ public class PortalChartService {
 			properties.add(y2fmtcol);
 		}
 		//判断柱状图是否显示为堆积图
-		if("column".equals(chartType) && "3".equals(typeIndex)){
+		if("column".equals(chartType) && ("3".equals(typeIndex) || "4".equals(typeIndex))){
 			ChartKeyContext stack = new ChartKeyContext("stack", "true");
 			properties.add(stack);
+		}
+		//饼图
+		if("pie".equals(chartType) && "2".equals(typeIndex)){
+			ChartKeyContext ring = new ChartKeyContext("ring", "true");
+			properties.add(ring);
+		}
+		if("pie".equals(chartType) && "3".equals(typeIndex)){
+			ctx.setShape("nestingPie");  //嵌套圆环图
+		}
+		if("map".equals(chartType) && "2".equals(typeIndex)){
+			ctx.setShape("scatterMap");  //地图散点图嵌套
 		}
 		
 		return ctx;
@@ -390,24 +403,6 @@ public class PortalChartService {
 			clink.setType(type.split(","));
 		}
 		return clink;
-	}
-	
-	/**
-	 * 创建图形的dataCenter
-	 * @param sql
-	 * @param sqlVO
-	 * @return
-	 * @throws IOException
-	 */
-	public GridDataCenterContext createDataCenter(String sql, TableSqlJsonVO sqlVO) throws IOException{
-		GridDataCenterContext ctx = new GridDataCenterContextImpl();
-		GridSetConfContext conf = new GridSetConfContext();
-		ctx.setConf(conf);
-		ctx.setId("DC-" + IdCreater.create());
-		String name = TemplateManager.getInstance().createTemplate(sql);
-		ctx.getConf().setTemplateName(name);
-		
-		return ctx;
 	}
 	
 	/**

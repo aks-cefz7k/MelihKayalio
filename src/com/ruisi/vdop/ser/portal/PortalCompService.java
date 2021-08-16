@@ -171,7 +171,7 @@ public class PortalCompService {
 		}
 		
 		String sql = ser.createSql(sqlVO, txcol, tscol, (JSONArray)params, 2);
-		GridDataCenterContext dc = ser.createDataCenter(sql, sqlVO);
+		GridDataCenterContext dc = chartser.createDataCenter(chartJson, sql, sqlVO);
 		cr.setRefDataCenter(dc.getId());
 		if(mv.getGridDataCenters() == null){
 			mv.setGridDataCenters(new HashMap<String, GridDataCenterContext>());

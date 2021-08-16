@@ -54,6 +54,7 @@ function editChartData(compId, layoutId){
 	isscatter = charttype == 'bubble' || charttype == 'scatter';
 	isbubble = charttype == 'bubble';
 	ismap = charttype == "map";
+	isnesting = charttype == 'pie' && comp.chartJson && comp.chartJson.typeIndex== "3";
 	
 	var y2str = ""; //第二纵轴
 	if(comp.kpiJson[1] != null){
@@ -62,13 +63,13 @@ function editChartData(compId, layoutId){
 		y2str = "<span class=\"charttip\">将度量拖到这里</span>";
 	}
 	
-	var str =  "<div class=\"tsbd\">" + (isscatter?"<div class=\"ts_h\">" + (ispie ? "观察维度" : "横轴")+"：<div id=\"y2col\" class=\"h_ctx\">"+(comp.kpiJson[1]!=null?"<span title=\""+comp.kpiJson[1].kpi_name+"\" class=\"charttxt\">"+(comp.kpiJson[1].kpi_name)+"</span><span onclick=\"chartmenu(this, "+comp.kpiJson[1].kpi_id+",'y2col','"+comp.kpiJson[1].kpi_name+"','"+compId+"')\" title=\"配置\" class=\"charticon\"></span>":"<span class=\"charttip\">将度量拖到这里</span>")+"</div></div>":"<div class=\"ts_h\">" + (ispie ? "观察维度" : (ismap?"地域维度":"横轴"))+"：<div id=\"xcol\" class=\"h_ctx\">"+(comp.chartJson.xcol&&comp.chartJson.xcol.id?"<span class=\"charttxt\" title=\""+comp.chartJson.xcol.dimdesc+"\">"+comp.chartJson.xcol.dimdesc+"</span><span onclick=\"chartmenu(this, "+comp.chartJson.xcol.id+",'xcol', '"+comp.chartJson.xcol.dimdesc+"','"+compId+"')\" title=\"配置\" class=\"charticon\"></span>":"<span class=\"charttip\">"+(ismap?"将地域拖到这里":"将维度拖到这里")+"</span>")+"</div></div>") + 
+	var str =  "<div class=\"tsbd\">" + (isscatter?"<div class=\"ts_h\">" + (ispie ? "观察维度" : "横轴")+"：<div id=\"y2col\" class=\"h_ctx\">"+(comp.kpiJson[1]!=null?"<span title=\""+comp.kpiJson[1].kpi_name+"\" class=\"charttxt\">"+(comp.kpiJson[1].kpi_name)+"</span><span onclick=\"chartmenu(this, "+comp.kpiJson[1].kpi_id+",'y2col','"+comp.kpiJson[1].kpi_name+"','"+compId+"')\" title=\"配置\" class=\"charticon\"></span>":"<span class=\"charttip\">将度量拖到这里</span>")+"</div></div>":"<div class=\"ts_h\">" + (ispie ? "观察维度" : (ismap?"地域维度":"横轴"))+"：<div id=\"xcol\" class=\"h_ctx\">"+(comp.chartJson.xcol&&comp.chartJson.xcol.id?"<span class=\"charttxt\" title=\""+comp.chartJson.xcol.dimdesc+"\">"+comp.chartJson.xcol.dimdesc+"</span><span onclick=\"chartmenu(this, "+comp.chartJson.xcol.id+",'xcol', '"+comp.chartJson.xcol.dimdesc+"','"+compId+"')\" title=\"配置\" class=\"charticon\"></span>":"<span class=\"charttip\">"+(ismap?"将地域拖到这里":"将维度拖到这里")+"</span>")+"</div></div>") + (isnesting?"<div class=\"ts_h\">外环维度：<div id=\"scol\" class=\"h_ctx\">"+(comp.chartJson.scol&&comp.chartJson.scol.id?"<span class=\"charttxt\" title=\""+comp.chartJson.scol.dimdesc+"\">"+comp.chartJson.scol.dimdesc+"</span><span onclick=\"chartmenu(this,"+comp.chartJson.scol.id+", 'scol', '"+comp.chartJson.scol.dimdesc+"','"+compId+"')\" title=\"配置\" class=\"charticon\"></span>":"<span class=\"charttip\">将维度拖到这里</span>")+"</div></div>":"") +
 	"<div class=\"ts_h\">"+(ispie||ismap?"度量":"纵轴")+"：<div id=\"ycol\" class=\"h_ctx\">"+(comp.kpiJson[0]!=null?"<span class=\"charttxt\" title=\""+comp.kpiJson[0].kpi_name+"\">"+(comp.kpiJson[0].kpi_name)+"</span><span onclick=\"chartmenu(this, "+comp.kpiJson[0].kpi_id+",'ycol','"+comp.kpiJson[0].kpi_name+"','"+compId+"')\" title=\"配置\" class=\"charticon\"></span>":"<span class=\"charttip\">将度量拖到这里</span>")+"</div></div>" +
 	(isbubble ? "<div class=\"ts_h\">气泡大小：<div id=\"y3col\" class=\"h_ctx\">"+(comp.kpiJson[2]!=null?"<span title=\""+comp.kpiJson[2].kpi_name+"\" class=\"charttxt\">"+(comp.kpiJson[2].kpi_name)+"</span><span onclick=\"chartmenu(this, "+comp.kpiJson[2].kpi_id+",'y3col','"+comp.kpiJson[2].kpi_name+"','"+compId+"')\" title=\"配置\" class=\"charticon\"></span>":"<span class=\"charttip\">将度量拖到这里</span>")+"</div></div>":"") +
 	(isscatter?"<div class=\"ts_h\">观察维度：<div id=\"xcol\" class=\"h_ctx\">"+(comp.chartJson.xcol&&comp.chartJson.xcol.id?"<span class=\"charttxt\" title=\""+comp.chartJson.xcol.dimdesc+"\">"+comp.chartJson.xcol.dimdesc+"</span><span onclick=\"chartmenu(this, "+comp.chartJson.xcol.id+",'xcol', '"+comp.chartJson.xcol.dimdesc+"','"+compId+"')\" title=\"配置\" class=\"charticon\"></span>":"<span class=\"charttip\">将维度拖到这里</span>")+"</div></div>":"") +
+	(isbubble || ismap ? "":"<div class=\"ts_h\" "+(ispie?"style=\"display:none\"":"")+">图例：<div id=\"scol\" class=\"h_ctx\">"+(comp.chartJson.scol&&comp.chartJson.scol.id?"<span class=\"charttxt\" title=\""+comp.chartJson.scol.dimdesc+"\">"+comp.chartJson.scol.dimdesc+"</span><span onclick=\"chartmenu(this,"+comp.chartJson.scol.id+", 'scol', '"+comp.chartJson.scol.dimdesc+"','"+compId+"')\" title=\"配置\" class=\"charticon\"></span>":"<span class=\"charttip\">将维度拖到这里</span>")+"</div></div>")  +
 	/** 对于 (curTmpInfo.chart.chartJson.type=="column"&&curTmpInfo.chart.chartJson.typeIndex=="2" 表示双坐标轴，现在曲线图、柱状图都支持双坐标*/
-	((charttype=="column"||charttype=="line")&&comp.chartJson.typeIndex=="2"?"<div class=\"ts_h\">第二纵轴：<div class=\"h_ctx\" id=\"y2col\">"+y2str+"</div></div>":"")+
-	(isbubble || ismap ? "":"<div class=\"ts_h\" "+(ispie||(charttype=="column" && comp.chartJson.typeIndex=="2") ||(charttype=="line" && comp.chartJson.typeIndex=="2")?"style=\"display:none\"":"")+">图例：<div id=\"scol\" class=\"h_ctx\">"+(comp.chartJson.scol&&comp.chartJson.scol.id?"<span class=\"charttxt\" title=\""+comp.chartJson.scol.dimdesc+"\">"+comp.chartJson.scol.dimdesc+"</span><span onclick=\"chartmenu(this,"+comp.chartJson.scol.id+", 'scol', '"+comp.chartJson.scol.dimdesc+"','"+compId+"')\" title=\"配置\" class=\"charticon\"></span>":"<span class=\"charttip\">将维度拖到这里</span>")+"</div></div>") + "</div>";
+	((charttype=="column"||charttype=="line")&&(comp.chartJson.typeIndex=="2"||comp.chartJson.typeIndex=="4")?"<div class=\"ts_h\">第二纵轴：<div class=\"h_ctx\" id=\"y2col\">"+y2str+"</div></div>":"") + "</div>";
 	var ctx = "<div style=\"margin:10px;\"><div class=\"chartDatasty\" id=\"chartData\">"+str+"</div></div>";
 	$("#dataProperty").html(ctx);
 	//注册度量及维度拖拽事件
@@ -122,14 +123,27 @@ function initChartKpiDrop(id){
 			//如果是地图，横轴必须是省/地市等地域维度
 			if(json.chartJson.type == "map" && node.attributes.col_type == 1 && $(this).attr("id") == "xcol"){
 			    if(!(node.attributes.dim_type == 'prov' || node.attributes.dim_type == 'city')){
-				msginfo("地图只能拖放地域维度到横轴!");
+				msginfo("只能拖放地域维度到横轴!");
 				return;
 			    }
+				var maparea = json.chartJson.maparea;
+				if(maparea == "china"){
+					if(node.attributes.dim_type == 'city'){
+						msginfo("只能把省份维度拖放到全国地图上!");
+						return;
+					}
+				}else{
+					if(node.attributes.dim_type == 'prov'){
+						msginfo("只能把地市维度拖放到 " + json.chartJson.mapAreaName+ " 地图上!");
+						return;
+					}
+				}
 			}
 			json.cubeId = node.attributes.cubeId;
 			json.dsetId = node.attributes.dsetId;
 			json.dsid = node.attributes.dsid;
 			var targetid = $(this).attr("id");
+			var nestingPie = json.chartJson && json.chartJson.type == "pie" && json.chartJson.typeIndex== "3"  //是否是嵌套圆环图
 
 			if(node.attributes.col_type == 2 && (targetid == "ycol" || targetid == "y2col" || targetid == "y3col")){
 				var ooo = {"kpi_id":node.attributes.col_id, "kpi_name" : node.text, ydispName:node.text, "col_name":node.attributes.col_name, "aggre":node.attributes.aggre, "fmt":node.attributes.fmt, "alias":node.attributes.alias,"unit":node.attributes.unit,"rate":node.attributes.rate,"tname":node.attributes.tname,"calc":node.attributes.calc};
@@ -154,7 +168,7 @@ function initChartKpiDrop(id){
 				
 				//判断xcol 和 scol 是否属于一个分组，如果是，不让拖动
 				var gt = node.attributes.grouptype;
-				if(gt != null && gt != ''){
+				if(gt != null && gt != '' && !nestingPie){
 					if(json.chartJson.scol != undefined && json.chartJson.scol.grouptype == gt){
 						msginfo("您拖放的维度与此图形中已有维度分类相同，不能拖放。")
 						return;
@@ -175,7 +189,7 @@ function initChartKpiDrop(id){
 				
 				//判断xcol 和 scol 是否属于一个分组，如果是，不让拖动
 				var gt = node.attributes.grouptype;
-				if(gt != null && gt != ''){
+				if(gt != null && gt != '' && !nestingPie){
 					if(json.chartJson.xcol != undefined && json.chartJson.xcol.grouptype == gt){
 						msginfo("您拖放的维度与此图形中已有维度分类相同，不能拖放。")
 						return;
@@ -205,11 +219,13 @@ function setcharttype(addChart, layoutId){
 	var ctp;
 	var cindex;
 	var maparea;
+	var mapAreaName;
 	if(!addChart){
 		comp =  findCompById(curTmpInfo.compId);
 		ctp = comp.chartJson.type;
 		cindex = comp.chartJson.typeIndex;
 		maparea = comp.chartJson.maparea;
+		mapAreaName = comp.chartJson.mapAreaName;
 	}
 	if($("#cpdailog").size() == 0){
 		$("<div id=\"cpdailog\"></div>").appendTo("body");
@@ -230,6 +246,7 @@ function setcharttype(addChart, layoutId){
 				cid = 1;
 				cindex = "1";
 				maparea = "china";
+				mapAreaName = "全国";
 			}else{ //回写值
 				var cid = 1;
 				if(ctp == 'line'){
@@ -288,8 +305,10 @@ function setcharttype(addChart, layoutId){
 			});
 			
 			//地图地域选择
-			$("#cpdailog #maparea").val(maparea).bind("change", function(){
-				maparea = $(this).val();
+			$("#cpdailog #maparea").val(maparea+","+mapAreaName).bind("change", function(){
+				var vls = $(this).val().split(",");
+				maparea = vls[0];
+				mapAreaName = vls[1];
 			});
 			
 		},
@@ -301,7 +320,7 @@ function setcharttype(addChart, layoutId){
 				handler:function(){
 					$('#cpdailog').dialog('close');
 					if(addChart){
-						insertChart(layoutId, ctp, cindex, maparea);
+						insertChart(layoutId, ctp, cindex, maparea, mapAreaName);
 					}else{
 						comp.chartJson.type = ctp;
 						comp.chartJson.typeIndex = cindex;
@@ -314,8 +333,10 @@ function setcharttype(addChart, layoutId){
 						}
 						if(ctp == "map"){
 							comp.chartJson.maparea = maparea;
+							comp.chartJson.mapAreaName = mapAreaName;
 						}else{
 							delete comp.chartJson.maparea;
+							delete comp.chartJson.mapAreaName;
 						}
 						$('#Jlayout').layout("remove", "east");
 						 $('#Jlayout').layout("remove", "south");
@@ -476,14 +497,20 @@ function setChartProperty(comp){
 		options:{data:kpirate}
 	}});
 	
-	if(ctp == "pie"){
+	if(ctp == "pie" || ctp == "map"){
 		dt.push({name:'是否显示标签',col:'dataLabel', value:(comp.chartJson.dataLabel?comp.chartJson.dataLabel:""), group:'图形属性', editor:{
 			type:"checkbox",
 			options: {"on":true, "off":false}
 		}});
+		if(ctp == "pie"){
+			dt.push({name:'标签显示内容',col:'labelType', value:(comp.chartJson.labelType?comp.chartJson.labelType:""), group:'图形属性', editor:{
+				type:"combobox",
+				options: {"data":[{"text":"名称","value":"n"},{"text":"名称+值","value":"nv"},{"text":"名称+比例","value":"np"}]}
+			}});
+		}
 	}
 	
-	if((ctp == "column" || ctp == "line") && comp.chartJson.typeIndex=="2"){ //双坐标设置第二坐标
+	if((ctp == "column" || ctp == "line") && (comp.chartJson.typeIndex=="2" || comp.chartJson.typeIndex=="4")){ //双坐标设置第二坐标
 		dt.push({name:'标题',col:'y2dispName', value:(comp.kpiJson[1]!=null?comp.kpiJson[1].ydispName:""), group:'第二纵轴', editor:'text'});
 		dt.push({name:'单位',col:'unit2', value:(comp.kpiJson[1]!=null?comp.kpiJson[1].unit:""), group:'第二纵轴', editor:'text'});
 		dt.push({name:'格式化',col:'fmt2', value:(comp.kpiJson[1]!=null?comp.kpiJson[1].fmt:""), group:'第二纵轴', editor:{
@@ -493,6 +520,10 @@ function setChartProperty(comp){
 		dt.push({name:'度量比例',col:'rate2', value:(comp.kpiJson[1]!=null?comp.kpiJson[1].rate:""), group:'第二纵轴', editor:{
 			type:'combobox',
 			options:{data:kpirate}
+		}});
+		dt.push({name:'合并数据',col:'mergeData', value:(comp.kpiJson[1]!=null?comp.kpiJson[1].mergeData:""), group:'第二纵轴', editor:{
+			type:"checkbox",
+			options: {"on":true, "off":false}
 		}});
 	}
 	
@@ -555,7 +586,7 @@ function setChartProperty(comp){
 				}
 				o[col] = val;
 				chartview(comp, comp.id);
-			}else if(col == "y2dispName" || col == "unit2" || col == "fmt2" || col == "rate2"){	//处理y2col y2轴
+			}else if(col == "y2dispName" || col == "unit2" || col == "fmt2" || col == "rate2" || col == "mergeData"){	//处理y2col y2轴
 				var o = comp.kpiJson[1];
 				
 				if(col == "y2dispName"){
@@ -578,6 +609,11 @@ function setChartProperty(comp){
 						return;
 					}
 					o.rate = val;
+				}else if(col == "mergeData"){
+					if(o.mergeData == val){ //值未改变
+						return;
+					}
+					o.mergeData = val;
 				}
 				chartview(comp, comp.id);
 			}else if(col == "title"){

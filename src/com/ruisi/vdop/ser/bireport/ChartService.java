@@ -21,11 +21,13 @@ import com.ruisi.ext.engine.view.context.chart.ChartContextImpl;
 import com.ruisi.ext.engine.view.context.chart.ChartKeyContext;
 import com.ruisi.ext.engine.view.context.dc.grid.GridDataCenterContext;
 import com.ruisi.ext.engine.view.context.dc.grid.GridDataCenterContextImpl;
+import com.ruisi.ext.engine.view.context.dc.grid.GridFilterContext;
 import com.ruisi.ext.engine.view.context.dc.grid.GridSetConfContext;
 import com.ruisi.ext.engine.view.context.dsource.DataSourceContext;
 import com.ruisi.ext.engine.view.context.form.InputField;
 import com.ruisi.ext.engine.view.context.html.TextContext;
 import com.ruisi.ext.engine.view.context.html.TextContextImpl;
+import com.ruisi.ispire.dc.grid.GridFilter;
 import com.ruisi.vdop.ser.bireport.TableSqlJsonVO.DimInfo;
 import com.ruisi.vdop.ser.bireport.TableSqlJsonVO.KpiFilter;
 import com.ruisi.vdop.ser.bireport.TableSqlJsonVO.KpiInfo;
@@ -153,7 +155,7 @@ public class ChartService {
 		}
 		
 		String sql = this.createSql(sqlVO, txcol, tscol, params, 0);
-		GridDataCenterContext dc = this.createDataCenter(sql, sqlVO);
+		GridDataCenterContext dc = this.createDataCenter(chartJson, sql, sqlVO);
 		cr.setRefDataCenter(dc.getId());
 		if(mv.getGridDataCenters() == null){
 			mv.setGridDataCenters(new HashMap<String, GridDataCenterContext>());
@@ -386,6 +388,9 @@ public class ChartService {
 			kpi.setSort((String)kpij.get("sort"));
 			kpi.setMin((String)kpij.get("ymin"));
 			kpi.setMax((String)kpij.get("ymax"));
+			if(kpij.get("mergeData") != null){
+				kpi.setMergeData(kpij.getBoolean("mergeData"));
+			}
 			vo.getKpis().add(kpi);
 			
 			Object ftObj = kpij.get("filter");
@@ -465,14 +470,37 @@ public class ChartService {
 	 * @return
 	 * @throws IOException
 	 */
-	public GridDataCenterContext createDataCenter(String sql, TableSqlJsonVO sqlVO) throws IOException{
+	public GridDataCenterContext createDataCenter(JSONObject chartJson, String sql, TableSqlJsonVO sqlVO) throws IOException{
 		GridDataCenterContext ctx = new GridDataCenterContextImpl();
 		GridSetConfContext conf = new GridSetConfContext();
 		ctx.setConf(conf);
 		ctx.setId("DC-" + IdCreater.create());
 		String name = TemplateManager.getInstance().createTemplate(sql);
 		ctx.getConf().setTemplateName(name);
-		
+		String maparea = (String)chartJson.get("maparea");
+		String type = (String)chartJson.get("type");
+		if("map".equals(type) && maparea != null && maparea.length() > 0 && !"china".equals(maparea)){  //如果是地图，并且是省份地图。需要忽略其他省份数据
+			for(int i=0; i<sqlVO.getDims().size(); i++){
+				DimInfo dim = sqlVO.getDims().get(i);
+				if(dim.getType().equals("city")){  //地市
+					GridFilterContext filter = new GridFilterContext();
+					filter.setColumn(dim.getTableColName() != null && dim.getTableColName().length() > 0 ? dim.getTableColName() : dim.getAlias());
+					filter.setFilterType(GridFilter.in);
+					String citySql = "select city_name as name from code_area where code = '"+maparea+"'";
+					List ls = VDOPUtils.getDaoHelper().queryForList(citySql);
+					StringBuffer sb = new StringBuffer();
+					for(int j=0; j<ls.size(); j++){
+						Map m = (Map)ls.get(j);
+						sb.append(m.get("name"));
+						if(j != ls.size() - 1){
+							sb.append(",");
+						}
+					}
+					filter.setValue(sb.toString());
+					ctx.getProcess().add(filter);  //过滤其他地市
+				}
+			}
+		}
 		return ctx;
 	}
 	

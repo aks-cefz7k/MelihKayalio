@@ -624,11 +624,14 @@ function formatCol(val, row){
 配置气泡大小
 转换到 10 到 50
 **/
-function bubbleSize(maxval, minval, val){
+function bubbleSize(maxval, minval, val, targetMax){
 	if(maxval == minval){
 		return 40;
 	}
-	var r = (50-10)/(maxval-minval)*(val-minval)+10;
+	if(!targetMax){
+		targetMax = 50;
+	}
+	var r = (targetMax-10)/(maxval-minval)*(val-minval)+10;
 	return r;
 }
 function formatNumber(num,pattern, shortname){

@@ -276,6 +276,7 @@ public class TableSqlJsonVO {
 		
 		private String funcname;  //回调函数名称
 		private String code;  //回调函数内容
+		private Boolean mergeData; //合并第二纵轴的数据
 
 		public String getId() {
 			return id;
@@ -408,6 +409,12 @@ public class TableSqlJsonVO {
 		}
 		public void setTname(String tname) {
 			this.tname = tname;
+		}
+		public Boolean getMergeData() {
+			return mergeData;
+		}
+		public void setMergeData(Boolean mergeData) {
+			this.mergeData = mergeData;
 		}
 		
 	}
