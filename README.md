@@ -1,6 +1,6 @@
 # 睿思BI-开源商业智能，数据可视化系统
 
-## 系统已升至4.0版本，欢迎您的体验
+### 系统已升至4.0版本，欢迎您的体验
 
 “睿思BI”商业智能系统是由[北京睿思科技有限公司](http://www.ruisitech.com)自主研发的企业数据分析系统。 系统包含数据建模、数据报表、多维分析、仪表盘、移动BI等功能模块，方便企业快速建立一套易用，灵活、低成本的商业智能平台，实现数据的快速分析及可视化。 <br>
 
@@ -29,10 +29,10 @@
 # 产品截图：<br/>
 
 数据多维分析<br/>
-![olap](http://www.ruisitech.com/img/olap12.png?v1)  <br/>
+![olap](http://www.ruisitech.com/img/olap12.png?v2)  <br/>
 数据可视化<br/>
-![1](http://www.ruisitech.com/img/ybpn1.png?v1)  <br/>
+![1](http://www.ruisitech.com/img/ybpn1.png?v2)  <br/>
 数据建模<br/>
-![2](http://www.ruisitech.com/img/ybpn2.png?v2)  <br/>
+![2](http://www.ruisitech.com/img/ybpn2.png?v3)  <br/>
 APP访问<br/>
-![3](http://www.ruisitech.com/img/3g/IMG_1292.PNG?v2)  <br/>
+![3](http://www.ruisitech.com/img/3g/IMG_1292.PNG?v3)  <br/>
