@@ -175,10 +175,7 @@ public class PortalPageService {
 						
 						//生成外层div
 						DivContext div = new DivContextImpl(); //外层div
-						div.setStyleClass("cbox");
-						if(tp.equals("table") || tp.equals("grid")){  //表格取消边框
-							div.setStyle("border:none;");
-						}
+						div.setStyleClass("ibox");
 						div.setChildren(new ArrayList());
 						tabTd.getChildren().add(div);
 						div.setParent(tabTd);
@@ -190,11 +187,7 @@ public class PortalPageService {
 						}else{   //生成head
 							DivContext head = new DivContextImpl(); //内层head Div
 							head.setChildren(new ArrayList());
-							if(tp.equals("table") || tp.equals("grid")){  //表格设置head边框
-								head.setStyleClass("ctableview");
-							}else{
-								head.setStyleClass("ctitleview");
-							}
+							head.setStyleClass("ibox-title");
 							div.getChildren().add(head);
 							head.setParent(div);
 							
@@ -209,7 +202,7 @@ public class PortalPageService {
 						}
 						
 						DivContext content = new DivContextImpl(); //内层content Div
-						content.setStyleClass("cctx");
+						content.setStyleClass("ibox-content");
 						//content.setStyle("margin:3px;");
 						content.setChildren(new ArrayList());
 						div.getChildren().add(content);

@@ -107,7 +107,7 @@ function newdset(isupdate, dsetId){
 		   }
 		}
 	});
-	var ctx = "<div id=\"crtdataset\"><div title=\"基本信息\"><div class=\"textpanel\"><span class=\"inputtext\">数据集名称：</span><input type=\"text\" id=\"name\" name=\"name\" value=\""+(transform.name?transform.name:"")+"\" class=\"inputform\"><br/><span class=\"inputtext\">数据源：</span><select id=\"dsid\" class=\"inputform\">"+dsls+"</select><br/><span class=\"inputtext\" style=\"width:120px;\">选择表：</span><br/><div class=\"tablesleft\"><div class=\"tabletitle\">待选表</div><ul id=\"allTablesTree\" style=\"height:270px; width:100%; overflow:auto\"></ul></div><div class=\"tablescenter\"><input id=\"left2right\" type=\"button\" style=\"margin-top:120px;\" value=\">\" title=\"选择\"><br/><input type=\"button\" id=\"right2left\"  value=\"<\" title=\"移除\"></div><div class=\"tablesright\"><div class=\"tabletitle\">已选表</div><ul id=\"selTablesTree\" class=\"easyui-tree\" style=\"height:270px; width:100%; overflow:auto\">"+treeStr+"</ul></div></div></div><div title=\"表关联\"><div class=\"textpanel\"><div style=\"float:right\"><input type=\"button\" id=\"jointable\" value=\"关联\"> <br/> <input type=\"button\" id=\"unjointable\" value=\"取消\"></div><span class=\"inputtext\">主表： </span><select id=\"mastertable\" style=\"width:300px;\" "+(isupdate?"disabled":"")+">"+tables+"</select>"+(isupdate?"<font color='#999'>(禁止更改)</font>":"")+"<br/><ul class=\"easyui-tree\" id=\"masterTableTree\" style=\"margin-left:90px;border:1px solid #999; width:300px; height:320px; overflow:auto\"></ul></div></div>"+(isupdate?"<div title=\"表字段\"></div><div title=\"动态字段\"></div>":"")+"</div>";
+	var ctx = "<div id=\"crtdataset\"><div title=\"基本信息\"><div class=\"textpanel\"><span class=\"inputtext\">数据集名称：</span><input type=\"text\" id=\"name\" name=\"name\" value=\""+(transform.name?transform.name:"")+"\" class=\"inputform\"><br/><span class=\"inputtext\">数据源：</span><select id=\"dsid\" class=\"inputform\">"+dsls+"</select><br/><span class=\"inputtext\" style=\"width:120px;\">选择表：</span><br/><div class=\"tablesleft\"><div class=\"tabletitle\">待选表</div><ul id=\"allTablesTree\" style=\"height:270px; width:100%; overflow:auto\"></ul></div><div class=\"tablescenter\"><input id=\"left2right\" type=\"button\" style=\"margin-top:120px;\" value=\">\" title=\"选择\"><br/><input type=\"button\" id=\"right2left\"  value=\"<\" title=\"移除\"></div><div class=\"tablesright\"><div class=\"tabletitle\">已选表</div><ul id=\"selTablesTree\" class=\"easyui-tree\" style=\"height:270px; width:100%; overflow:auto\">"+treeStr+"</ul></div></div></div><div title=\"表关联\"><div class=\"textpanel\"><div style=\"float:right\"><input type=\"button\" id=\"jointable\" value=\"关联\"> <br/> <input type=\"button\" id=\"unjointable\" value=\"取消\"></div><span class=\"inputtext\">主表： </span><select id=\"mastertable\" class=\"inputform\" style=\"width:300px;\" "+(isupdate?"disabled":"")+">"+tables+"</select>"+(isupdate?"<font color='#999'>(禁止更改)</font>":"")+"<br/><ul class=\"easyui-tree\" id=\"masterTableTree\" style=\"margin-left:100px;border:1px solid #999; width:300px; height:320px; overflow:auto\"></ul></div></div>"+(isupdate?"<div title=\"表字段\"></div><div title=\"动态字段\"></div>":"")+"</div>";
 	$('#pdailog').dialog({
 		title: isupdate?'编辑数据集':'创建数据集',
 		width: 700,
@@ -121,6 +121,7 @@ function newdset(isupdate, dsetId){
 		content: ctx,
 		buttons:[{
 			text:'确定',
+			iconCls:"icon-ok",
 			handler:function(){
 				var name = $("#pdailog #name").val();
 				if(name == ''){
@@ -181,6 +182,7 @@ function newdset(isupdate, dsetId){
 			}
 		},{
 			text:'取消',
+			iconCls:"icon-cancel",
 			handler:function(){
 				$('#pdailog').dialog('close');
 			}
@@ -196,11 +198,11 @@ function newdset(isupdate, dsetId){
 				str = str + "<tr><th width='20%'>字段名</th><th width='17%'>显示名</th><th width='13%'>类型</th><th width='30%'>来源表</th><th width='10%'>操作</th></tr>";
 				for(var i=0; i<transform.cols.length; i++){
 					m = transform.cols[i];
-					str = str + "<tr><td class='kpiData1 grid3-td'>"+m.name+"</td><td class='kpiData1 grid3-td'><div id=\""+m.tname+"_"+m.name+"_disp\">"+(m.dispName == '' ? "&nbsp;":m.dispName)+"</div></td><td class='kpiData1 grid3-td'><div id=\""+m.tname+"_"+m.name+"_tp\">"+m.type+"</div></td><td class='kpiData1 grid3-td'>"+m.tname+"</td><td class='kpiData1 grid3-td'><a cname='"+m.name+"' tname='"+m.tname+"' href=\"javascript:;\">编辑</a></td></tr>";
+					str = str + "<tr><td class='kpiData1 grid3-td'>"+m.name+"</td><td class='kpiData1 grid3-td'><div id=\""+m.tname+"_"+m.name+"_disp\">"+(m.dispName == '' ? "&nbsp;":m.dispName)+"</div></td><td class='kpiData1 grid3-td'><div id=\""+m.tname+"_"+m.name+"_tp\">"+m.type+"</div></td><td class='kpiData1 grid3-td'>"+m.tname+"</td><td class='kpiData1 grid3-td'><button class=\"btn btn-info btn-xs\" cname='"+m.name+"' tname='"+m.tname+"' >编辑</buttton></td></tr>";
 				}
 				str = str + "</table>";
 				$(pp).html(str);
-				$("#crtdataset table.grid3 td a").click(function(){
+				$("#crtdataset table.grid3 td button").click(function(){
 					var name = $(this).attr("cname");
 					var tname = $(this).attr("tname");
 					editDsColumn(name, transform, tname);
@@ -222,10 +224,10 @@ function newdset(isupdate, dsetId){
 				});
 				if(isupdate){
 					//隐藏已经选择的表
-					$("#allTablesTree div[node-id='"+transform.master+"']").attr("hide", "y").hide();
+					$($("#allTablesTree").tree("find", transform.master).target).attr("hide", "y").hide();
 					for(k=0; transform.joininfo&&k<transform.joininfo.length; k++){
 						var j = transform.joininfo[k];
-						$("#allTablesTree div[node-id='"+j.ref+"']").attr("hide", "y").hide();
+						$($("#allTablesTree").tree("find", j.ref).target).attr("hide", "y").hide();
 					}
 				}
 			}
@@ -323,8 +325,6 @@ function newdset(isupdate, dsetId){
 				}
 			}
 			transform.joininfo.splice(idx, 1);
-			//移除关联显示
-			//var node = $("#masterTableTree").tree("getSelected", $("#allTablesTree div[node-id='"+node.id+"']"));
 		}
 	});
 	//表关联 -- 取消关联按钮
@@ -419,7 +419,7 @@ function editDsColumn(colId, dset, tname){
 			break;
 		}
 	}
-	var ctx = "<div class=\"textpanel\"><span class=\"inputtext\">字段名：</span>"+tmp.name+"<br/><span class=\"inputtext\">显示名：</span><input type=\"text\" name=\"coldispname\" id=\"coldispname\" value=\""+tmp.dispName+"\" class=\"inputform\"><br/><span class=\"inputtext\">类型：</span><select id=\"coltype\" class=\"inputform\">"+tps+"</select><br/><span class=\"inputtext\">来源表：</span>"+tmp.tname+"<br/><span class=\"inputtext\">字段关联：</span>"+(joinInfo==null?"字段无关联":dset.master+"."+joinInfo.col+" -> " + joinInfo.ref+"."+joinInfo.refKey)+(joinInfo!=null?"<br/><span class=\"inputtext\">关联类型：</span>"+(joinInfo.jtype=="all"?"全连接":(joinInfo.jtype=="left"?"左连接":"右连接")):"")+(joinInfo==null?"":"<br/><span class=\"inputtext\">强制连接：</span>"+(joinInfo.force=="y"?"是":"否"))+"</div>";
+	var ctx = "<div class=\"textpanel\"><span class=\"inputtext\">字段名：</span>"+tmp.name+"<br/><span class=\"inputtext\">显示名：</span><input type=\"text\" name=\"coldispname\" id=\"coldispname\" value=\""+tmp.dispName+"\" class=\"inputform2\"><br/><span class=\"inputtext\">类型：</span><select id=\"coltype\" class=\"inputform2\">"+tps+"</select><br/><span class=\"inputtext\">来源表：</span>"+tmp.tname+"<br/><span class=\"inputtext\">字段关联：</span>"+(joinInfo==null?"字段无关联":dset.master+"."+joinInfo.col+" -> " + joinInfo.ref+"."+joinInfo.refKey)+(joinInfo!=null?"<br/><span class=\"inputtext\">关联类型：</span>"+(joinInfo.jtype=="all"?"全连接":(joinInfo.jtype=="left"?"左连接":"右连接")):"")+(joinInfo==null?"":"<br/><span class=\"inputtext\">强制连接：</span>"+(joinInfo.force=="y"?"是":"否"))+"</div>";
 	$('#dsColumn_div').dialog({
 		title: '编辑字段信息',
 		width: joinInfo == null ? 350 : 450,
@@ -435,6 +435,7 @@ function editDsColumn(colId, dset, tname){
 		},
 		buttons:[{
 				text:'确定',
+				iconCls:"icon-ok",
 				handler:function(){
 					tmp.dispName = $("#dsColumn_div #coldispname").val();
 					tmp.type = $("#dsColumn_div #coltype").val();
@@ -445,6 +446,7 @@ function editDsColumn(colId, dset, tname){
 				}
 			},{
 				text:'取消',
+				iconCls:"icon-cancel",
 				handler:function(){
 					$('#dsColumn_div').dialog('close');
 				}
@@ -458,7 +460,7 @@ function reloadDynamicCol(transform){
 			
 	for(var i=0; transform.dynamic && i<transform.dynamic.length; i++){
 		var o = transform.dynamic[i];
-		str = str + "<tr><td class=\"kpiData1 grid3-td\">"+o.name+"</td><td class=\"kpiData1 grid3-td\">"+o.expression.replace(/@/g,"'")+"</td><td class=\"kpiData1 grid3-td\">"+o.type+"</td><td class=\"kpiData1 grid3-td\"><a href=\"javascript:;\" col=\""+o.name+"\" id=\"dynamiccolupdate\">编辑</a> <a href=\"javascript:;\" col=\""+o.name+"\" id=\"dynamiccoldel\">删除</a></td></tr>";
+		str = str + "<tr><td class=\"kpiData1 grid3-td\">"+o.name+"</td><td class=\"kpiData1 grid3-td\">"+o.expression.replace(/@/g,"'")+"</td><td class=\"kpiData1 grid3-td\">"+o.type+"</td><td class=\"kpiData1 grid3-td\"><button class=\"btn btn-info btn-xs\" col=\""+o.name+"\" id=\"dynamiccolupdate\">编辑</button> <button  col=\""+o.name+"\" id=\"dynamiccoldel\" class=\"btn btn-danger btn-xs\">删除</button></td></tr>";
 	}
 	if(!transform.dynamic || transform.dynamic.length==0){
 		str = str + "<tr><td class=\"kpiData1 grid3-td\" align=\"center\" colspan=\"4\">无数据.</td></tr>";
@@ -486,11 +488,11 @@ function reloadDynamicCol(transform){
 			data:{tname:transform.master,dsid:$("#pdailog #dsid").val()},
 			success:function(resp){
 				for(k=0; k<resp.length; k++){
-					cols = cols + "<span name=\""+resp[k].name+"\" class=\"column\">"+resp[k].name+"</span>";
+					cols = cols + "<button name=\""+resp[k].name+"\" class=\"btn btn-primary btn-xs\">"+resp[k].name+"</button> ";
 				}
 			}
 		});
-		var ctx = "<div class=\"textpanel\"><span class=\"inputtext\">字段名：</span><input type=\"text\" id=\"colname\" name=\"colname\" class=\"inputform\" value=\""+(ccol?ccol.name:"")+"\">(英文字符)<br/><table cellspacing=\"0\" cellpadding=\"0\"><tbody><tr><td valign=\"top\"><span class=\"inputtext\">表 达 式：</span></td><td><textarea name=\"expression\" id=\"expression\" style=\"width:200px;height:60px;\">"+(ccol?ccol.expression.replace(/@/g,"'"):"")+"</textarea></td></tr></tbody></table><div class=\"actColumn\" style=\"margin-top:12px;\">"+cols+"</div><span class=\"inputtext\">值类型：</span><select id=\"valtype\" class=\"inputform\">"+tps+"</select></div>";
+		var ctx = "<div class=\"textpanel\"><span class=\"inputtext\">字段名：</span><input type=\"text\" id=\"colname\" name=\"colname\" class=\"inputform2\" value=\""+(ccol?ccol.name:"")+"\">(英文字符)<br/><table cellspacing=\"0\" cellpadding=\"0\"><tbody><tr><td valign=\"top\"><span class=\"inputtext\">表 达 式：</span></td><td><textarea name=\"expression\" id=\"expression\" class=\"inputform2\" style=\"width:200px;height:60px;\">"+(ccol?ccol.expression.replace(/@/g,"'"):"")+"</textarea></td></tr></tbody></table><div class=\"actColumn\" style=\"margin-top:12px;\">"+cols+"</div><span class=\"inputtext\">值类型：</span><select class=\"inputform2\" id=\"valtype\" class=\"inputform\">"+tps+"</select></div>";
 		if($("#dsColumn_div").size() == 0){
 			$("<div id=\"dsColumn_div\" class=\"easyui-menu\"></div>").appendTo("body");
 		}
@@ -509,6 +511,7 @@ function reloadDynamicCol(transform){
 			},
 			buttons:[{
 					text:'确定',
+					iconCls:"icon-ok",
 					handler:function(){
 						var name = $("#dsColumn_div #colname").val();
 						var expression =  $("#dsColumn_div #expression").val().replace(/'/g,"@");
@@ -547,12 +550,13 @@ function reloadDynamicCol(transform){
 					}
 				},{
 					text:'取消',
+					iconCls:"icon-cancel",
 					handler:function(){
 						$('#dsColumn_div').dialog('close');
 					}
 				}]
 		});
-		$("#dsColumn_div .actColumn .column").bind("click", function(){
+		$("#dsColumn_div .actColumn button").bind("click", function(){
 			var txt = $(this).attr("name");
 			insertText2focus(document.getElementById("expression"),  txt);
 		});
@@ -634,11 +638,11 @@ function jointableFunc(transform){
 		return slavecols;
 	};
 	
-	var ctx = "<div class=\"textpanel\">主表 <b>"+$("#mastertable").val()+"</b> 字段 <b>"+node.id+"</b> <br/> &nbsp; &nbsp; &nbsp; =>关联到=> <br/>从表：<select id=\"slavetable\" style=\"width:150px;\">"+tbs+"</select><br/>字段：<select id=\"slavetablecol\"  style=\"width:150px;\">"+getSlaveColumns(tname)+"</select><br/> 方式：<select id=\"jtype\" style=\"width:150px;\"><option value=\"all\" "+(joinInfo&&joinInfo.jtype=="all"?"selected":"")+">全连接</option><option value=\"left\" "+(joinInfo&&joinInfo.jtype=="left"?"selected":"")+">左连接</option><option value=\"right\" "+(joinInfo&&joinInfo.jtype=="right"?"selected":"")+">右连接</option></select> </div>";
+	var ctx = "<div class=\"textpanel\">主表 <b>"+$("#mastertable").val()+"</b> 字段 <b>"+node.id+"</b> <br/> &nbsp; &nbsp; &nbsp; =>关联到=> <br/>从表：<select id=\"slavetable\" class=\"inputform\" style=\"width:150px;\">"+tbs+"</select><br/>字段：<select id=\"slavetablecol\" class=\"inputform\" style=\"width:150px;\">"+getSlaveColumns(tname)+"</select><br/> 方式：<select id=\"jtype\" style=\"width:160px;\" class=\"inputform\"><option value=\"all\" "+(joinInfo&&joinInfo.jtype=="all"?"selected":"")+">全连接</option><option value=\"left\" "+(joinInfo&&joinInfo.jtype=="left"?"selected":"")+">左连接</option><option value=\"right\" "+(joinInfo&&joinInfo.jtype=="right"?"selected":"")+">右连接</option></select> </div>";
 	$('#dsColumn_div').dialog({
 		title: "关联维度表",
 		width: 350,
-		height: 220,
+		height: 240,
 		closed: false,
 		cache: false,
 		modal: true,
@@ -650,6 +654,7 @@ function jointableFunc(transform){
 		},
 		buttons:[{
 				text:'确定',
+				iconCls:"icon-ok",
 				handler:function(){
 					//建立关联关系
 					node.attributes.ref = $("#dsColumn_div #slavetable").val();
@@ -672,6 +677,7 @@ function jointableFunc(transform){
 				}
 			},{
 				text:'取消',
+				iconCls:"icon-cancel",
 				handler:function(){
 					$('#dsColumn_div').dialog('close');
 				}

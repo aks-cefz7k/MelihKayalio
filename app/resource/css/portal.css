@@ -1,79 +1,3 @@
-body {
-	margin:0px;
-	padding:0px;
-}
-.cbox-edit .ctitle .ticon {
-	width:60px;
-	height:20px;
-	text-align:right;
-	float:right;
-	margin-top:-22px;
-	margin-right:5px;
-}
-.cbox-edit .ctitle .ticon a.del {
-	width:16px;
-	height:20px;
-	background-image:url("../img/closeme.png");
-	background-position:center center;
-	display:inline-block;
-	opacity:0.6;
-}
-.cbox-edit .ctitle .ticon a.mcomp {
-	width:20px;
-	height:20px;
-	background-image:url("../image/move.png");
-	background-position:center center;
-	display:inline-block;
-	background-repeat:no-repeat;
-	opacity:0.6;
-	cursor:move;
-}
-.cbox-edit .ctitle .ticon a.cedit {
-	width:20px;
-	height:20px;
-	display:inline-block;
-	opacity:0.6;
-	background-position:center center;
-	margin-right:2px;
-}
-.cbox-edit .ctitle .ctit {
-	text-align:center;
-    padding: 5px;
-	font-size:14px;
-	font-family:'宋体';
-	font-weight:bold;
-	border-bottom:solid 1px #CACACA;
-}
-.portal .ptitle{
-	background-color:#EEEEEE;
-	border-color:#CACACA;
-	border-style:solid;
-	border-width:1px;
-}
-.portal .ptitle span{
-	display:-moz-inline-box;  
-	display:inline-block;
-	font-size:14px;
-}
-.portal .ptitle span.tit{
-	margin:5px 3px 5px 10px;
-}
-.portal .pctx {
-	border:solid 1px #CACACA;
-	border-top: none;
-	background-color:#FFF;
-}
-.ploading {
-	height:50px;
-	background-image:url(../../ext-res/image/large-loading.gif);
-	background-repeat: no-repeat;
-	background-position: center center;
-}
-
-
-.portal .pbox {
-	margin-bottom:10px;
-}
 span.rlayout {
 	display:-moz-inline-box;  
 	display:inline-block;
@@ -81,11 +5,6 @@ span.rlayout {
 	height:100px;
 	text-align:center;
 	vertical-align:central;
-}
-.window_ctx {
-	line-height:20px;
-	text-indent:20px;
-	margin:5px;
 }
 table.r_layout {
 	border-collapse:collapse;
@@ -97,8 +16,9 @@ table.r_layout td.laytd {
     border: 1px solid #adb7c5;
     text-align: left;
     vertical-align: top;
-	background-color:#FFFFFF;
+	background-color:#f0f3f4;
 	min-height:100px;
+	padding:10px;
 }
 table.r_layout td.laytd2 {
     padding: 2px;
@@ -109,7 +29,7 @@ table.r_layout td.layouttd {
 	border: 2px solid #FFF;
     text-align: left;
     vertical-align: top;
-	background-color:#FFFFFF;
+	background-color:#f0f3f4;
 }
 .indicator{
 	position:absolute;
@@ -138,81 +58,9 @@ table.r_layout td.layouttd {
 #autoLayoutTable td.tdselect{
 	background-color:#FFFF99;
 }
-.textpanel{
-	line-height:30px;
-	margin:10px;
-}
 .tipinfo {
 	color:#999;
 	padding:10px;
-}
-.tableDatasty{
-	border: 1px dotted #666;
-	padding:5px;
-}
-.tableDatasty .col {
-    border: 1px solid #DF7809;
-    display: inline-block;
-    margin: 5px;
-    padding: 5px;
-    text-align: center;
-	width:120px;
-}
-.tableDatasty .dimcol {
-    border: 1px solid #0C6ADF;
-    display: inline-block;
-    margin: 5px;
-    padding: 5px;
-    text-align: center;
-	width:120px;
-}
-.tableDatasty .boxcol {
-    border: 1px solid #DF7809;
-    display: inline-block;
-    margin: 5px;
-    padding: 5px;
-    text-align: center;
-	width:120px;
-}
-.tableDatasty .dimcol span.text, .tableDatasty .col span.text, .tableDatasty .boxcol span.text{
-	display: inline-block;
-	width:100px;
-	overflow:hidden;
-}
-.tableDatasty .col a, .tableDatasty .dimcol a{
-	background-image: url("../img/dimset.png");
-    background-position: center center;
-    background-repeat: no-repeat;
-    display: inline-block;
-    float: right;
-    height: 18px;
-    text-decoration: none;
-    width: 18px;
-}
-.chartloading {
-	height:40px;
-	width:140px;
-	background-image:url("../../ext-res/image/large-loading.gif");
-	background-position:left center;
-	background-repeat:no-repeat;
-	background-color:#FFFFCC;
-	border:1px solid #CACACA;
-	position:absolute;
-	display:none;
-	font-size:14px;
-	z-index:10000;
-}
-.chartloading .ltxt{
-	margin:12px 0px 10px 40px;
-}
-.chartloading .ldclose {
-	float:right;
-	height:20px;
-	width:20px;
-	background-image:url("../img/closeme.png");
-	background-position:center center;
-	background-repeat:no-repeat;
-	cursor:pointer;
 }
 .tsbd {
 }
@@ -265,8 +113,8 @@ span.charticon {
     margin: 5px;
     padding: 2px;
     text-align: center;
-	width:160px;
-	height:25px;
+	width:180px;
+	border-radius:3px;
 }
 #optparam span.text {
     cursor: pointer;
@@ -281,32 +129,6 @@ span.charticon {
     font-size: 13px;
     font-weight: normal;
     margin-left: 5px;
-}
-#optparam span.pppp a.one_2 {
-    background-image: url("../../ext-res/images/hmenu-del.gif");
-    background-position: center center;
-    background-repeat: no-repeat;
-    display: inline-block;
-    height: 10px;
-    text-decoration: none;
-    width: 16px;
-}
-#optparam span.pppp a.one_1 {
-    background-image: url("../../ext-res/image/sanjiaoda.gif");
-    background-position: center center;
-    background-repeat: no-repeat;
-    display: inline-block;
-    height: 10px;
-    text-decoration: none;
-    width: 16px;
-}
-.inputform {
-	width:160px;
-}
-span.inputtext {
-	display:-moz-inline-box;  
-	display:inline-block;
-	width:90px;
 }
 #reportcatalist {
     border: 1px solid #B7D0E3;
@@ -398,4 +220,49 @@ span.rlayout div.onelayout {
 }
 .exportpanel .select{
 	border:solid 1px #990000;
+}
+.ibox .cctx {
+	overflow:auto;
+}
+.tableDatasty{
+	border: 1px dotted #666;
+	padding:5px;
+}
+.tableDatasty .col {
+    border: 1px solid #DF7809;
+    display: inline-block;
+    margin: 5px;
+    padding: 5px;
+    text-align: center;
+	width:120px;
+}
+.tableDatasty .dimcol {
+    border: 1px solid #0C6ADF;
+    display: inline-block;
+    margin: 5px;
+    padding: 5px;
+    text-align: center;
+	width:120px;
+}
+.tableDatasty .boxcol {
+    border: 1px solid #DF7809;
+    display: inline-block;
+    margin: 5px;
+    padding: 5px;
+    text-align: center;
+	width:120px;
+}
+.tableDatasty .dimcol span.text, .tableDatasty .col span.text, .tableDatasty .boxcol span.text{
+	width:100px;
+	overflow:hidden;
+}
+.tableDatasty .col a, .tableDatasty .dimcol a{
+	background-image: url("../img/dimset.png");
+    background-position: center center;
+    background-repeat: no-repeat;
+    display: inline-block;
+    float: right;
+    height: 18px;
+    text-decoration: none;
+    width: 18px;
 }

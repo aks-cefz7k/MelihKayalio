@@ -2,23 +2,23 @@
     pageEncoding="utf-8"%>
 <%@ taglib prefix="s" uri="/struts-tags"%>
 <%@ taglib prefix="bi" uri="/WEB-INF/common.tld"%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-	 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-   <title>手机报表分类管理</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>手机报表分类管理</title>
 <link rel="shortcut icon" type="image/x-icon" href="../resource/img/rs_favicon.ico">
-   <script type="text/javascript" src="../ext-res/js/jquery.min.js"></script>
-	<link rel="stylesheet" type="text/css" href="../ext-res/css/fonts-min.css" />
-	<link rel="stylesheet" type="text/css" href="../ext-res/css/boncbase.css?v2" />
-  
-	<script type="text/javascript" src="../ext-res/My97DatePicker/WdatePicker.js"></script>
-	<script language="javascript" src="../resource/js/json.js"></script>
-    <script language="javascript" src="../ext-res/js/ext-base.js"></script>
-	<link rel="stylesheet" type="text/css" href="../resource/jquery-easyui-1.3.4/themes/gray/easyui.css">
-	<link rel="stylesheet" type="text/css" href="../resource/jquery-easyui-1.3.4/themes/icon.css">
-	<script type="text/javascript" src="../resource/jquery-easyui-1.3.4/jquery.easyui.min.js"></script>
-    <script type="text/javascript" src="../resource/jquery-easyui-1.3.4/locale/easyui-lang-zh_CN.js"></script>
+<link href="../ext-res/css/bootstrap.min.css" rel="stylesheet">
+<link href="../resource/css/animate.css" rel="stylesheet">
+<link href="../resource/css/style.css" rel="stylesheet">
+<link href="../resource/css/font-awesome.css?v=4.4.0" rel="stylesheet">
+<script type="text/javascript" src="../ext-res/js/jquery.min.js"></script>
+<script language="javascript" src="../resource/js/json.js"></script>
+<script language="javascript" src="../ext-res/js/ext-base.js"></script>
+<link rel="stylesheet" type="text/css" href="../resource/jquery-easyui-1.4.4/themes/gray/easyui.css">
+<link rel="stylesheet" type="text/css" href="../resource/jquery-easyui-1.4.4/themes/icon.css">
+<script type="text/javascript" src="../resource/jquery-easyui-1.4.4/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="../resource/jquery-easyui-1.4.4/locale/easyui-lang-zh_CN.js"></script>
 </head>
 
 <script language="javascript">
@@ -58,12 +58,12 @@ function addType(update){
 			   }
 		});
 	}
-	var ord = $("#typetree").tree("getChildren", $("#typetree div[node-id='zty']")).length + 1 ;
+	var ord = $("#typetree").tree("getChildren", $("#typetree").tree("find","zty").target).length + 1 ;
 	var ctx = "<div class=\"textpanel\"><span class=\"inputtext\">名称：</span><input type=\"text\" id=\"name\" class=\"inputform\" value=\""+(obj&&obj.name!=null?obj.name:"")+"\"><br/><span class=\"inputtext\">说明：</span><input type=\"text\" id=\"note\" class=\"inputform\" value=\""+((obj&&obj.note!=null?obj.note:""))+"\"><br/><span class=\"inputtext\">排序：</span><input type=\"text\" id=\"order\" class=\"inputform\" value=\""+(obj&&obj.ord!=null?obj.ord:ord)+"\"><br/></div>";
 	$('#pdailog').dialog({
 		title: update?'修改分类':'新建分类',
-		width: 350,
-		height: 220,
+		width: 420,
+		height: 240,
 		closed: false,
 		cache: false,
 		modal: true,
@@ -95,7 +95,7 @@ function addType(update){
 						   dataType:"text",
 						   data: {"name":name,"note":note,"ord":order},
 						   success: function(resp){
-							   $("#typetree").tree("append", {parent:$("#typetree div[node-id='zty']"), data:[{id:resp,text:name,iconCls:'icon-subject3'}]});
+							   $("#typetree").tree("append", {parent:$("#typetree").tree("find", "zty").target, data:[{id:resp,text:name,iconCls:'icon-subject3'}]});
 						   }
 						});
 					}else{
@@ -145,46 +145,36 @@ function delType(){
 		}
 	}
 </script>
-<style>
-<!--
-.cubecfg{
-	margin:20px;
-}
-.textpanel{
-	line-height:25px;
-	margin:10px;
-}
-.inputform {
-	width:160px;
-}
-span.inputtext {
-	display:inline-block;
-	width:90px;
-}
--->
-</style>
 
-<body>
-<div class="pctx2">
-<div class="panel-header panel-header-noborder"><div class="panel-title">手机报表分类管理</div></div>
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInDown">
+ <div class="row">
+				<div class="col-sm-12">
+	<div class="ibox">
 
+					<div class="ibox-title">
+                        <h5>手机报表分类管理</h5>
+                    </div>
+<div class="ibox-content">
+ <div class="row">
+    <div class="col-sm-5">
+     <ul id="typetree" style="width:200px;"></ul>
+	 </div>
+	 <div class="col-sm-6">
+    <p class="text-warning">在分类上点击鼠标右键来新建或编辑分类。</p>
+	</div>
+</div>
+</div>
 
-<table width="100%" border="0" cellspacing="0" cellpadding="0">
-  <tr>
-    <td width="10%" valign="top">
-     <div class="easyui-panel" data-options="width:260,cls:'cubecfg'" title="报表分类">
- <ul id="typetree"></ul>
+</div>
  </div>
-    </td>
-    <td width="90%" valign="top"><div class="cubecfg"> <font color="#FF0000">说明：</font>此处定义的分类在APP报表列表中显示,在分类上点击鼠标右键来新建或编辑分类。</div></td>
-  </tr>
-</table>
+ </div>
+</div>
 
- 
- <div style="margin:10px 10px 10px 20px; ">
- <a href="SiteConfig.action" class="easyui-linkbutton" data-options="iconCls:'icon-back'">返回</a>
-</div>
-</div>
+
+
+
+
 
 <div id="pdailog"></div>
 <div id="typeMenu" class="easyui-menu">

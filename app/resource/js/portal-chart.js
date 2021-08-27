@@ -233,7 +233,7 @@ function setcharttype(addChart, layoutId){
 	$('#cpdailog').dialog({
 		title: "选择图表类型",
 		width: 550,
-		height: 386,
+		height: 410,
 		closed: false,
 		cache: false,
 		modal: true,
@@ -317,6 +317,7 @@ function setcharttype(addChart, layoutId){
 		},
 		buttons:[{
 				text:'确定',
+				iconCls:"icon-ok",
 				handler:function(){
 					$('#cpdailog').dialog('close');
 					if(addChart){
@@ -345,6 +346,7 @@ function setcharttype(addChart, layoutId){
 				}
 			},{
 				text:'取消',
+				iconCls:"icon-cancel",
 				handler:function(){
 					$('#cpdailog').dialog('close');
 				}
@@ -368,7 +370,7 @@ function chartview(json, compId){
 		resetchart(compId);
 		return;
 	}
-	showloading();
+	__showLoading();
 	var chartJson = JSON.stringify(json.chartJson);
 	var kpiJson = JSON.stringify(json.kpiJson);
 	var kpiType = json.ttype;
@@ -381,11 +383,11 @@ function chartview(json, compId){
 	   dataType:"html",
 	   data: {"chartJson":chartJson, "kpiJson":kpiJson, "compId":compId, "params":params, "pageParams":pageParam, dsource:json.dsid, dset:json.dsetId},
 	   success: function(resp){
-		   hideLoading();
+		   __hideLoading();
 		  $("#c_" + compId + " div.cctx").html(resp);
 	   },
 	   error:function(resp){
-		   hideLoading();
+		   __hideLoading();
 		   $.messager.alert('出错了','系统出错，请查看后台日志。','error');
 	   }
 	});
@@ -640,7 +642,7 @@ function chartmenu(ts, id, tp, name, compId){
 	}else{
 		$("#chartoptmenu").menu("disableItem", $("#m_set"));
 	}
-	$("#chartoptmenu").menu("show", {left:offset.left, top:offset.top - 5});
+	$("#chartoptmenu").menu("show", {left:offset.left, top:offset.top - 100});
 }
 function delChartKpiOrDim(){
 	var tp = curTmpInfo.tp;

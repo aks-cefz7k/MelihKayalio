@@ -2,34 +2,36 @@
     pageEncoding="utf-8" import="com.ruisi.vdop.web.bireport.ReportDesignAction"%>
 <%@ taglib prefix="s" uri="/struts-tags"%>
 <%@ taglib prefix="bi" uri="/WEB-INF/common.tld"%>
-<%
-boolean showtit = true;
-String stit = request.getParameter("showtit");
-if(stit != null && stit.length() > 0){
-	showtit = "true".equals(stit);
-}
-%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-  <title><s:if test="pageName != null && pageName !=''">${pageName} - </s:if>多维分析工具(OLAP)</title>
-  
-  <script type="text/javascript" src="../ext-res/js/jquery.min.js"></script>
-  <link rel="stylesheet" type="text/css" href="../resource/jquery-easyui-1.3.4/themes/gray/easyui.css"/>
-  <link rel="stylesheet" type="text/css" href="../resource/jquery-easyui-1.3.4/themes/icon.css"/>
-  <script type="text/javascript" src="../resource/jquery-easyui-1.3.4/jquery.easyui.min.js"></script>
-  <script language="javascript" src="../resource/js/bireport.js?v2"></script>
-  <script language="javascript" src="../resource/js/bitable.js"></script>
-  <script language="javascript" src="../resource/js/bichart.js"></script>
-  <script language="javascript" src="../resource/js/bidrill.js"></script>
-   <link rel="stylesheet" type="text/css" href="../ext-res/css/fonts-min.css" />
-	<link rel="stylesheet" type="text/css" href="../ext-res/css/boncbase.css?v3" />
-	<link rel="stylesheet" type="text/css" href="../resource/css/bireport.css?v3" />
-  
-	<script type="text/javascript" src="../ext-res/My97DatePicker/WdatePicker.js"></script>
-	<script language="javascript" src="../resource/js/json.js"></script>
-    <script type="text/javascript" src="../ext-res/js/echarts.min.js"></script>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title><s:if test="pageName != null && pageName !=''">${pageName} - </s:if>多维分析工具(OLAP)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<link href="../ext-res/css/bootstrap.min.css" rel="stylesheet">
+<link href="../resource/css/animate.css" rel="stylesheet">
+<link href="../resource/css/style.css" rel="stylesheet">
+<link href="../resource/css/font-awesome.css?v=4.4.0" rel="stylesheet">
+<link href="../resource/sweetalert/sweetalert.css" rel="stylesheet">
+<link href="../resource/css/bireport.css" rel="stylesheet">
+<link href="../resource/awesome-bootstrap-checkbox/awesome-bootstrap-checkbox.css" rel="stylesheet">
+<script type="text/javascript" src="../ext-res/js/jquery.min.js"></script>
+<script type="text/javascript" src="../ext-res/js/bootstrap.min.js?v=3.3.6"></script>
+<link rel="stylesheet" type="text/css" href="../resource/jquery-easyui-1.4.4/themes/gray/easyui.css"/>
+<link rel="stylesheet" type="text/css" href="../resource/jquery-easyui-1.4.4/themes/icon.css"/>
+<script type="text/javascript" src="../resource/jquery-easyui-1.4.4/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="../resource/sweetalert/sweetalert.min.js"></script>
+<script type="text/javascript" src="../ext-res/My97DatePicker/WdatePicker.js"></script>
+<!--
+<script language="javascript" src="../resource/js/bireport-compress.js?v6"></script>
+-->
+<script language="javascript" src="../resource/js/bitable.js"></script>
+<script language="javascript" src="../resource/js/bidrill.js"></script>
+<script language="javascript" src="../resource/js/bichart.js"></script>
+<script language="javascript" src="../resource/js/bireport.js"></script>
+<script language="javascript" src="../resource/js/json.js"></script>
+<script type="text/javascript" src="../ext-res/js/ext-base.js"></script>
+<script type="text/javascript" src="../ext-res/js/echarts.min.js"></script>
 </head>
 
 <script language="javascript">
@@ -38,7 +40,7 @@ if(stit != null && stit.length() > 0){
 String pageInfo = (String)request.getAttribute("pageInfo");
 if(pageInfo == null){
 	%>
-	var pageInfo = {"selectDs":'${selectDs}', comps:[{"name":"表格组件","id":1, "type":"table"}], params:[]};
+	var pageInfo = {"selectDs":'${selectDs}',tab:"1", comps:[{"name":"表格组件","id":1, "type":"table"},{"name":"","id":2, "type":"chart",chartJson:{type:"line",params:[]},kpiJson:[]}], params:[]};
 	var isnewpage = true;
 	<%
 }else{
@@ -46,14 +48,11 @@ if(pageInfo == null){
 	var pageInfo = <%=pageInfo%>;
 	var isnewpage = false;
 <%}%>
-var showtit = <%=showtit%>;
+var showtit = true;
 var curTmpInfo = {"menus":"${menus}"}; //临时对象
 curTmpInfo.isupdate = false; //页面是否已经修改
-curTmpInfo.chartpos = "left";  //too/left 表示图形配置属性的位
+curTmpInfo.chartpos = "left";  //too/left 表示图表配置属性的位
 $(function(){
-	
-	//初始化TAB信息
-	$("#l_tab").tabs({fit:true,border:false});
 	
 	//初始化数据集
 	reloadDatasetTree();
@@ -61,166 +60,137 @@ $(function(){
 		$("#datasettree").tree("options").dnd = false;
 	}
 	
-	//初始化我的报表
-	//loadMyReportTree();
-	
-	//初始化视图
-	initviewTree();
-	
 	//初始化参数
 	initparam();
 	
 	//初始化默认组件
 	for(i=0;i<pageInfo.comps.length; i++){
-		var t = pageInfo.comps[i];		
-		if(t.type =="customComp"){
-			addComp(t.id, t.name, str, false, t.type, isnewpage ? null : t.json,false,t.customCompType);
-		}else{
-			var str = t.type == 'text' ? t.text.replace(/\n/g,"<br>") : null;
-			addComp(t.id, t.name, str, false, t.type, isnewpage ? null : t);
-		}
+		var t = pageInfo.comps[i];
+		var str = t.type == 'text' ? t.text.replace(/\n/g,"<br>") : null;
+		addComp(t.id, t.name, str, false, t.type, isnewpage ? null : t);	
 	}
-	
-	
-
-	
-	//初始化关闭按钮图标颜色,及删除动作事件
-	$(".comp_table .title a.easyui-linkbutton").live("click", function(evt){		
-		var id = $(this).attr("pid");
-		if($(this).hasClass("btn_delete")){
-			delComp(id);
-			return ;
-		}
-		var name = $(this).attr("name");
-		var cmpInfo=findCompById(id)
-		if(cmpInfo == null){
-			return;
-		}
-		var type=cmpInfo.type;		
-		if(type in customComp){
-			var cmp=customComp[type];
-			if(toolsHandler.toolsHandler){
-				toolsHandler.toolsHandler.call(window,id,name,this);
-			}			
-		}
-		
+	//初始化选项卡
+	$('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+		var activeTab = $(e.target).attr("idx"); 
+		pageInfo.idx = activeTab;
 	});
-	$(".comp_table .title .ticon a").live("mouseover", function(){
+	if(pageInfo.idx == "2"){
+		$('a[data-toggle="tab"]').last().tab('show');
+	}
+	//图标事件
+	$("#chartarea").on("mouseover", "span.charticon", function(){
 		$(this).css("opacity", 1);
-	}).live("mouseout", function(){
+	}).on("mouseout", "span.charticon", function(){
 		$(this).css("opacity", 0.6);
 	});
-	$(".dimoptbtn,.one_p,.charticon").live("mouseover", function(){
+	$("#optarea").on("mouseover", "a.dimDrill", function(){
 		$(this).css("opacity", 1);
-	}).live("mouseout", function(){
+	}).on("mouseout", "a.dimDrill", function(){
 		$(this).css("opacity", 0.6);
 	});
-	$(".dimDrill,.dimgoup,.chartdrillDim a").live("mouseover", function(){
+	$("#optarea").on("mouseover", "a.dimoptbtn", function(){
 		$(this).css("opacity", 1);
-	}).live("mouseout",function(){
-		$(this).css("opacity", 0.5);
+	}).on("mouseout", "a.dimoptbtn", function(){
+		$(this).css("opacity", 0.6);
 	});
-	
-	<%if(!ReportDesignAction.isShowMenu("view", request)){%>
-	$("#viewtreediv").hide();
-	$("#l_tab li.tabs-selected").next().hide();
-	<%}%>
 });
 
 </script>
+<style>
+.panel-body {
+	overflow:hidden;
+}
+</style>
 
-<body class="easyui-layout" id="layout_data">
+<body class="gray-bg">
 
-<%if(ReportDesignAction.isShowMenu("menu", request)){%>
-	<div region="north" border="false" style="height:33px;background:#ffffff; overflow:hidden;">
-		<%
-        	if(showtit){
-        %>
-       
-        <%
-			}else{
-		%>
-        
-        <%
-			}
-		%>
-        <div class="panel-header" style="padding:3px; background-image:url(../ext-res/image/white-top-bottom.gif)">
-        <%if(ReportDesignAction.isShowMenu("open", request)){%>
-            <a href="javascript:openreport();" id="mb8" class="easyui-linkbutton" plain="true" iconCls="icon-open">打开</a>
-        <%}%>
-        <%if(ReportDesignAction.isShowMenu("new", request)){%>
-            <a href="javascript:newpage()" id="mb1" class="easyui-linkbutton" plain="true" iconCls="icon-newpage" title="新建查询页面">新建</a>
-         <%}%>
-         <%if(ReportDesignAction.isShowMenu("save", request)){%>
-            <a href="javascript:savepage()" id="mb2" class="easyui-linkbutton" plain="true" iconCls="icon-save" title="保存查询页面">保存</a>
-         <%}%>
-          <%if(ReportDesignAction.isShowMenu("data", request)){%>
-            <a href="javascript:selectdataset()" id="mb3" class="easyui-linkbutton" plain="true" iconCls="icon-dataset" title="选择分析主题">数据</a>
-            <%}%>
-             <%if(ReportDesignAction.isShowMenu("insert", request)){%>
-            <a href="javascript:void(0)" id="mb4" class="easyui-menubutton" plain="true" iconCls="icon-add" menu="#insertcompmenu" title="插入组件">插入</a>
-            <%}%>
-             
-              <%if(ReportDesignAction.isShowMenu("export", request)){%>
-            <a href="javascript:exportPage()" id="mb6" class="easyui-linkbutton" plain="true" iconCls="icon-export" title="导出数据">导出</a>
-            <%}%>
-            <%if(ReportDesignAction.isShowMenu("push", request)){
-				/**
-				%>
-            <a href="javascript:pushData()" id="mb9" class="easyui-linkbutton" plain="true" iconCls="icon-push" title="推送数据">推送</a>
-            <%
-			**/
-			}%>
-            <%if(ReportDesignAction.isShowMenu("print", request)){%>
-            <a href="javascript:printData()" id="mb10" class="easyui-linkbutton" plain="true" iconCls="icon-print" title="打印数据">打印</a>
-            <%}%>
-             <%if(ReportDesignAction.isShowMenu("desc", request)){%>
-            <a href="javascript:kpidesc()" id="mb8" class="easyui-linkbutton" plain="true" iconCls="icon-kpidesc" title="查看指标解释">解释</a>
-            <%}%>
-             <%if(ReportDesignAction.isShowMenu("dm", request)){%>
-            <a href="javascript:helper()" id="mb13" class="easyui-linkbutton" plain="true" iconCls="icon-help" title="帮助">帮助</a>
-            <%}%>
-        </div>
+<nav class="navbar navbar-default animated fadeInDown" role="navigation" style="margin-bottom:0px;">
+    <div>
+        <!--向左对齐-->
+        <ul class="nav navbar-nav navbar-left">
+		<li class="dropdown">
+        	<a href="#"  class="dropdown-toggle" data-toggle="dropdown">
+            	文件
+                <b class="caret"></b>
+            </a>
+        	<ul class="dropdown-menu">
+                <li><a href="javascript:openreport();">打开</a></li>
+                <li><a href="javascript:newpage();">新建</a></li>
+                <li><a href="javascript:savepage();">保存</a></li>
+            </ul>
+        </li>
+		<li class="dropdown">
+        	<a href="#" class="dropdown-toggle" data-toggle="dropdown">
+            	导出
+                <b class="caret"></b>
+            </a>
+            <ul class="dropdown-menu">
+                <li><a href="javascript:exportPage('html');">HTML</a></li>
+                <li><a href="javascript:exportPage('csv');">CSV</a></li>
+                <li><a href="javascript:exportPage('excel');">EXCEL</a></li>
+                <li><a href="javascript:exportPage('word');">WORD</a></li>
+				<li><a href="javascript:exportPage('pdf');">PDF</a></li>
+            </ul>
+        </li>
+		<li><a href="javascript:printData();">打印</a></li>
+		<li><a href="javascript:kpidesc();">度量解释</a></li>
+        </ul>
     </div>
-	 <%}%>
-     
-     <!-- 配置数据是否隐藏 -->
-	<%if(ReportDesignAction.isShowMenu("showData", request)){%>
-	<div region="west" split="true" style="width:200px;" title="对象浏览">
-    	<div id="l_tab" class="easyui-tabs" style="height:auto; width:auto;">
-        	<div title="数据" style="">
-        		<div id="datasettreediv">
-				</div>    
-            </div>
-            <div title="视图" style="" id="viewtreediv">
-            	<ul id="viewtree" class="easyui-tree">
-				</ul>  
-            </div>
-        </div>
-    </div>
-    <%}%>
-    
-	<div region="center" title="操作区" >
-    	   <div class="easyui-layout" data-options="fit:true">
-                <div data-options="region:'north',split:true,border:true" id="p_param" class="param" style="height:37px">
-                         <div class="ptabhelpr">
-                            拖拽维度到此处作为页面参数
-                         </div>
-                </div>
-                <div data-options="region:'center',border:false" id="optarea"  style="padding:5px;">
-                     
-                </div>
-              </div>
+</nav>
+
+<div class="wrapper wrapper-content">
+	<div class="row">
+		<div class="col-sm-3">
+			<div class="ibox">
+				<div class="ibox-title">
+					<h5>数据模型</h5>
+				</div>
+				<div class="ibox-content">
+					<button class="btn btn-block btn-primary" onclick="selectdataset()"><i class="fa fa-refresh"></i> 切换数据</button>
+					<p class="text-warning">拖拽数据到表格或图表中展现</p>
+					<div id="datasettreediv"></div>
+				</div>
+			</div>
+		</div>
+		
+		<div class="col-sm-9 animated fadeInRight">
+			<div class="ibox">
+				<div class="ibox-content" id="p_param" style="padding:5px;">
+					<div class="ptabhelpr">拖拽维度到此处作为筛选条件</div>
+				</div>
+			</div>
+			
+					<div class="tabs-container">
+						<ul class="nav nav-tabs">
+							<li class="active"><a data-toggle="tab" idx="1" href="#tab-1" aria-expanded="true"> 表格</a>
+							</li>
+							<li><a data-toggle="tab" idx="2" href="#tab-2" aria-expanded="false">图表</a>
+							</li>
+							<p class="navbar-form navbar-right" role="search">
+							<button type="button" class="btn btn-default btn-xs btn-outline" onclick="cleanData()">清除数据</button>
+						</p>
+						</ul>
+					</div>
+					
+					<div class="tab-content">
+                        <div id="tab-1" class="tab-pane active">
+                            <div class="panel-body">
+                               <div id="optarea" style="padding:5px; overflow:auto;"></div>
+                            </div>
+                        </div>
+                        <div id="tab-2" class="tab-pane">
+                            <div class="panel-body">
+								<button class="btn btn-block btn-default" onclick="updateChart()">切换图表类型</button>
+                               <div id="chartarea" style="padding:5px;"></div>
+                            </div>
+                        </div>
+                    </div>
+			
+		</div>
 	</div>
-
-<div id="insertcompmenu" style="width:150px;">
-		<div onclick="insertTable()" >插入表格</div>
-		<div onclick="insertChart()" >插入图形...</div>
-        <div onclick="insertText('insert')">插入文本...</div>
-</div>
+</div>	  
 
 <div id="pdailog"></div>
-<div class="indicator">==></div>
 <div id="kpioptmenu" class="easyui-menu">
 	<div>
     	<span>计算</span>
@@ -238,7 +208,7 @@ $(function(){
        </div>
     </div>
 	<div onclick="kpiproperty()">属性...</div>
-    <div onclick="crtChartfromTab()">图形...</div>
+    <div onclick="crtChartfromTab()">图表...</div>
     <div onclick="kpiFilter('table')">筛选...</div>
     <div onclick="kpiwarning()">预警...</div>
     <div>
@@ -275,6 +245,5 @@ $(function(){
     <div onclick="setChartKpi()" id="m_set">属性...</div>
     <div onclick="delChartKpiOrDim()" iconCls="icon-remove">清除</div>
 </div>
-<div class='chartloading' id="Cloading"><div class="ldclose" onclick="hideLoading()"></div><div class="ltxt">Loading...</div></div>
 </body>
 </html>

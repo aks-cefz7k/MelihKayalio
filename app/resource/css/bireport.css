@@ -1,112 +1,4 @@
 @charset "utf-8";
-.bi_tit{
-	height:57px;
-	background-image:url(../img/bireportlog.png);
-	background-repeat:no-repeat;
-	background-position:left center;
-	background-color:#FFFFFF;
-}
-.textpanel {
-    line-height: 30px;
-    margin: 10px;
-}
-span.inputtext {
-    display: inline-block;
-    width: 90px;
-}
-.inputform {
-    width: 160px;
-}
-.comp_table{
-	border:dotted 1px #999999;
-	margin-bottom:10px;
-}
-
-.comp_table .title{
-	padding:3px;
-	background-color:#EFEFEF;
-	border-bottom:dotted 1px #999999;
-	height:18px;
-}
-.comp_table .title .tname{
-	float:left;
-}
-.comp_table .title .mvcomp{
-	height:18px;
-	float:right;
-	width:100%;
-	margin-left:-200px;
-}
-/*组件工具按钮定义-start*/
-.comp_table .title a.l-btn span span.l-btn-text {
-	height:14px;	
-}
-.comp_table .title a.l-btn span.l-btn-left{
-	padding:0px 0px 0px 0px
-}
-.comp_table .title a.l-btn{
-	height:16px;
-}
-.comp_table .title a.l-btn-plain{
-	margin-top:-2px;
-}
-.icon-moveComponent{
-	background:url('../image/move.png') no-repeat;
-}
-.icon-removeComponent{
-	background:url('../img/closeme.png') no-repeat;
-}
-/*组件工具按钮定义-end*/
-
-.comp_table .title .ticon{
-	width:22px;
-	height:16px;
-	text-align:right;
-	display:inline;
-	/*float:right;
-	margin-top:-16px;*/
-}
-.comp_table .title .ticon a{
-	width:16px;
-	height:16px;
-	background:url("../img/closeme.png");
-	background-position:center center;
-	cursor:pointer;
-	display:inline-block;
-	opacity:0.6;
-	_background:none;
-    _filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src="../resource/img/closeme.png");
-}
-.comp_table .ctx{
-	padding:5px;
-	background-color:#FFFFFF;
-}
-
-.txtctxdiv{
-	margin:1px;
-}
-.txtctxdiv textarea {
-	border:none;
-}
-.tabhelpr{
-	color:#999999;
-	font-size:14px;
-	padding:15px;
-}
-.tabhelpr2{
-	color:#999999;
-	font-size:14px;
-	padding:15px;
-}
-.indicator{
-	position:absolute;
-	font-size:14px;
-	width:50px;
-	height:10px;
-	display:none;
-	color:red;
-}
-
 table.d_table {
     border-collapse:collapse;
     border-spacing: 0px;
@@ -162,7 +54,7 @@ TABLE.d_table2 TD {
 .rowDimsList span{
 	display:-moz-inline-box;  
 	display:inline-block;
-	width:112px;
+	width:117px;
 	border:1px solid #CACACA;
 	border-right:none;
 	background-color:#FFFFCC;
@@ -238,7 +130,7 @@ tr.scrollColThead th span a.extKpibtn {
 .tsbd .h_ctx, .tsbd2 .h_ctx{
 	border:1px solid #7F9DB9;
 	overflow:hidden;
-	height:24px;
+	height:26px;
 }
 .chartctx {
 	border:1px solid #CACACA;
@@ -281,7 +173,7 @@ span.chartdel {
 	cursor:pointer;
 	background-position:center center;
 	background-repeat:no-repeat;
-	opacity: 0.6;
+	margin:3px 0;
 }
 .tsbd span.grouptype {
 	width:16px;
@@ -293,92 +185,33 @@ span.chartdel {
 	background-position:center center;
 	background-repeat:no-repeat;
 	float:left;
-	padding:3px 0px 0px 0px;
+	margin:3px 0;
 }
-.chartloading {
-	height:40px;
-	width:140px;
-	background-image:url("../../ext-res/image/large-loading.gif");
-	background-position:left center;
-	background-repeat:no-repeat;
-	background-color:#FFFFCC;
-	border:1px solid #CACACA;
-	position:absolute;
-	display:none;
-	font-size:14px;
-	z-index:10000;
-}
-.chartloading .ltxt{
-	margin:12px 0px 10px 40px;
-}
-.chartloading .ldclose {
-	float:right;
-	height:20px;
-	width:20px;
-	background-image:url("../img/closeme.png");
-	background-position:center center;
-	background-repeat:no-repeat;
-	cursor:pointer;
-}
-.exchangexs{
+.exchangexs {
 	width:20px;
 	height:170px;
 	float:left;
-}
-.msginfo{
-	width:85%;
-	height:90%;
-	padding-left:40px;
-	line-height:20px;
-}
-.msgerr{
-	background-image:url(../img/icon-error.gif);
-	background-position:left center;
-	background-repeat:no-repeat;
-}
-.msgsuc{
-	background-image:url(../img/icon-suc.gif);
-	background-position:left center;
-	background-repeat:no-repeat;
 }
 #d_colDims span.colkpi{
 	display:-moz-inline-box;  
 	display:inline-block;
 	width:110px;
 	overflow:hidden;
+	padding:5px 0px 0px 3px;
 }
-#d_kpi span.kpiValue{
-	display:-moz-inline-box;  
-	display:inline-block;
+#d_kpi span.kpiValue{ 
+	display:block;
 	width:110px;
 }
-#d_rowDims span.s_rowDim{
-	display:-moz-inline-box;  
-	display:inline-block;
+#d_rowDims span.s_rowDim{  
+	display:block;
 	width:110px;
 	white-space: nowrap;
 	overflow:hidden;
+	margin:3px;
 }
 #d_colDims span.s_colDim{
 	white-space: nowrap;
-}
-.exportpanel{
-	margin:30px 10px 10px 10px;
-}
-.exportpanel .exptp{
-	display:-moz-inline-box;  
-	display:inline-block;
-	width:68px;
-	text-align:center;
-	cursor:pointer;
-}
-.exportpanel .select{
-	border:solid 1px #990000;
-}
-.helpctx {
-	font-size:12px;
-	line-height:20px;
-	text-indent: 25px;
 }
 .chartdrillmenu{
 	margin-top:5px;
@@ -407,13 +240,7 @@ span.chartdel {
 	display:-moz-inline-box;  
 	display:inline-block;
 	white-space:nowrap;
-	width:90px;
-}
-
-#p_param .ptabhelpr{
-	padding:5px;
-	color: #999999;
-    font-size: 14px;
+	width:84px;
 }
 #p_param span.pppp {
 	background-color: #FFFFCC;
@@ -422,25 +249,15 @@ span.chartdel {
     padding: 4px;
     text-align: center;
 	margin:2px;
+	border-radius: 3px;
 }
 #p_param span.text {
 	cursor:pointer;
 }
 #p_param span.pppp span.text {
 	display:-moz-inline-box;  
-	display:inline-block;
 	white-space:nowrap;
 	overflow:hidden;
-}
-#p_param span.pppp a {
-	display:-moz-inline-box;  
-	display:inline-block;
-	width:18px;
-	height:12px;
-	background-image:url("../../ext-res/images/hmenu-del.gif");
-	background-repeat:no-repeat;
-	background-position:center center;
-	text-decoration:none;
 }
 #reportcatalist {
 	width: 190px;
@@ -484,4 +301,121 @@ span.chartdel {
     height: 250px;
     overflow: hidden;
     width: 220px;
+}
+/** olap 视图样式*/
+TABLE.grid5 {
+	width: 100%;
+    border-collapse:collapse;
+    border-spacing: 0px;
+    border-cellpadding: 0px;
+}
+TABLE.grid5 THEAD {color: black;text-align: center}
+TABLE.grid5 TH {
+    border: 1px solid #CACACA;
+    font-size: 13px;
+     height:26px;
+    background-color: #EEEEEE;
+    text-align: left;
+	font-weight:normal;
+}
+TABLE.grid5 TD.grid5-td {
+    border: 1px solid #CACACA;
+    font-size: 12px;
+    height:26px;
+	overflow:hidden;
+	padding:3px;
+}
+TABLE.grid5 TD.kpiData1 {
+	background-color:#FFF;
+}
+TABLE.grid5 TD.kpiData2 {
+	background-color:#F7F7F7;
+}
+TABLE.grid5 td.pms, TABLE.grid3 td.pms {
+    color: #ff0000;
+    font-weight: bold;
+    text-align: center;
+}
+.dimDrill{
+	display: inline-block;
+    text-decoration: none;
+    width: 17px;
+	height:14px;
+	background-image:url(../image/plus.gif);
+	background-repeat: no-repeat;
+	background-position: center center;
+	cursor:pointer;
+}
+.dimgoup{
+	display: inline-block;
+    text-decoration: none;
+    width: 17px;
+	height:14px;
+	background-image:url(../image/minus.gif);
+	background-repeat: no-repeat;
+	background-position: center center;
+	cursor:pointer;	
+}
+.tabhelpr{
+	color:#999999;
+	font-size:14px;
+	padding:15px;
+}
+#p_param .ptabhelpr{
+	padding:5px;
+	color: #999999;
+    font-size: 14px;
+}
+.dfilter {
+	width:290px;
+	height:218px;
+	overflow:auto;
+}
+.warning1 {
+	display: inline-block;
+    width: 16px;
+	height:16px;
+	background-image:url(../image/j1.png);
+	background-repeat: no-repeat;
+	background-position: center center;
+}
+.warning2 {
+	display: inline-block;
+    width: 16px;
+	height:16px;
+	background-image:url(../image/j2.png);
+	background-repeat: no-repeat;
+	background-position: center center;
+}
+.warning3 {
+	display: inline-block;
+    width: 16px;
+	height:16px;
+	background-image:url(../image/j3.png);
+	background-repeat: no-repeat;
+	background-position: center center;
+}
+.warning4 {
+	display: inline-block;
+    width: 16px;
+	height:16px;
+	background-image:url(../image/w1.png);
+	background-repeat: no-repeat;
+	background-position: center center;
+}
+.warning5 {
+	display: inline-block;
+    width: 16px;
+	height:16px;
+	background-image:url(../image/w2.png);
+	background-repeat: no-repeat;
+	background-position: center center;
+}
+.warning6 {
+	display: inline-block;
+    width: 16px;
+	height:16px;
+	background-image:url(../image/w3.png);
+	background-repeat: no-repeat;
+	background-position: center center;
 }

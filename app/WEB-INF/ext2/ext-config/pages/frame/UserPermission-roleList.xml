@@ -14,7 +14,7 @@
 			<textField id="user_id" type="hidden" show="true"></textField>
 			<div align="right" style="padding:5px;">
 				<button action="frame.UserPermission" desc="添加" method="preAddRole" checkParam="false" submit="get"></button>
-				<button action="frame.UserPermission" method="delRole" desc="删除" confirm="true"></button>
+				<button action="frame.UserPermission" method="delRole" desc="删除" styleClass="btn btn-danger btn-sm" confirm="true"></button>
 				<link action="frame.User" method="" title="返回"/>
 			</div>
 			<dataGrid>

@@ -19,7 +19,7 @@ function crtChart(compId){
 		ismap = comp.chartJson.type == 'map';
 	}
 	if(ismap){
-		return "<div class=\""+(curTmpInfo.chartpos=="left"?"tsbd":"tsbd2")+"\"><div class=\""+(curTmpInfo.chartpos=="left"?"ts_h":"ts_h2")+"\">地域：<div class=\"h_ctx\" id=\"xcol\"><span class=\"charttip\">将地域拖到这里</span></div></div><div class=\""+(curTmpInfo.chartpos=="left"?"ts_h":"ts_h2")+"\">度量：<div id=\"ycol\" class=\"h_ctx\"><span class=\"charttip\">将度量拖到这里</span></div></div></div><div class=\"chartctx\" style=\""+(curTmpInfo.chartpos=="top"?"margin-left:auto":"")+"\">图形预览区域</div>";
+		return "<div class=\""+(curTmpInfo.chartpos=="left"?"tsbd":"tsbd2")+"\"><div class=\""+(curTmpInfo.chartpos=="left"?"ts_h":"ts_h2")+"\">地域：<div class=\"h_ctx\" id=\"xcol\"><span class=\"charttip\">将地域拖到这里</span></div></div><div class=\""+(curTmpInfo.chartpos=="left"?"ts_h":"ts_h2")+"\">度量：<div id=\"ycol\" class=\"h_ctx\"><span class=\"charttip\">将度量拖到这里</span></div></div></div><div class=\"chartctx\" style=\""+(curTmpInfo.chartpos=="top"?"margin-left:auto":"")+"\">图表预览区域</div>";
 	}else{
 		return "<div class=\""+(curTmpInfo.chartpos=="left"?"tsbd":"tsbd2")+"\">" + (isscatter?"<div class=\""+(curTmpInfo.chartpos=="left"?"ts_h":"ts_h2")+"\">" + (ispie ? "观察维度" : "横轴")+"：<div id=\"y2col\" class=\"h_ctx\"><span class=\"charttip\">"+"将度量拖到这里"+"</span></div></div>":"<div class=\""+(curTmpInfo.chartpos=="left"?"ts_h":"ts_h2")+"\">" + (ispie ? "观察维度" : "横轴")+"：<div id=\"xcol\" class=\"h_ctx\"><span class=\"charttip\">"+"将维度拖到这里"+"</span></div></div>") + 
 		"<div class=\""+(curTmpInfo.chartpos=="left"?"ts_h":"ts_h2")+"\">"+(ispie?"度量":"纵轴")+"：<div id=\"ycol\" class=\"h_ctx\"><span class=\"charttip\">将度量拖到这里</span></div></div>" +
@@ -27,43 +27,15 @@ function crtChart(compId){
 		(isscatter?"<div class=\""+(curTmpInfo.chartpos=="left"?"ts_h":"ts_h2")+"\">观察维度：<div id=\"xcol\" class=\"h_ctx\"><span class=\"charttip\">"+"将维度拖到这里"+"</span></div></div>":"") +
 		(isbubble ? "":"<div class=\""+(curTmpInfo.chartpos=="left"?"ts_h":"ts_h2")+"\" "+(ispie?"style=\"display:none\"":"")+">图例：<div id=\"scol\" class=\"h_ctx\"><span class=\"charttip\">将维度拖到这里</span></div></div>") + "</div>" + 
 		(ispie||isscatter||curTmpInfo.chartpos=="top" ? "" :"<div class=\"exchangexs\"><img src='../resource/img/exchangexs1.gif'><a title='交换维度' href='javascript:exchangexs("+compId+", true);'><img src='../resource/img/reload.png' border='0'></a><img src='../resource/img/exchangexs2.gif'></div>") + 
-		"<div class=\"chartctx\" style=\""+(curTmpInfo.chartpos=="top"?"margin-left:auto;":"")+(isscatter?"height:220px;":"")+"\">图形预览区域</div>";
+		"<div class=\"chartctx\" style=\""+(curTmpInfo.chartpos=="top"?"margin-left:auto;":"")+(isscatter?"height:220px;":"")+"\">图表预览区域</div>";
 	}
 }
-function addChart(tp){
-	curTmpInfo.charttype = tp; //放入全局对象，后面crtChart方法访问
-	var compId = getMaxCompId();
-	var name = "图形组件-";
-	if(tp == 'line'){
-		name = name + "曲线图";
-	}else if(tp == 'column'){
-		name = name + "柱状图";
-	}else if(tp == "pie"){
-		name = name + "饼图";
-	}else if(tp == "gauge"){
-		name = name  + "仪表盘";
-	}else if(tp == "radar"){
-		name = name + "雷达图";
-	}else if(tp == "scatter"){
-		name = name + "散点图";
-	}else if(tp == "bubble"){
-		name = name + "气泡图";
-	}else if(tp == "map"){
-		name = name + "地图";
-	}else if(tp == "bar"){
-		name = name + "条形图";
-	}else if(tp == "area"){
-		name = name + "面积图";
-	}
-	addComp(compId, name, null, true, 'chart');
-	var json = findCompById(compId);
-	json.chartJson = {"type":tp, "label":"c"+compId, xcol:{}, ycol:{}, scol:{}, params:[]};
-};
-function insertChart(){
+function updateChart(){
+	var comp = findCompById(2);
 	$('#pdailog').dialog({
-		title: '插入图形',
+		title: '切换图表',
 		width: 400,
-		height: 355,
+		height: 375,
 		closed: false,
 		cache: false,
 		modal: true,
@@ -73,12 +45,26 @@ function insertChart(){
 					iconCls:'icon-ok',
 					handler:function(){
 						if(curTmpInfo.selectChart == undefined){
-							msginfo("您还未选择图形，请点击图形示意图片，再点确认按钮。");
+							msginfo("您还未选择图表，请点击图表示意图片，再点确认按钮。");
 						}else{
-							addChart(curTmpInfo.selectChart);
+							var tp = comp.chartJson.type = curTmpInfo.selectChart;
 							//清除数据
 							delete curTmpInfo.selectChart;
+							delete comp.kpiJson[1];
+							delete comp.kpiJson[2];
+							if(tp == "pie" || tp == "gauge"){
+								delete comp.chartJson.scol;
+							}
 							$('#pdailog').dialog('close');
+							var str = crtChart(comp.id);
+							$("#chartarea div.ctx").html(str);
+							backChartData(comp);
+							if(tp == 'bubble' || tp == 'scatter'){
+								initChartByScatter(2);
+							}else{
+								initChartKpiDrop(2)
+							}
+							chartview(comp, comp.id);
 						}
 					}
 				},{
@@ -91,7 +77,7 @@ function insertChart(){
 					}
 				}]
 	});
-	$('#pdailog').dialog('refresh', 'Panel!insertChart.action');
+	$('#pdailog').dialog('refresh', 'Panel!insertChart.action?tp=' + comp.chartJson.type);
 }
 function chartcss(){
 	//默认值
@@ -103,7 +89,7 @@ function chartcss(){
 		$(".chartselect .selright .one").css("display", "none");
 		$("#schart" + cid).css("display", "block");
 		
-		//默认选图形
+		//默认选图表
 		//$(".chartselect .selright .one").css("border", "none");
 		//$("#schart" + cid).css("border","1px solid #FF0000");
 		var tp = $("#schart" + cid).attr("tp");
@@ -123,32 +109,39 @@ function chartview(json, compId){
 	if(json.kpiJson == undefined || json.kpiJson.length == 0){
 		return;
 	}
-	showloading();
+	if(json.chartJson.type == "scatter" && (json.kpiJson.length < 2 || json.kpiJson[1] == null)  ){
+		return;
+	}
+	if(json.chartJson.type == "bubble" && (json.kpiJson.length < 3 || json.kpiJson[2] == null ) ){
+		return;
+	}
+	__showLoading();
+	var kpiType = json.ttype;
 	//处理参数
 	var params = "[]";
 	if(pageInfo.params && pageInfo.params.length > 0){
 		params = JSON.stringify(pageInfo.params);
 	}
 	
-		var chartJson = JSON.stringify(json.chartJson);
-		var kpiJson = JSON.stringify(json.kpiJson);
-		$.ajax({
-		   type: "POST",
-		   url: "ChartView.action",
-		   dataType:"html",
-		   data: {"chartJson":chartJson, "kpiJson":kpiJson, "compId":compId, "params":params, dsource:json.dsid, dset:json.dsetId},
-		   success: function(resp){
-			   hideLoading();
-			  //清除DIV高度
-			  $("#T" + compId + " div.chartctx").css("height", "auto");
-			  
-			  $("#T" + compId + " div.chartctx").html(resp);
-		   },
-		   error:function(resp){
-			   hideLoading();
-			   $.messager.alert('出错了','系统出错，请联系管理员。','error');
-		   }
-		});
+	var chartJson = JSON.stringify(json.chartJson);
+	var kpiJson = JSON.stringify(json.kpiJson);
+	$.ajax({
+	   type: "POST",
+	   url: "ChartView.action",
+	   dataType:"html",
+	   data: {"chartJson":chartJson, "kpiJson":kpiJson, "kpiType":kpiType, "compId":compId, "params":params, "dsource":(json.dsource==null?"":json.dsource)},
+	   success: function(resp){
+		   __hideLoading();
+		  //清除DIV高度
+		  $("#T" + compId + " div.chartctx").css("height", "auto");
+		  
+		  $("#T" + compId + " div.chartctx").html(resp);
+	   },
+	   error:function(resp){
+		   __hideLoading();
+		   $.messager.alert('出错了','系统出错，请联系管理员。','error');
+	   }
+	});
 	
 }
 function initChartKpiDrop(id){
@@ -190,8 +183,8 @@ function initChartKpiDrop(id){
 			e.stopPropagation(); //阻止事件冒泡
 			
 			//判断拖入的维度及度量是否和以前维度及度量在同一个表。
-			if(json.cubeId != undefined){
-				if(json.cubeId != node.attributes.cubeId){
+			if(json.tid != undefined){
+				if(json.tid != node.attributes.tid){
 					msginfo("您拖入的"+ (node.attributes.col_type == 2 ? "度量" : "维度") +"与组件已有的内容不在同一个数据表中，拖放失败。");
 					return;
 				}
@@ -200,14 +193,15 @@ function initChartKpiDrop(id){
 			//判断拖入的度量是否是（同比、环比），如果是，需要判断当前维度是否有date类型
 			if(node.attributes.calc_kpi == 1){
 				if(!isExistDateDim(json, 'chart')){
-					msginfo("您拖入的度量需要图形中有时间类型的维度(年/季度/月/日)。");
+					msginfo("您拖入的度量需要图表中有时间类型的维度(年/季度/月/日)。");
 					return;
 				}
 			}
 		
-			json.cubeId = node.attributes.cubeId;
-			json.dsid = node.attributes.dsid;
-			json.dsetId = node.attributes.dsetId;
+			json.tid = node.attributes.tid;
+			json.tname = node.attributes.tname;
+			json.ttype = node.attributes.ttype;
+			json.dsource = node.attributes.dsource; //组件所使用的数据源
 			
 			if(json.kpiJson == undefined){
 				json.kpiJson = [];
@@ -229,7 +223,7 @@ function initChartKpiDrop(id){
 			
 			if(node.attributes.col_type == 2 && $(this).attr("id") == "ycol"){
 				json.kpiJson = [];
-				json.kpiJson.push({"kpi_id":node.attributes.col_id, "kpi_name" : node.text, "col_name":node.attributes.col_name, "aggre":node.attributes.aggre, "fmt":node.attributes.fmt, "alias":node.attributes.alias,"tname":node.attributes.tname,"unit":node.attributes.unit,"rate":node.attributes.rate,"calc":node.attributes.calc});
+				json.kpiJson.push({"kpi_id":node.attributes.col_id, "kpi_name" : node.text, "col_name":node.attributes.col_name, "aggre":node.attributes.aggre, "fmt":node.attributes.fmt, "alias":node.attributes.alias,"tid":json.tid,"unit":node.attributes.unit,"rate":node.attributes.rate});
 				json.chartJson.ycol = {"type":"kpi"};
 				$(this).html("<span title=\""+node.text+"\" class=\"charttxt\">" + node.text + "</span><span class=\"charticon\" title=\"配置\" onclick=\"chartmenu(this, "+node.attributes.col_id+",'ycol','"+node.text+"')\"></span>");
 				curTmpInfo.isupdate = true;
@@ -246,12 +240,12 @@ function initChartKpiDrop(id){
 				var gt = node.attributes.grouptype;
 				if(gt != null && gt != ''){
 					if(json.chartJson.scol != undefined && json.chartJson.scol.grouptype == gt){
-						msginfo("您拖放的维度与此图形中已有维度分组相同，不能拖放。")
+						msginfo("您拖放的维度与此图表中已有维度分组相同，不能拖放。")
 						return;
 					}
 				}
 				
-				json.chartJson.xcol = {"id":node.attributes.col_id, "dimdesc" : node.text, "type":node.attributes.dim_type, "colname":node.attributes.col_name,"alias":node.attributes.alias,"tname":node.attributes.tname,"iscas":node.attributes.iscas, "tableName":node.attributes.tableName, "tableColKey":node.attributes.tableColKey,"tableColName":node.attributes.tableColName, "dimord":node.attributes.dimord, "dim_name":node.attributes.dim_name, "grouptype":node.attributes.grouptype,"valType":node.attributes.valType, "ordcol":node.attributes.ordcol,dateformat:node.attributes.dateformat,"calc":node.attributes.calc};
+				json.chartJson.xcol = {"id":node.attributes.col_id, "dimdesc" : node.text, "type":node.attributes.dim_type, "colname":node.attributes.col_name,"alias":node.attributes.alias,"tid":json.tid,"iscas":node.attributes.iscas, "tableName":node.attributes.tableName, "tableColKey":node.attributes.tableColKey,"tableColName":node.attributes.tableColName, "dimord":node.attributes.dimord, "dim_name":node.attributes.dim_name, "grouptype":node.attributes.grouptype,"valType":node.attributes.valType, "ordcol":node.attributes.ordcol,dateformat:node.attributes.dateformat};
 				$(this).html("<span title=\""+node.text+"\" class=\"charttxt\">" + node.text + "</span><span class=\"charticon\" title=\"配置\" onclick=\"chartmenu(this, "+node.attributes.col_id+",'xcol', '"+node.text+"')\"></span>");
 				curTmpInfo.isupdate = true;
 				chartview(json, id);
@@ -267,12 +261,12 @@ function initChartKpiDrop(id){
 				var gt = node.attributes.grouptype;
 				if(gt != null && gt != ''){
 					if(json.chartJson.xcol != undefined && json.chartJson.xcol.grouptype == gt){
-						msginfo("您拖放的维度与此图形中已有维度分组相同，不能拖放。")
+						msginfo("您拖放的维度与此图表中已有维度分组相同，不能拖放。")
 						return;
 					}
 				}
 				
-				json.chartJson.scol = {"id":node.attributes.col_id, "dimdesc" : node.text, "type":node.attributes.dim_type, "colname":node.attributes.col_name,"alias":node.attributes.alias,"tname":node.attributes.tname,"iscas":node.attributes.iscas, "tableName":node.attributes.tableName, "tableColKey":node.attributes.tableColKey,"tableColName":node.attributes.tableColName, "dimord":node.attributes.dimord, "dim_name":node.attributes.dim_name, "grouptype":node.attributes.grouptype,"valType":node.attributes.valType, "ordcol":node.attributes.ordcol,"calc":node.attributes.calc};
+				json.chartJson.scol = {"id":node.attributes.col_id, "dimdesc" : node.text, "type":node.attributes.dim_type, "colname":node.attributes.col_name,"alias":node.attributes.alias,"tid":json.tid,"iscas":node.attributes.iscas, "tableName":node.attributes.tableName, "tableColKey":node.attributes.tableColKey,"tableColName":node.attributes.tableColName, "dimord":node.attributes.dimord, "dim_name":node.attributes.dim_name, "grouptype":node.attributes.grouptype,"valType":node.attributes.valType, "ordcol":node.attributes.ordcol};
 				$(this).html("<span title=\""+node.text+"\" class=\"charttxt\">" + node.text + "</span><span class=\"charticon\" title=\"配置\" onclick=\"chartmenu(this,"+node.attributes.col_id+", 'scol', '"+node.text+"')\"></span>");
 				curTmpInfo.isupdate = true;
 				chartview(json, id);
@@ -281,7 +275,7 @@ function initChartKpiDrop(id){
 	});
 }
 /**
-对于气泡图、 散点图， 横轴和纵轴都是度量，序列是维度，处理方式和其他图形不一样，需特殊处理
+对于气泡图、 散点图， 横轴和纵轴都是度量，序列是维度，处理方式和其他图表不一样，需特殊处理
 */
 function initChartByScatter(id){
 	$("#T" + id + " #xcol, #T" + id +" #ycol, #T"+id+" #y2col, #T"+id+" #y3col, #T"+id+" #scol").droppable({
@@ -322,8 +316,8 @@ function initChartByScatter(id){
 			e.stopPropagation(); //阻止事件冒泡
 			
 			//判断拖入的维度及度量是否和以前维度及度量在同一个表。
-			if(json.cubeId != undefined){
-				if(json.cubeId != node.attributes.cubeId){
+			if(json.tid != undefined){
+				if(json.tid != node.attributes.tid){
 					msginfo("您拖入的"+ (node.attributes.col_type == 2 ? "度量" : "维度") +"与组件已有的内容不在同一个数据表中，拖放失败。");
 					return;
 				}
@@ -332,14 +326,15 @@ function initChartByScatter(id){
 			//判断拖入的度量是否是（同比、环比），如果是，需要判断当前维度是否有date类型
 			if(node.attributes.calc_kpi == 1){
 				if(!isExistDateDim(json, 'chart')){
-					msginfo("您拖入的度量需要图形中有时间类型的维度(年/季度/月/日)。");
+					msginfo("您拖入的度量需要图表中有时间类型的维度(年/季度/月/日)。");
 					return;
 				}
 			}
 		
-			json.cubeId = node.attributes.cubeId;
-			json.dsid = node.attributes.dsid;
-			json.dsetId = node.attributes.dsetId;
+			json.tid = node.attributes.tid;
+			json.tname = node.attributes.tname;
+			json.ttype = node.attributes.ttype;
+			json.dsource = node.attributes.dsource; //组件所使用的数据源
 			
 			if(json.kpiJson == undefined){
 				json.kpiJson = [];
@@ -360,10 +355,10 @@ function initChartByScatter(id){
 				}
 				//判断度量是否存在
 				if((json.kpiJson[1] != null && json.kpiJson[1].kpi_id == node.attributes.col_id) || (json.kpiJson[2] != null && json.kpiJson[2].kpi_id == node.attributes.col_id)){
-					msginfo("您拖放的度量已存在当前图形中。")
+					msginfo("您拖放的度量已存在当前图表中。")
 					return;
 				}
-				json.kpiJson[0] = {"kpi_id":node.attributes.col_id, "kpi_name" : node.text, "col_name":node.attributes.col_name, "aggre":node.attributes.aggre, "fmt":node.attributes.fmt, "alias":node.attributes.alias,"tname":node.attributes.tname,"unit":node.attributes.unit,"rate":node.attributes.rate,"calc":node.attributes.calc};
+				json.kpiJson[0] = {"kpi_id":node.attributes.col_id, "kpi_name" : node.text, "col_name":node.attributes.col_name, "aggre":node.attributes.aggre, "fmt":node.attributes.fmt, "alias":node.attributes.alias,"tid":json.tid,"unit":node.attributes.unit,"rate":node.attributes.rate};
 				json.chartJson.ycol = {"type":"kpi"};
 				$(this).html("<span title=\""+node.text+"\" class=\"charttxt\">" + node.text + "</span><span class=\"charticon\" title=\"配置\" onclick=\"chartmenu(this, "+node.attributes.col_id+",'ycol','"+node.text+"')\"></span>");
 				curTmpInfo.isupdate = true;
@@ -384,10 +379,10 @@ function initChartByScatter(id){
 				}
 				//判断度量是否存在
 				if((json.kpiJson[0] != null && json.kpiJson[0].kpi_id == node.attributes.col_id) || (json.kpiJson[2] != null && json.kpiJson[2].kpi_id == node.attributes.col_id)){
-					msginfo("您拖放的度量已存在当前图形中。")
+					msginfo("您拖放的度量已存在当前图表中。")
 					return;
 				}
-				var kpi = {"kpi_id":node.attributes.col_id, "kpi_name" : node.text, "col_name":node.attributes.col_name, "aggre":node.attributes.aggre, "fmt":node.attributes.fmt, "alias":node.attributes.alias,"tname":node.attributes.tname,"unit":node.attributes.unit,"rate":node.attributes.rate,"calc":node.attributes.calc};
+				var kpi = {"kpi_id":node.attributes.col_id, "kpi_name" : node.text, "col_name":node.attributes.col_name, "aggre":node.attributes.aggre, "fmt":node.attributes.fmt, "alias":node.attributes.alias,"tid":json.tid,"unit":node.attributes.unit,"rate":node.attributes.rate};
 				json.kpiJson[1] = kpi;
 				$(this).html("<span title=\""+node.text+"\" class=\"charttxt\">" + node.text + "</span><span class=\"charticon\" title=\"配置\" onclick=\"chartmenu(this, "+node.attributes.col_id+",'y2col','"+node.text+"')\"></span>");
 				curTmpInfo.isupdate = true;
@@ -408,10 +403,10 @@ function initChartByScatter(id){
 				}
 				//判断度量是否存在
 				if((json.kpiJson[0] != null && json.kpiJson[0].kpi_id == node.attributes.col_id) || (json.kpiJson[1] != null && json.kpiJson[1].kpi_id == node.attributes.col_id)){
-					msginfo("您拖放的度量已存在当前图形中。")
+					msginfo("您拖放的度量已存在当前图表中。")
 					return;
 				}
-				var kpi = {"kpi_id":node.attributes.col_id, "kpi_name" : node.text, "col_name":node.attributes.col_name, "aggre":node.attributes.aggre, "fmt":node.attributes.fmt, "alias":node.attributes.alias,"tname":node.attributes.tname,"unit":node.attributes.unit,"rate":node.attributes.rate,"calc":node.attributes.calc};
+				var kpi = {"kpi_id":node.attributes.col_id, "kpi_name" : node.text, "col_name":node.attributes.col_name, "aggre":node.attributes.aggre, "fmt":node.attributes.fmt, "alias":node.attributes.alias,"tid":json.tid,"unit":node.attributes.unit,"rate":node.attributes.rate};
 				json.kpiJson[2] = kpi;
 				$(this).html("<span title=\""+node.text+"\" class=\"charttxt\">" + node.text + "</span><span class=\"charticon\" title=\"配置\" onclick=\"chartmenu(this, "+node.attributes.col_id+",'y3col','"+node.text+"')\"></span>");
 				curTmpInfo.isupdate = true;
@@ -437,12 +432,12 @@ function initChartByScatter(id){
 				var gt = node.attributes.grouptype;
 				if(gt != null && gt != ''){
 					if(json.chartJson.scol != undefined && json.chartJson.scol.grouptype == gt){
-						msginfo("您拖放的维度与此图形中已有维度分组相同，不能拖放。")
+						msginfo("您拖放的维度与此图表中已有维度分组相同，不能拖放。")
 						return;
 					}
 				}
 				
-				json.chartJson.xcol = {"id":node.attributes.col_id, "dimdesc" : node.text, "type":node.attributes.dim_type, "colname":node.attributes.col_name,"alias":node.attributes.alias,"tname":node.attributes.tname,"iscas":node.attributes.iscas, "tableName":node.attributes.tableName, "tableColKey":node.attributes.tableColKey,"tableColName":node.attributes.tableColName, "dimord":node.attributes.dimord, "dim_name":node.attributes.dim_name, "grouptype":node.attributes.grouptype,"valType":node.attributes.valType, "ordcol":node.attributes.ordcol,"calc":node.attributes.calc};
+				json.chartJson.xcol = {"id":node.attributes.col_id, "dimdesc" : node.text, "type":node.attributes.dim_type, "colname":node.attributes.col_name,"alias":node.attributes.alias,"tid":json.tid,"iscas":node.attributes.iscas, "tableName":node.attributes.tableName, "tableColKey":node.attributes.tableColKey,"tableColName":node.attributes.tableColName, "dimord":node.attributes.dimord, "dim_name":node.attributes.dim_name, "grouptype":node.attributes.grouptype,"valType":node.attributes.valType, "ordcol":node.attributes.ordcol};
 				$(this).html("<span title=\""+node.text+"\" class=\"charttxt\">" + node.text + "</span><span class=\"charticon\" title=\"配置\" onclick=\"chartmenu(this, "+node.attributes.col_id+",'xcol', '"+node.text+"')\"></span>");
 				curTmpInfo.isupdate = true;
 				if(json.chartJson.type == 'scatter'){
@@ -467,12 +462,12 @@ function initChartByScatter(id){
 				var gt = node.attributes.grouptype;
 				if(gt != null && gt != ''){
 					if(json.chartJson.xcol != undefined && json.chartJson.xcol.grouptype == gt){
-						msginfo("您拖放的维度与此图形中已有维度分组相同，不能拖放。")
+						msginfo("您拖放的维度与此图表中已有维度分组相同，不能拖放。")
 						return;
 					}
 				}
 				
-				json.chartJson.scol = {"id":node.attributes.col_id, "dimdesc" : node.text, "type":node.attributes.dim_type, "colname":node.attributes.col_name,"alias":node.attributes.alias,"tname":node.attributes.tname,"iscas":node.attributes.iscas, "tableName":node.attributes.tableName, "tableColKey":node.attributes.tableColKey,"tableColName":node.attributes.tableColName, "dimord":node.attributes.dimord, "dim_name":node.attributes.dim_name, "grouptype":node.attributes.grouptype,"valType":node.attributes.valType, "ordcol":node.attributes.ordcol,"calc":node.attributes.calc};
+				json.chartJson.scol = {"id":node.attributes.col_id, "dimdesc" : node.text, "type":node.attributes.dim_type, "colname":node.attributes.col_name,"alias":node.attributes.alias,"tid":json.tid,"iscas":node.attributes.iscas, "tableName":node.attributes.tableName, "tableColKey":node.attributes.tableColKey,"tableColName":node.attributes.tableColName, "dimord":node.attributes.dimord, "dim_name":node.attributes.dim_name, "grouptype":node.attributes.grouptype,"valType":node.attributes.valType, "ordcol":node.attributes.ordcol};
 				$(this).html("<span title=\""+node.text+"\" class=\"charttxt\">" + node.text + "</span><span class=\"charticon\" title=\"配置\" onclick=\"chartmenu(this,"+node.attributes.col_id+", 'scol', '"+node.text+"')\"></span>");
 				curTmpInfo.isupdate = true;
 				if(json.chartJson.type == 'scatter'){
@@ -601,20 +596,6 @@ function delChartKpiOrDim(){
 		chartview(json, compId);
 	}
 }
-/**
-function formatUnit(rate){
-	if(rate == 1000){
-		return "千";
-	}else if(rate == 10000){
-		return "万";
-	}else if(rate == 1000000){
-		return "百万";
-	}else if(rate == 100000000){
-		return "亿";
-	}
-	return "";
-}
-**/
 function setChartKpi(){
 	var tp = curTmpInfo.tp;
 	if(tp == 'xcol' || tp == 'scol'){
@@ -687,7 +668,7 @@ function chartfilterDims(){
 	$('#pdailog').dialog({
 		title: name + ' - 维度筛选',
 		width: 300,
-		height: 341,
+		height: 321,
 		closed: false,
 		cache: false,
 		modal: true,
@@ -756,7 +737,7 @@ function chartfilterDims(){
 	var dimtp = dim.type;
 	var curDim = dim;
 	var filtertype = dim.filtertype == undefined ? "" : dim.filtertype;
-	var url =  "DimFilter.action?cubeId="+comp.cubeId+"&filtertype="+filtertype+"&dimId="+dimid+"&dsid="+comp.dsid;
+	var url =  "DimFilter.action?tid="+comp.tid+"&dimType="+dimtp+"&filtertype="+filtertype+"&dimId="+dimid;
 	if(dimtp == 'month'){
 		url = url + "&dfm2="+(curDim.startmt == undefined ? "" : curDim.startmt);
 		url = url + "&dfm1="+(curDim.endmt == undefined ? "" : curDim.endmt);
@@ -793,7 +774,7 @@ function exchangexs(compId, islink){
 	curTmpInfo.isupdate = true;
 	chartview(comp, compId);
 	
-	//判断图形是否有联动
+	//判断图表是否有联动
 	if(comp.complink && islink){
 		var tableComp = findCompById(comp.complink);
 		if(tableComp != null && isSameDimsInDrill(tableComp, comp)){ //必须维度相同才能联动。
@@ -801,118 +782,6 @@ function exchangexs(compId, islink){
 			changecolrow(false);
 		}
 	}
-}
-/**
-配置气泡大小
-转换到 10 到 50
-**/
-function bubbleSize(maxval, minval, val){
-	if(maxval == minval){
-		return 40;
-	}
-	var r = (50-10)/(maxval-minval)*(val-minval)+10;
-	return r;
-}
-/**
- * 格式化数字显示方式 
- * 用法
- shortname == true 表示显示缩写, 分为k,m
- 
- * formatNumber(12345.999,'#,##0.00');
- * formatNumber(12345.999,'#,##0.##');
- * formatNumber(123,'000000');
- * @param num
- * @param pattern
- */
-function formatNumber(num,pattern,shortname){
-  var shortdw;
-  if(shortname && num > 1000000){
-	 num = num / 1000000;
-	 shortdw = "百万";
-  }else if(shortname && num > 10000){
-	  num = num / 10000;
-	  shortdw = "万";
-  }else if(shortname && num > 1000){
-	  num = num / 1000;
-	  shortdw = "千";
-  }
-  if(pattern.indexOf("%") > 0){
-	  num = num * 100;
-  }
-  var fmtarr = pattern?pattern.split('.'):[''];
-  var retstr='';
-  
-  //先对数据做四舍五入
-  var xsw = 0;
-  if(fmtarr.length > 1){
-	  xsw = fmtarr[1].length;
-  }
-  var bl = 1;
-  for(i=0; i<xsw; i++){
-	  bl = bl * 10;
-  }
-  num = num * bl;
-  num = Math.round(num);
-  num = num / bl;
-  
-  var strarr = num?num.toString().split('.'):['0'];
- 
-  // 整数部分
-  var str = strarr[0];
-  var fmt = fmtarr[0];
-  var i = str.length-1;  
-  var comma = false;
-  for(var f=fmt.length-1;f>=0;f--){
-    switch(fmt.substr(f,1)){
-      case '#':
-        if(i>=0 ) retstr = str.substr(i--,1) + retstr;
-        break;
-      case '0':
-        if(i>=0) retstr = str.substr(i--,1) + retstr;
-        else retstr = '0' + retstr;
-        break;
-      case ',':
-        comma = true;
-        retstr=','+retstr;
-        break;
-    }
-  }
-  if(i>=0){
-    if(comma){
-      var l = str.length;
-      for(;i>=0;i--){
-        retstr = str.substr(i,1) + retstr;
-        if(i>0 && ((l-i)%3)==0) retstr = ',' + retstr; 
-      }
-    }
-    else retstr = str.substr(0,i+1) + retstr;
-  }
-
-  retstr = retstr+'.';
-  // 处理小数部分
-  str=strarr.length>1?strarr[1]:'';
-  fmt=fmtarr.length>1?fmtarr[1]:'';
-  i=0;
-  for(var f=0;f<fmt.length;f++){
-    switch(fmt.substr(f,1)){
-      case '#':
-        if(i<str.length) retstr+=str.substr(i++,1);
-        break;
-      case '0':
-        if(i<str.length) retstr+= str.substr(i++,1);
-        else retstr+='0';
-        break;
-    }
-  }
-
-  var r = retstr.replace(/^,+/,'').replace(/\.$/,''); 
-  if(pattern.indexOf("%") > 0){
-	  r = r + "%";
-  } 
-  if(shortdw){
-	  r = r + shortdw;
-  }
-  return r;
 }
 function crtChartfromTab(){
 	var compId = curTmpInfo.compId.replace("T", "");
@@ -933,11 +802,11 @@ function crtChartfromTab(){
 		}
 		cols = cols + "<option value='"+comp.tableJson.cols[i].id+"' "+selected+">"+comp.tableJson.cols[i].dimdesc+"</option>";
 	}
-	var ctx = "<div style='line-height:25px; margin:5px;'>类型：<select id='charttype'><option value='line'>曲线图</option><option value='column'>柱状图</option><option value='pie'>饼图</option><option value='radar'>雷达图</option></select><br>横轴：<select id='hz'>"+rows+"</select><br/>图例：<select id='zz'>"+cols+"</select></div>";
+	var ctx = "<div style='line-height:25px; margin:10px;'><span class=\"inputtext\">类型：</span><select id='charttype' class=\"inputform2\"><option value='line'>曲线图</option><option value='column'>柱状图</option><option value='pie'>饼图</option><option value='radar'>雷达图</option></select><br><span class=\"inputtext\">横轴：</span><select id='hz' class=\"inputform2\">"+rows+"</select><br/><span class=\"inputtext\">图例：</span><select id='zz' class=\"inputform2\">"+cols+"</select></div>";
 	$('#pdailog').dialog({
-		title: '通过表格数据生成图形',
-		width: 220,
-		height: 200,
+		title: '通过表格数据生成图表',
+		width: 320,
+		height: 220,
 		closed: false,
 		cache: false,
 		modal: true,
@@ -952,8 +821,8 @@ function crtChartfromTab(){
 						var scol = $("#zz").val();
 						var kpi = curTmpInfo.ckid;
 						$('#pdailog').dialog('close');
-						var chart = {id:getMaxCompId(), name:"图形组件", type:"chart", chartJson:{type:tp,ycol:{type:"kpi"}, params:[]}, tid:comp.tid, tname:comp.tname, ttype:comp.ttype, kpiJson:[], dsource:comp.dsource, complink:comp.id}; //通过complink 实现图形和表格的联动
-						comp.complink = chart.id; //设置表格和图形的联动
+						var chart = {id:2, name:"图表组件", type:"chart", chartJson:{type:tp,ycol:{type:"kpi"}, params:[]}, tid:comp.tid, tname:comp.tname, ttype:comp.ttype, kpiJson:[], dsource:comp.dsource, complink:comp.id}; //通过complink 实现图表和表格的联动
+						comp.complink = chart.id; //设置表格和图表的联动
 						//设置度量
 						var k = eval("(" + JSON.stringify(findKpiById(kpi, comp.kpiJson)) + ")");
 						chart.kpiJson.push(k);
@@ -981,10 +850,9 @@ function crtChartfromTab(){
 						curTmpInfo.charttype = tp;
 						addComp(chart.id, chart.name, null, false, chart.type, chart);
 						//添加到组件
-						pageInfo.comps.push(chart);
-						//设置滚动条位置sss
-						var p = $("#T"+chart.id).offset();
-						$("#optarea").scrollTop(p.top);
+						pageInfo.comps[1] = chart;
+						//切换选项卡
+						$('a[data-toggle="tab"]').last().tab('show');
 					}
 				},{
 					text:'取消',
@@ -995,7 +863,7 @@ function crtChartfromTab(){
 				}]
 	});
 }
-//导出图形到excel，次excel子包括数据，可以直接用来生成图形
+//导出图表到excel，次excel子包括数据，可以直接用来生成图表
 function exportChart(compId){
 	var json = findCompById(compId);
 	if(json.kpiJson == undefined || json.kpiJson.length == 0){

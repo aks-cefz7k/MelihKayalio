@@ -387,7 +387,7 @@ function resetWindows(tp){
 function setlayout(){
 	var ctx = "<div class=\"textpanel\"><br/>";
 	for(var i=1; i<=6; i++){
-		ctx = ctx + "<span class=\"rlayout\"><div class=\"onelayout\" tp=\""+i+"\"><img src=\"../resource/img/layout/l"+i+".png\"><br/><input type=\"radio\" name=\"sellayout\" value=\""+i+"\" "+(i == pageInfo.layout ? "checked" : "")+" ></div></span>";
+		ctx = ctx + "<span class=\"rlayout\"><div class=\"onelayout\" tp=\""+i+"\"><label for=\"lay"+i+"\"><img src=\"../resource/img/layout/l"+i+".png\"></lable><br/><input id=\"lay"+i+"\" type=\"radio\" name=\"sellayout\" value=\""+i+"\" "+(i == pageInfo.layout ? "checked" : "")+" ></div></span>";
 	}
 	ctx = ctx + "</div>";
 	$('#pdailog').dialog({
@@ -402,6 +402,7 @@ function setlayout(){
 		content:ctx,
 		buttons:[{
 				text:'确定',
+				iconCls:"icon-ok",
 				handler:function(){
 					var comps = curTmpInfo.comps;
 					var s = $("input[name=\"sellayout\"]:checked").val();
@@ -436,6 +437,7 @@ function setlayout(){
 				}
 			},{
 				text:'取消',
+				iconCls:"icon-cancel",
 				handler:function(){
 					$('#pdailog').dialog('close');
 				}
@@ -447,6 +449,9 @@ function setlayout(){
 		s.attr("checked","checked");
 	});
 }
+/**
+自定义布局
+**/
 /**
 自定义布局
 **/
@@ -484,6 +489,7 @@ function autoLayout(){
 		content:ctx,
 		buttons:[{
 			text:'确定',
+			iconCls:"icon-ok",
 			handler:function(){
 				var ljson = {};
 				var rows = document.getElementById("autoLayoutTable").rows;
@@ -520,6 +526,7 @@ function autoLayout(){
 			}
 		},{
 			text:'取消',
+			iconCls:"icon-cancel",
 			handler:function(){
 				$('#pdailog').dialog('close');
 			}
@@ -550,18 +557,18 @@ function autoLayout(){
 	//注册布局器编辑事件
 	var issel = false;
 	var start = null;
-	$("#autoLayoutTable td").live("click", function(){
+	$("#autoLayoutTable").on("click", 'td.laytd', function(){
 		selFunc(this);
-	}).live("mousedown", function(e){
+	}).on("mousedown", "td.laytd", function(e){
 		issel = true;
 		start = this;
-	}).live("mouseup", function(e){
+	}).on("mouseup","td.laytd", function(e){
 		issel = false;
-	}).live("mousemove", function(e){
+	}).on("mousemove","td.laytd", function(e){
 		if(issel){
 			areaSelFunc(start, this);
 		}
-	}).live("contextmenu", function(e){
+	}).on("contextmenu","td.laytd", function(e){
 		e.preventDefault();
 		e.stopPropagation();
 		curTmpInfo.curtabtd = this;
@@ -1032,7 +1039,7 @@ isbind 是否绑定事件
 */
 function crtLayoutHTML(json, isbind){
 	var cps = [];
-	var ret = "<table border=\"0\"  style=\"width:"+(curTmpInfo.is3g=="y"?"460":"960")+"px;\" cellspacing=\"0\" cellpadding=\"0\" class=\"r_layout\" id=\"layout_table\">";
+	var ret = "<table border=\"0\"  style=\"width:"+(curTmpInfo.is3g=="y"?"460px":"100%")+";\" cellspacing=\"0\" cellpadding=\"0\" class=\"r_layout\" id=\"layout_table\">";
 	for(var i=1; true; i++){
 		var tr = json["tr"+i];
 		if(!tr || tr == null){
@@ -1075,7 +1082,7 @@ function crtLayoutHTML(json, isbind){
 	}
 	//注册每个TD的接收组件拖放事件
 	$("#layout_table td.laytd").droppable({
-		accept:".cbox-edit,#comp_tree .tree-node",
+		accept:"div.ibox, #comp_tree .tree-node",
 		onDragEnter:function(e,source){
 			var obj = $(this);
 			if(obj.children().size() == 0){
@@ -1115,8 +1122,7 @@ function crtLayoutHTML(json, isbind){
 		},
 		onDrop:function(e,source){
 			$(".indicator").hide();
-			var node = $("#comp_tree").tree("getNode", source);
-			if($(node.target).hasClass("cbox-edit")){
+			if($(source).hasClass("ibox")){
 				//组件间的拖拽
 				if($(this).children().size() == 0){
 					$(this).append(source);
@@ -1128,15 +1134,25 @@ function crtLayoutHTML(json, isbind){
 					}
 				}
 			}else{
+				//alert(curTmpInfo.tp + "," + curTmpInfo.id);
+				var node = $("#comp_tree").tree("getNode", source);
 				//从组件树拖拽， 创建组件
 				var layoutId = $(this).attr("id").split("_")[1];
 				var tp = node.attributes.tp;
 				if(tp == "text"){
-					insertText("insert", layoutId);
+					insertText("insert", layoutId, '', curTmpInfo.id, curTmpInfo.tp);
 				}else if(tp == "table"){
 					var comp = {"id":newGuid(), "name":"交叉表", "type":"table"};
 					var str = addComp(comp, layoutId, true);
-					$("#layout_"+layoutId).append(str);
+					if(!curTmpInfo.id){
+						$("#layout_"+layoutId).append(str);
+					}else{
+						if(curTmpInfo.tp == "before"){
+							$("#"+curTmpInfo.id).before(str);
+						}else{
+							$("#"+curTmpInfo.id).after(str);
+						}
+					}
 					//注册拖放事件
 					bindCompEvent(comp);
 					//滚动位置
@@ -1145,11 +1161,19 @@ function crtLayoutHTML(json, isbind){
 					}, 500);
 				}else if(tp == "chart"){
 					//insertChart(layoutId);
-					setcharttype(true, layoutId)
+					setcharttype(true, layoutId, curTmpInfo.id, curTmpInfo.tp)
 				}else if(tp == "grid"){
 					var comp = {"id":newGuid(), "name":"表格", "type":"grid"};
 					var str = addComp(comp, layoutId, true);
-					$("#layout_"+layoutId).append(str);
+					if(!curTmpInfo.id){
+						$("#layout_"+layoutId).append(str);
+					}else{
+						if(curTmpInfo.tp == "before"){
+							$("#"+curTmpInfo.id).before(str);
+						}else{
+							$("#"+curTmpInfo.id).after(str);
+						}
+					}
 					//注册拖放事件
 					bindCompEvent(comp);
 					//滚动位置
@@ -1158,13 +1182,23 @@ function crtLayoutHTML(json, isbind){
 					}, 500);
 				}else if(tp == "box"){
 					var comp = {"id":newGuid(), "name":"数据块", "type":"box"};
-					var str = addComp(comp, layoutId, true);;
-					$("#layout_"+layoutId).append(str);
+					var str = addComp(comp, layoutId, true);
+					if(!curTmpInfo.id){
+						$("#layout_"+layoutId).append(str);
+					}else{
+						if(curTmpInfo.tp == "before"){
+							$("#"+curTmpInfo.id).before(str);
+						}else{
+							$("#"+curTmpInfo.id).after(str);
+						}
+					}
 					//注册拖放事件
 					bindCompEvent(comp)
 				}
 				
 			}
+			delete curTmpInfo.tp;
+			delete curTmpInfo.id;
 			curTmpInfo.isupdate = true;
 		}
 
@@ -1190,7 +1224,7 @@ function compevent(compId){
 			linkaccept = comp.tableJson.linkAccept;
 		}
 	}
-	var str = "<select id=\"linkcomp\" name=\"linkcomp\" class=\"inputform\"><option value=\"\"></option>";
+	var str = "<select id=\"linkcomp\" name=\"linkcomp\" class=\"inputform2\"><option value=\"\"></option>";
 	for(i=0; i<curTmpInfo.comps.length; i++){
 		var o = curTmpInfo.comps[i];
 		if(o.type == 'chart' || o.type == 'table'){
@@ -1216,13 +1250,13 @@ function compevent(compId){
 		});
 		return ret;
 	};
-	var str2 = "<select id=\"acceptCol\" name=\"acceptCol\" class=\"inputform\"><option value=\"\"></option>";
+	var str2 = "<select id=\"acceptCol\" name=\"acceptCol\" class=\"inputform2\"><option value=\"\"></option>";
 	str2 = str2 + findCubeCols(comp.tid);
 	str2 = str2 + "</select>";
-	var ctx = "<div id=\"compevent_tab\" style=\"height:auto; width:auto;\"><div title=\"事件发起\"><div class=\"textpanel\"><span class=\"inputtext\">联动组件：</span>"+str+"<br/> &nbsp; &nbsp; ->或-> <br/><span class=\"inputtext\">链接到URL：</span><input type=\"text\" name=\"linkurl\" id=\"linkurl\" class=\"inputform\" value=\""+(clink&&clink.url?clink.url:"")+"\"><br/><a href=\"javascript:;\" id=\"cleanPostEvent\">清除事件发起</a></div></div><div title=\"事件接收\"><div class=\"textpanel\"><span class=\"inputtext\">接收字段：</span>"+str2+"<br/><span class=\"inputtext\">默认值：</span><input type=\"text\" name=\"dftval\" id=\"dftval\" class=\"inputform\" value=\""+(linkaccept&&linkaccept.dftval?linkaccept.dftval:"")+"\"><br/><span class=\"inputtext\">默认值类型：</span><select name=\"valtype\" id=\"valtype\" class=\"inputform\"><option value=\"\"></option><option value=\"number\" "+(linkaccept&&linkaccept.valType=="number"?"selected":"")+">数字类型</option><option value=\"string\" "+(linkaccept&&linkaccept.valType=="string"?"selected":"")+">字符类型</option></select><br/><a href=\"javascript:;\" id=\"cleanAcceptEvent\">清除事件接收</a></div></div></div>";
+	var ctx = "<div id=\"compevent_tab\" style=\"height:auto; width:auto;\"><div title=\"事件发起\"><div class=\"textpanel\"><span class=\"inputtext\">联动组件：</span>"+str+"<br/> &nbsp; &nbsp; ->或-> <br/><span class=\"inputtext\">链接到URL：</span><input type=\"text\" name=\"linkurl\" id=\"linkurl\" class=\"inputform2\" value=\""+(clink&&clink.url?clink.url:"")+"\"><br/><a href=\"javascript:;\" id=\"cleanPostEvent\">清除事件发起</a></div></div><div title=\"事件接收\"><div class=\"textpanel\"><span class=\"inputtext\">接收字段：</span>"+str2+"<br/><span class=\"inputtext\">默认值：</span><input type=\"text\" name=\"dftval\" id=\"dftval\" class=\"inputform2\" value=\""+(linkaccept&&linkaccept.dftval?linkaccept.dftval:"")+"\"><br/><span class=\"inputtext\">默认值类型：</span><select name=\"valtype\" id=\"valtype\" class=\"inputform2\"><option value=\"\"></option><option value=\"number\" "+(linkaccept&&linkaccept.valType=="number"?"selected":"")+">数字类型</option><option value=\"string\" "+(linkaccept&&linkaccept.valType=="string"?"selected":"")+">字符类型</option></select><br/><a href=\"javascript:;\" id=\"cleanAcceptEvent\">清除事件接收</a></div></div></div>";
 	$('#pdailog').dialog({
 		title: '组件事件设置',
-		width: 300,
+		width: 330,
 		height: (comp.type=="table"?290:250),
 		closed: false,
 		cache: false,
@@ -1231,6 +1265,7 @@ function compevent(compId){
 		content: ctx,
 		buttons:[{
 			text:'确定',
+			iconCls:"icon-ok",
 			handler:function(){
 				var tab = $("#pdailog #compevent_tab").tabs("getSelected");
 				var idx = $("#pdailog #compevent_tab").tabs("getTabIndex", tab);
@@ -1283,6 +1318,7 @@ function compevent(compId){
 			}
 		},{
 			text:'取消',
+			iconCls:"icon-cancel",
 			handler:function(){
 				$('#pdailog').dialog('close');
 			}

@@ -9,7 +9,7 @@
 			<div style="margin:20px;">
             <p/>
             开始月份：   
-            <select name="dfm2" id="dfm2">
+            <select name="dfm2" id="dfm2" class="inputform2">
             <option value=""></option>
                 <s:iterator var="e" value="#request.datas" status="statu">
              <option value="${e.id}" <s:if test="id == #request.dfm2">selected</s:if> >${e.name}</option>
@@ -17,7 +17,7 @@
             </select>
             <p/>
             结束月份：
-            <select name="dfm1" id="dfm1">
+            <select name="dfm1" id="dfm1" class="inputform2">
             <option value=""></option>
                 <s:iterator var="e" value="#request.datas" status="statu">
              <option value="${e.id}" <s:if test="id == #request.dfm1">selected</s:if>>${e.name}</option>
@@ -30,8 +30,8 @@
 		<div title="区间筛选" style="">
 			<div style="margin:20px;">
             <p/>
-            开始时间： <input type="text" size="20" value="${dft2}" id="dft2" name="dft2" readonly="true" onclick="WdatePicker({dateFmt:'yyyy-MM-dd', minDate:'${min}', maxDate:'${max}'})" class="Wdate"> <p/>
-            结束时间： <input type="text" size="20" value="${dft1}" id="dft1" name="dft1" readonly="true" onclick="WdatePicker({dateFmt:'yyyy-MM-dd', minDate:'${min}', maxDate:'${max}'})" class="Wdate">
+            开始时间： <input type="text" size="20" value="${dft2}" id="dft2" name="dft2" readonly="true" onclick="WdatePicker({dateFmt:'yyyy-MM-dd', minDate:'${min}', maxDate:'${max}'})" class="inputform2 Wdate"> <p/>
+            结束时间： <input type="text" size="20" value="${dft1}" id="dft1" name="dft1" readonly="true" onclick="WdatePicker({dateFmt:'yyyy-MM-dd', minDate:'${min}', maxDate:'${max}'})" class="inputform2 Wdate">
             </div>
 		</div>
         </s:if>
@@ -43,9 +43,9 @@ String id = (String)pageContext.findAttribute("id");
 String ids = (String)request.getAttribute("vals");
 if(id != null && id.length() > 0){  //忽略 id 为 null 的
 %>	
-<div class="fltone"><input type="checkbox" id="dimval" name="dimval" value="${id}" <%if(com.ruisi.vdop.web.bireport.DimFilterAction.exist(id, ids.split(","))){%>checked="true"<%}%> > ${name} <s:if test="#request.dimType == 'day'"><!-- 追加日期的节日 -->
+<div class="checkbox checkbox-info"> <input type="checkbox" id="d${statu.index}" name="dimval" value="${id}" <%if(com.ruisi.vdop.web.bireport.DimFilterAction.exist(id, ids.split(","))){%>checked="true"<%}%> > <label for="d${statu.index}"> ${name} <s:if test="#request.dimType == 'day'"><!-- 追加日期的节日 -->
 <%=com.ruisi.vdop.web.bireport.DimFilterAction.getFestival((String)pageContext.findAttribute("id"), (String)request.getAttribute("dateformat"))%>
-</s:if></div>
+</s:if></label></div>
 <%
 }
 %>
@@ -60,22 +60,7 @@ if(id != null && id.length() > 0){  //忽略 id 为 null 的
      </s:if>
 
 <script>
-jQuery(function(){
-	$(".dfilter .fltone").mousemove(function(){
-		$(this).css("background-color","#FFF4D7");
-	}).mouseout(function(e){
-        $(this).css("background-color","#FFFFFF");
-    }).click(function(e) {
-		if(e.target.id == 'dimval'){
-			return;
-		}
-        var obj = $(this).find("#dimval");
-		if(obj.attr("checked") == "checked"){
-			obj.attr("checked", false) 
-		}else{
-			obj.attr("checked", true);
-		}
-    });
+$(function(){
 	$('#dimsearch').searchbox({
 		searcher:function(value,name){
 			searchDims(value, '<%=request.getAttribute("vals")%>');
@@ -104,13 +89,6 @@ jQuery(function(){
 			handler:function(){
 				$("#pdailog input[name='dimval']").each(function(){
 					$(this).attr("checked", false);
-				});
-			}
-		},{
-			text:"全选",
-			handler:function(){
-				$("#pdailog input[name='dimval']").each(function(){
-					$(this).attr("checked", true);
 				});
 			}
 		}]

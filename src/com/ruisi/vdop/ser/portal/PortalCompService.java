@@ -114,10 +114,6 @@ public class PortalCompService {
 	}
 	
 	public void createChart(Element tabTd, JSONObject compJson, boolean release) throws Exception{
-		String dsetId = compJson.getString("dsetId");
-		String dsid = compJson.getString("dsid");
-		ser.setDset(ModelCacheManager.getDset(dsetId, VDOPUtils.getDaoHelper()));
-		ser.setDsource(ModelCacheManager.getDsource(dsid, VDOPUtils.getDaoHelper()));
 		JSONObject chartJson = compJson.getJSONObject("chartJson");
 		String compId = (String)compJson.get("id");
 		if(chartJson == null || chartJson.isNullObject()){
@@ -134,6 +130,11 @@ public class PortalCompService {
 		if(firstKpi == null || firstKpi instanceof JSONNull){
 			return; //未选指标
 		}
+		String dsetId = compJson.getString("dsetId");
+		String dsid = compJson.getString("dsid");
+		ser.setDset(ModelCacheManager.getDset(dsetId, VDOPUtils.getDaoHelper()));
+		ser.setDsource(ModelCacheManager.getDsource(dsid, VDOPUtils.getDaoHelper()));
+		
 		JSONArray params = (JSONArray)compJson.get("params");
 		TableSqlJsonVO sqlVO = chartser.json2ChartSql(chartJson, kpiJson);
 		
@@ -254,6 +255,10 @@ public class PortalCompService {
 	}
 	
 	public void crtTable(Element tabTd, JSONObject compJson, boolean release) throws Exception {
+		JSONObject tableJson = compJson.getJSONObject("tableJson");
+		if(tableJson == null || tableJson.isNullObject() ){
+			return;
+		}
 		//初始化dset, dsource
 		DaoHelper dao = VDOPUtils.getDaoHelper(pageSer.getSctx());
 		String dsid = compJson.getString("dsid");
@@ -264,10 +269,6 @@ public class PortalCompService {
 		}
 		
 		jsonService = new TableJsonService();
-		JSONObject tableJson = compJson.getJSONObject("tableJson");
-		if(tableJson == null || tableJson.isNullObject() ){
-			return;
-		}
 		JSONArray params = (JSONArray)compJson.get("params");
 		JSONArray kpiJson = compJson.getJSONArray("kpiJson");
 		TableSqlJsonVO sqlVO = TableJsonService.json2TableSql(tableJson, kpiJson);

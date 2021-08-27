@@ -45,7 +45,7 @@
            <div class="erinfo"> 
            License 不存在、过期或超出最大用户数。
            </div>
-        请联系我们技术人员或者重新<a href='http://www.ruisitech.com/license.html'>获取License</a>。
+        请联系我们销售人员进行购买。
         </div>
         <div align="right">
         <img src="../resource/img/error-2.gif">

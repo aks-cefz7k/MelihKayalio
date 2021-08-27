@@ -52,7 +52,7 @@ function delCube(id){
 		$.ajax({
 			type:"POST",
 			url:"Cube!del.action",
-			dataType:"JSON",
+			dataType:"html",
 			data:{cubeId:id},
 			success:function(){
 				$('#cubetable').datagrid('load',{
@@ -102,9 +102,9 @@ function newCube(isupdate, cubeId){
 	}
 	
 	//立方体
-	var cstr = "<div style='margin-top:10px;'><table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\"><tr><td valign=\"top\" align=\"right\"><div class=\"easyui-panel\" data-options=\"width:220,height:380,cls:'cubecfg'\" title=\"待选字段\"><ul id=\"cubelefttree\"></ul></div></td> <td align=\"center\" valign=\"top\"><p style=\"height:150px;\"></p><input type=\"button\" title=\"选择\" value=\"&gt;\" onclick=\"ds2cube()\"><br/><br/><input type=\"button\" onclick=\"cube2ds()\" value=\"&lt;\" title=\"移除\"></td><td valign=\"top\"><div class=\"easyui-panel\" data-options=\"width:220,height:380,cls:'cubecfg'\" title=\"维度和度量\"><ul id=\"cuberighttree\"></ul></div></td><td valign=\"top\"><div style=\"width:60px;\"><a href=\"javascript:addgroup();\" id=\"crtfz\" data-options=\"plain:true,iconCls:'icon-add'\">分组</a><br/><a href=\"javascript:editCalcKpi(false);\" id=\"crtcalckpi\" data-options=\"plain:true,iconCls:'icon-add2'\">度量</a><br/><a href=\"javascript:editcubecol();\" id=\"dim_editbtn\" data-options=\"plain:true,iconCls:'icon-edit'\">编辑</a><br/><a href=\"javascript:cube2ds();\"  id=\"dim_delbtn\" data-options=\"plain:true,iconCls:'icon-cancel'\">删除</a></div></td></tr></table></div>";
+	var cstr = "<div style='margin-top:10px;'><table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\"><tr><td valign=\"top\" align=\"right\"><div class=\"easyui-panel\" data-options=\"width:220,height:380,cls:'cubecfg'\" title=\"待选字段\"><ul id=\"cubelefttree\"></ul></div></td> <td align=\"center\" valign=\"top\"><p style=\"height:150px;\"></p><input type=\"button\" title=\"选择\" value=\"&gt;\" onclick=\"ds2cube()\"><br/><br/><input type=\"button\" onclick=\"cube2ds()\" value=\"&lt;\" title=\"移除\"></td><td valign=\"top\"><div class=\"easyui-panel\" data-options=\"width:220,height:380,cls:'cubecfg'\" title=\"维度和度量\"><ul id=\"cuberighttree\"></ul></div></td><td valign=\"top\"><div style=\"width:60px;\"><a href=\"javascript:addgroup();\" id=\"crtfz\" data-options=\"plain:true,iconCls:'icon-add'\">分组</a><br/><a href=\"javascript:editCalcKpi(false);\" id=\"crtcalckpi\" data-options=\"plain:true,iconCls:'icon-add2'\">度量</a><br/><a href=\"javascript:editcubecol();\" id=\"dim_editbtn\" data-options=\"plain:true,iconCls:'icon-edit'\">编辑</a><br/><a href=\"javascript:cube2ds();\"  id=\"dim_delbtn\" data-options=\"plain:true,iconCls:'icon-remove'\">删除</a></div></td></tr></table></div>";
 	
-	var ctx = "<div id=\"crtdataset\" data-options=\"fit:true,border:false,tabPosition:'left'\"><div title=\"基本信息\"><div class=\"textpanel\"><span class=\"inputtext\">立方体名称：</span><input type=\"text\" value=\""+(cube?cube.cubeName:"")+"\" class=\"inputform\" id=\"name\"><br/><span class=\"inputtext\">立方体说明：</span><input type=\"text\" value=\""+(!cube||cube.desc==null?"":cube.desc)+"\" size=\"50\" id=\"note\"><br/><span class=\"inputtext\">对应数据集：</span><select id=\"dsetId\">"+dsetls+"</select>"+(isupdate?" (禁止修改)":"")+"</div></div><div title=\"立方体信息\">"+cstr+"</div></div>";
+	var ctx = "<div id=\"crtdataset\" data-options=\"fit:true,border:false,tabPosition:'left'\"><div title=\"基本信息\"><div class=\"textpanel\"><span class=\"inputtext\">立方体名称：</span><input type=\"text\" value=\""+(cube?cube.cubeName:"")+"\" class=\"inputform2\" id=\"name\"><br/><span class=\"inputtext\">立方体说明：</span><input type=\"text\" value=\""+(!cube||cube.desc==null?"":cube.desc)+"\" size=\"50\" id=\"note\" class=\"inputform2\"><br/><span class=\"inputtext\">对应数据集：</span><select id=\"dsetId\" class=\"inputform2\">"+dsetls+"</select>"+(isupdate?" (禁止修改)":"")+"</div></div><div title=\"立方体信息\">"+cstr+"</div></div>";
 	$('#pdailog').dialog({
 		title: isupdate?'编辑立方体':'新建立方体',
 		width: 760,
@@ -118,6 +118,7 @@ function newCube(isupdate, cubeId){
 		content: ctx,
 		buttons:[{
 			text:'确定',
+			iconCls:"icon-ok",
 			handler:function(){
 				var name = $("#pdailog #name").val();
 				var dsetId = $("#pdailog #dsetId").val();
@@ -140,6 +141,7 @@ function newCube(isupdate, cubeId){
 			}
 		},{
 			text:'取消',
+			iconCls:"icon-cancel",
 			handler:function(){
 				$('#pdailog').dialog('close');
 			}
@@ -211,9 +213,16 @@ function newCube(isupdate, cubeId){
 		}
 		return ret;
 	};
-	var nodes = $("#cubelefttree").tree("getChildren", $("#cubelefttree div[node-id='leftroot']"));
-	var dynas = $("#cubelefttree").tree("getChildren", $("#cubelefttree div[node-id='dynaroot']"));
-	nodes = nodes.concat(dynas);
+	var nodes = [];
+	var roots = $("#cubelefttree").tree("find","leftroot");
+	if(roots != null){
+		nodes = nodes.concat($("#cubelefttree").tree("getChildren", roots.target));
+	}
+	var dytar = $("#cubelefttree").tree("find","dynaroot");
+	if(dytar != null){
+		var dynas = $("#cubelefttree").tree("getChildren", dytar.target);
+		nodes = nodes.concat(dynas);
+	}
 	for(i=0; i<nodes.length; i++){
 		var id = nodes[i].id;
 		if(findcol(id) != null){
@@ -367,7 +376,7 @@ function ds2cube(){
 	}		
 	if(right.text == '度量' || parent.text == '度量'){
 		//生成ID
-		var cid = findCubeMaxId($("#cuberighttree  div[node-id='cubedl']"));
+		var cid = findCubeMaxId($("#cuberighttree").tree("find", "cubedl").target);
 		var o = {id:cid, text:'sum('+left.text+")",attributes:{tp:"kpi",drag:true,aggre:"sum",col:(!isCalc?left.attributes.col:left.attributes.expression), tname:left.attributes.tname,dispName:left.text,alias:left.id,calc:isCalc,calcKpi:0},iconCls:"icon-kpi"};
 		if(right.text == '度量'){
 			$("#cuberighttree").tree("append",  {parent:right.target,data:o});
@@ -376,7 +385,7 @@ function ds2cube(){
 		}
 		$(left.target).attr("hide", "y").hide();
 	}else if(right.text == '维度' || parent.text == '维度' || parent.attributes.tp == 'group'){
-		var cid = findCubeMaxId($("#cuberighttree  div[node-id='cubewd']"));
+		var cid = findCubeMaxId($("#cuberighttree").tree("find", "cubewd").target);
 		
 		var o = {id:cid, text:left.text, attributes:{tp:"dim",drag:true,col:!isCalc?left.attributes.col:left.attributes.expression,tname:left.attributes.tname,dispName:left.text,tname:left.attributes.tname,vtype:left.attributes.vtype,alias:left.attributes.col,calc:isCalc},iconCls:"icon-dim", targetId:""};  //通过targetId 来指引对应数据库的的字段 ID, 用在修改上
 		if(right.text == '维度' || (parent.text == '维度' && right.attributes.tp == 'group')){
@@ -405,7 +414,7 @@ function editcubecol(){
 	var ctx = "";
 	var atp = ["sum","avg","count", "max", "min"];
 	if(right.attributes.tp == 'dim'){
-		var cols = $("#cubelefttree").tree("getChildren", $("#cubelefttree div[node-id='leftroot']"));
+		var cols = $("#cubelefttree").tree("getChildren", $("#cubelefttree").tree("find", "leftroot").target);
 		var tabstr = "<option value=\"\"></option>";
 		var keystr = "<option value=\"\"></option>";
 		var txtstr = "<option value=\"\"></option>";
@@ -424,18 +433,18 @@ function editcubecol(){
 		for(i=0; i<dateformat.length; i++){
 			fmtstr = fmtstr + "<option value=\""+dateformat[i]+"\" "+(right.attributes.dateformat==dateformat[i]?"selected":"")+">"+dateformat[i]+"</option>";
 		}
-		ctx = "<div class=\"textpanel\"><span class=\"inputtext\">维度字段：</span>"+right.attributes.col+"<br/><span class=\"inputtext\">别名：</span>"+right.attributes.alias+"<br/><span class=\"inputtext\">显示名称：</span><input type=\"text\" id=\"dimname\" name=\"dimname\" class=\"inputform\" value=\""+right.attributes.dispName+"\"><br/><span class=\"inputtext\">维度类型：</span><select id=\"dimtype\" name=\"dimtype\" class=\"inputform\"><option value=\"\"></option><option value=\"year\" "+(right.attributes.dimtype=='year'?"selected":"")+">年</option><option value=\"quarter\" "+(right.attributes.dimtype=='quarter'?"selected":"")+">季度</option><option value=\"month\" "+(right.attributes.dimtype=='month'?"selected":"")+">月</option><option value=\"day\" "+(right.attributes.dimtype=='day'?"selected":"")+">日</option><option value=\"prov\" "+(right.attributes.dimtype=='prov'?"selected":"")+">省份</option><option value=\"city\" "+(right.attributes.dimtype=='city'?"selected":"")+">地市</option></select><br/><span class=\"inputtext\">维度格式：</span><select id=\"dateformat\" class=\"inputform\">"+fmtstr+"</select><br/><span class=\"inputtext\">维度对应表：</span><select id=\"colTable\" class=\"inputform\" name=\"colTable\">"+tabstr+"</select><br/><span class=\"inputtext\">维度Key字段：</span><select id=\"colkey\" class=\"inputform\" name=\"colkey\">"+keystr+"</select><br/><span class=\"inputtext\">维度Text字段：</span><select id=\"coltext\" name=\"coltext\" class=\"inputform\">"+txtstr+"</select><br/><span class=\"inputtext\">排序字段：</span><select id=\"ordcol\" name=\"ordcol\" class=\"inputform\">"+ordstr+"</select><br/><span class=\"inputtext\">排序方式：</span><select id=\"dimord\" name=\"dimord\" class=\"inputform\"><option value=\"\"></option><option "+(right.attributes.dimord=="asc"?"selected":"")+" value=\"asc\">正序</option><option value=\"desc\" "+(right.attributes.dimord=="desc"?"selected":"")+">倒叙</option></select></div>";
+		ctx = "<div class=\"textpanel\"><span class=\"inputtext\">维度字段：</span>"+right.attributes.col+"<br/><span class=\"inputtext\">别名：</span>"+right.attributes.alias+"<br/><span class=\"inputtext\">显示名称：</span><input type=\"text\" id=\"dimname\" name=\"dimname\" class=\"inputform2\" value=\""+right.attributes.dispName+"\"><br/><span class=\"inputtext\">维度类型：</span><select id=\"dimtype\" name=\"dimtype\" class=\"inputform2\"><option value=\"\"></option><option value=\"year\" "+(right.attributes.dimtype=='year'?"selected":"")+">年</option><option value=\"quarter\" "+(right.attributes.dimtype=='quarter'?"selected":"")+">季度</option><option value=\"month\" "+(right.attributes.dimtype=='month'?"selected":"")+">月</option><option value=\"day\" "+(right.attributes.dimtype=='day'?"selected":"")+">日</option><option value=\"prov\" "+(right.attributes.dimtype=='prov'?"selected":"")+">省份</option><option value=\"city\" "+(right.attributes.dimtype=='city'?"selected":"")+">地市</option></select><br/><span class=\"inputtext\">维度格式：</span><select id=\"dateformat\" class=\"inputform2\">"+fmtstr+"</select><br/><span class=\"inputtext\">维度对应表：</span><select id=\"colTable\" class=\"inputform2\" name=\"colTable\">"+tabstr+"</select><br/><span class=\"inputtext\">维度Key字段：</span><select id=\"colkey\" class=\"inputform2\" name=\"colkey\">"+keystr+"</select><br/><span class=\"inputtext\">维度Text字段：</span><select id=\"coltext\" name=\"coltext\" class=\"inputform2\">"+txtstr+"</select><br/><span class=\"inputtext\">排序字段：</span><select id=\"ordcol\" name=\"ordcol\" class=\"inputform2\">"+ordstr+"</select><br/><span class=\"inputtext\">排序方式：</span><select id=\"dimord\" name=\"dimord\" class=\"inputform2\"><option value=\"\"></option><option "+(right.attributes.dimord=="asc"?"selected":"")+" value=\"asc\">正序</option><option value=\"desc\" "+(right.attributes.dimord=="desc"?"selected":"")+">倒叙</option></select></div>";
 	}else if(right.attributes.tp == 'kpi'){
 		var tpstr = "";
 		for(i=0; i<atp.length; i++){
 			tpstr = tpstr + "<option value=\""+atp[i]+"\" "+(atp[i] == right.attributes.aggre ? "selected":"")+">"+atp[i]+"</option>";
 		}
-		ctx = "<div class=\"textpanel\"><span class=\"inputtext\">度量字段：</span>"+right.attributes.col+"<br/><span class=\"inputtext\">别名：</span>"+right.attributes.alias+"<br/><span class=\"inputtext\">显示名称：</span><input type=\"text\" id=\"kpiname\" name=\"kpiname\" class=\"inputform\" value=\""+right.attributes.dispName+"\"><br/>"
-		+ "<span class=\"inputtext\">计算方式：</span><select id=\"kpiaggre\" name=\"kpiaggre\" class=\"inputform\">"+tpstr+"</select> <br>"
-		+ "<span class=\"inputtext\">度量单位：</span><input type=\"text\" id=\"kpiunit\" name=\"kpiunit\" class=\"inputform\" value=\""+(right.attributes.unit?right.attributes.unit:"")+"\"> <br>"
-		+ "<span class=\"inputtext\">格式化：</span>" + ftmstr("kpifmt","inputform",right.attributes.fmt?right.attributes.fmt:"") + "<br/><span class=\"inputtext\">度量解释：</span><textarea name=\"kpinote\" id=\"kpinote\"  cols=\"25\" style=\"height:32px;\" rows=\"2\">"+(right.attributes.kpinote?right.attributes.kpinote:"")+"</textarea></div>";
+		ctx = "<div class=\"textpanel\"><span class=\"inputtext\">度量字段：</span>"+right.attributes.col+"<br/><span class=\"inputtext\">别名：</span>"+right.attributes.alias+"<br/><span class=\"inputtext\">显示名称：</span><input type=\"text\" id=\"kpiname\" name=\"kpiname\" class=\"inputform2\" value=\""+right.attributes.dispName+"\"><br/>"
+		+ "<span class=\"inputtext\">计算方式：</span><select id=\"kpiaggre\" name=\"kpiaggre\" class=\"inputform2\">"+tpstr+"</select> <br>"
+		+ "<span class=\"inputtext\">度量单位：</span><input type=\"text\" id=\"kpiunit\" name=\"kpiunit\" class=\"inputform2\" value=\""+(right.attributes.unit?right.attributes.unit:"")+"\"> <br>"
+		+ "<span class=\"inputtext\">格式化：</span>" + ftmstr("kpifmt","inputform2",right.attributes.fmt?right.attributes.fmt:"") + "<br/><span class=\"inputtext\">度量解释：</span><textarea name=\"kpinote\" id=\"kpinote\"  cols=\"25\" style=\"height:32px;\" rows=\"2\">"+(right.attributes.kpinote?right.attributes.kpinote:"")+"</textarea></div>";
 	}else if(right.attributes.tp == 'group'){
-		ctx = "<div class=\"textpanel\"><span class=\"inputtext\">分组名称：</span><input type=\"text\" id=\"groupname\" name=\"groupname\" value=\""+right.attributes.dispName+"\" class=\"inputform\"><br/></div>";
+		ctx = "<div class=\"textpanel\"><span class=\"inputtext\">分组名称：</span><input type=\"text\" id=\"groupname\" name=\"groupname\" value=\""+right.attributes.dispName+"\" class=\"inputform2\"><br/></div>";
 	}
 	if($("#dsColumn_div").size() == 0){
 		$("<div id=\"dsColumn_div\" class=\"easyui-menu\"></div>").appendTo("body");
@@ -455,6 +464,7 @@ function editcubecol(){
 		},
 		buttons:[{
 				text:'确定',
+				iconCls:"icon-ok",
 				handler:function(){
 					if(right.attributes.tp == 'kpi'){
 						right.attributes.aggre = $("#dsColumn_div #kpiaggre").val();
@@ -495,6 +505,7 @@ function editcubecol(){
 				}
 			},{
 				text:'取消',
+				iconCls:"icon-cancel",
 				handler:function(){
 					$('#dsColumn_div').dialog('close');
 				}
@@ -505,7 +516,7 @@ function editcubecol(){
 			var keystr = "";
 			var txtstr = "";
 			var ordstr = "";
-			var cols = $("#cubelefttree").tree("getChildren", $("#cubelefttree div[node-id='leftroot']"));
+			var cols = $("#cubelefttree").tree("getChildren", $("#cubelefttree").tree("find", "leftroot").target);
 			for(i=0; i<cols.length; i++){
 				var c = cols[i];
 				if(c.attributes.tname == tname){
@@ -530,11 +541,11 @@ function addgroup(){
 	if($("#dsColumn_div").size() == 0){
 		$("<div id=\"dsColumn_div\" class=\"easyui-menu\"></div>").appendTo("body");
 	}
-	var gctx = "<div class=\"textpanel\"><span class=\"inputtext\">分组名称：</span><input type=\"text\" value=\"\" id=\"groupname\" name=\"groupname\" class=\"inputform\"></div>";
+	var gctx = "<div class=\"textpanel\"><span class=\"inputtext\">分组名称：</span><input type=\"text\" value=\"\" id=\"groupname\" name=\"groupname\" class=\"inputform2\"></div>";
 	$('#dsColumn_div').dialog({
 		title: "创建维度分组",
 		width: 300,
-		height: 120,
+		height: 220,
 		closed: false,
 		cache: false,
 		modal: true,
@@ -546,6 +557,7 @@ function addgroup(){
 		},
 		buttons:[{
 			text:'确定',
+			iconCls:"icon-ok",
 			handler:function(){
 				var name = $("#dsColumn_div #groupname").val();
 				if(name == ''){
@@ -555,11 +567,12 @@ function addgroup(){
 				}
 				var cid = newGuid();
 				var dt = {id:cid,text:name, "iconCls":"icon-group", attributes:{tp:'group',dispName:name,drag:true}};
-				$("#cuberighttree").tree("append",{parent:$("#cuberighttree div[node-id='cubewd']"), data:[dt]});
+				$("#cuberighttree").tree("append",{parent:$("#cuberighttree").tree("find", "cubewd").target, data:[dt]});
 				$('#dsColumn_div').dialog('close');
 			}
 		},{
 			text:'取消',
+			iconCls:"icon-cancel",
 			handler:function(){
 				$('#dsColumn_div').dialog('close');
 			}
@@ -578,16 +591,16 @@ function editCalcKpi(update, kpiId){
 	}
 	//查询已选指标
 	var kpiStr = "";
-	var ls = $("#cubelefttree").tree("getChildren", $("#cubelefttree div[node-id='leftroot']"));
+	var ls = $("#cubelefttree").tree("getChildren", $("#cubelefttree").tree("find", "leftroot").target);
 	for(i=0; i<ls.length; i++){
 		var k = ls[i].attributes;
-		kpiStr = kpiStr + "<span name=\""+k.col+"\" class=\"column\">"+ k.col+"</span> ";
+		kpiStr = kpiStr + "<button name=\""+k.col+"\" class=\"btn btn-primary btn-xs\">"+ k.col+"</button> ";
 	}
 	kpiStr = kpiStr + "<br/>";
 	for(i=0; i<atp.length; i++){
-		kpiStr = kpiStr + "<span name=\""+atp[i]+"( )\" class=\"column\">"+ atp[i]+"</span> ";
+		kpiStr = kpiStr + "<button name=\""+atp[i]+"( )\" class=\"btn btn-primary btn-xs\">"+ atp[i]+"</button> ";
 	}
-	var ctx = "<div class=\"textpanel\"><span class=\"inputtext\">度量标识：</span><input type=\"text\" class=\"inputform\" name=\"alias\" id=\"alias\" value=\""+(kpi?kpi.attributes.alias:"")+"\">(英文字符)<br/><span class=\"inputtext\">显示名称：</span><input type=\"text\" class=\"inputform\" name=\"kpiname\" id=\"kpiname\" value=\""+(kpi?kpi.attributes.dispName:"")+"\"><br/><table cellspacing=\"0\" cellpadding=\"0\"><tbody><tr><td valign=\"top\"><span class=\"inputtext\">表 达 式：</span></td><td><textarea rows=\"2\" style=\"height:52px;\" cols=\"40\" id=\"expression\" name=\"expression\">"+(kpi?kpi.attributes.col:"")+"</textarea></td></tr></tbody></table><div class=\"actColumn\">"+kpiStr+"</div><span class=\"inputtext\">计算方式：</span><select id=\"kpiaggre\" name=\"kpiaggre\" class=\"inputform\">"+tpstr+"</select><br><span class=\"inputtext\">度量单位：</span><input type=\"text\" value=\""+(kpi?kpi.attributes.unit:"")+"\" class=\"inputform\" name=\"kpiunit\" id=\"kpiunit\"><br/><span class=\"inputtext\">格式化：</span>" + ftmstr("kpifmt","inputform",(kpi?kpi.attributes.fmt:"")) + "<br/><span class=\"inputtext\">指标解释：</span><textarea name=\"kpinote\" id=\"kpinote\"  cols=\"25\" style=\"height:32px;\" rows=\"2\">"+(kpi?kpi.attributes.kpinote:"")+"</textarea></div>";
+	var ctx = "<div class=\"textpanel\"><span class=\"inputtext\">度量标识：</span><input type=\"text\" class=\"inputform2\" name=\"alias\" id=\"alias\" value=\""+(kpi?kpi.attributes.alias:"")+"\">(英文字符)<br/><span class=\"inputtext\">显示名称：</span><input type=\"text\" class=\"inputform2\" name=\"kpiname\" id=\"kpiname\" value=\""+(kpi?kpi.attributes.dispName:"")+"\"><br/><table cellspacing=\"0\" cellpadding=\"0\"><tbody><tr><td valign=\"top\"><span class=\"inputtext\">表 达 式：</span></td><td><textarea rows=\"2\" style=\"height:52px;\" cols=\"40\" id=\"expression\" name=\"expression\">"+(kpi?kpi.attributes.col:"")+"</textarea></td></tr></tbody></table><div class=\"actColumn\">"+kpiStr+"</div><span class=\"inputtext\">计算方式：</span><select id=\"kpiaggre\" name=\"kpiaggre\" class=\"inputform2\">"+tpstr+"</select><br><span class=\"inputtext\">度量单位：</span><input type=\"text\" value=\""+(kpi?kpi.attributes.unit:"")+"\" class=\"inputform2\" name=\"kpiunit\" id=\"kpiunit\"><br/><span class=\"inputtext\">格式化：</span>" + ftmstr("kpifmt","inputform2",(kpi?kpi.attributes.fmt:"")) + "<br/><span class=\"inputtext\">指标解释：</span><textarea name=\"kpinote\" id=\"kpinote\"  cols=\"25\" style=\"height:32px;\" rows=\"2\">"+(kpi?kpi.attributes.kpinote:"")+"</textarea></div>";
 	if($("#dsColumn_div").size() == 0){
 		$("<div id=\"dsColumn_div\" class=\"easyui-menu\"></div>").appendTo("body");
 	}
@@ -606,6 +619,7 @@ function editCalcKpi(update, kpiId){
 		},
 		buttons:[{
 				text:'确定',
+				iconCls:"icon-ok",
 				handler:function(){
 					var alias = $("#dsColumn_div #alias").val();
 					var name = $("#dsColumn_div #kpiname").val();
@@ -641,20 +655,21 @@ function editCalcKpi(update, kpiId){
 						kpi.attributes.isupdate = "y";  //表示计算指标已经更改过了。
 						$("#cuberighttree").tree("update", {target:kpi.target, text:kpi.attributes.aggre+"("+name+")"});
 					}else{
-						var cid = findCubeMaxId($("#cuberighttree  div[node-id='cubedl']"));
+						var cid = findCubeMaxId($("#cuberighttree").tree("find","cubedl").target);
 						var o = {id:cid, text:$("#dsColumn_div #kpiaggre").val()+"("+name+")",attributes:{tp:"kpi",calc:true,drag:true,aggre:$("#dsColumn_div #kpiaggre").val(),col:expression, alias:$("#dsColumn_div #alias").val(), dispName:name,tname:"",fmt:$("#dsColumn_div #kpifmt").val(),unit:$("#dsColumn_div #kpiunit").val(),kpinote:$("#dsColumn_div #kpinote").val(),calcKpi:1},iconCls:"icon-ckpi"};
-						$("#cuberighttree").tree("append", {parent:$("#cuberighttree  div[node-id='cubedl']"), data:[o]});
+						$("#cuberighttree").tree("append", {parent:$("#cuberighttree").tree("find", "cubedl").target, data:[o]});
 					}
 					$('#dsColumn_div').dialog('close');
 				}
 			},{
 				text:'取消',
+				iconCls:"icon-cancel",
 				handler:function(){
 					$('#dsColumn_div').dialog('close');
 				}
 			}]
 	});
-	$("#dsColumn_div .actColumn .column").bind("click", function(){
+	$("#dsColumn_div .actColumn button").bind("click", function(){
 		var txt = $(this).attr("name");
 		insertText2focus(document.getElementById("expression"), txt+" ");
 	});
@@ -684,8 +699,8 @@ function cube2ds(){
 	if(right.attributes.tp != 'group'){ //分组删除不用关联左边树
 		var id = right.attributes.alias;   //通过 refId 引用s数据集的字段ID
 		//var root = $("#cubelefttree").tree("getRoot");
-		var cld = $("#cubelefttree").tree("getChildren", $("#cubelefttree div[node-id='leftroot']"));
-		var cld2 = $("#cubelefttree").tree("getChildren", $("#cubelefttree div[node-id='dynaroot']"));
+		var cld = $("#cubelefttree").tree("getChildren", $("#cubelefttree").tree("find", "leftroot").target);
+		var cld2 = $("#cubelefttree").tree("getChildren", $("#cubelefttree").tree("find", "dynaroot").target);
 		cld = cld.concat(cld2);
 		for(i=0; i<cld.length; i++){
 			if(cld[i].id == id){
@@ -708,7 +723,7 @@ function ftmstr(id, cls, curfmt){
 }
 function savecubecfg(pageJson, update){
 	var cubeDim = [];
-	var dims = $("#cuberighttree").tree("getChildren", $("#cuberighttree div[node-id='cubewd']"));
+	var dims = $("#cuberighttree").tree("getChildren", $("#cuberighttree").tree("find", "cubewd").target);
 	if(dims.length == 0){
 		$("#crtdataset").tabs("select", 1);
 		msginfo("您还未配置维度。");	
@@ -733,7 +748,7 @@ function savecubecfg(pageJson, update){
 		}
 	}
 	var cubeKpi = [];
-	var kpis = $("#cuberighttree").tree("getChildren", $("#cuberighttree div[node-id='cubedl']")); 
+	var kpis = $("#cuberighttree").tree("getChildren", $("#cuberighttree").tree("find", "cubedl").target); 
 	if(kpis.length == 0){
 		$("#crtdataset").tabs("select", 1);
 		msginfo("您还未配置度量。");

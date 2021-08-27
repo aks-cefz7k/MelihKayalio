@@ -76,7 +76,7 @@ function newdsource(isupdate, dsid){
 		    }
 		});
 	}
-	 var ctx = "<div id=\"dsource_tab\" style=\"height:auto; width:auto;\"><div title=\"JDBC\"><form id=\"datasourceform\" name=\"datasourceform\"><input type=\"hidden\" name=\"connstate\" id=\"connstate\"><div class=\"textpanel\"><span class=\"inputtext\">数据源名称：</span><input type=\"text\" id=\"dsname\" name=\"dsname\" style=\"width:400px;\" value=\""+(ds&&ds.usetype=='jdbc'?ds.dsname:"")+"\"><br/><span class=\"inputtext\">数据源类型：</span><select id=\"linktype\" name=\"linktype\" style=\"width:400px;\"><option value=\"mysql\" "+(ds&&ds.use=='jdbc'&&ds.linktype=='mysql'?"selected":"")+">MYSQL</option><option value=\"oracle\" "+(ds&&ds.usetype=='jdbc'&&ds.usetype=='jdbc'&&ds.linktype=='oracle'?"selected":"")+">ORACLE</option><option value=\"sqlserver\" "+(ds&&ds.usetype=='jdbc'&&ds.linktype=='sqlserver'?"selected":"")+">SQL Server</option></select><br/><span class=\"inputtext\">连接字符串：</span><input type=\"text\" id=\"linkurl\" name=\"linkurl\" style=\"width:400px;\" value=\""+(ds&&ds.usetype=='jdbc'?ds.linkurl:"jdbc:mysql://ip/database?useUnicode=true&characterEncoding=UTF8")+"\"><br/><span class=\"inputtext\">连接用户名：</span><input type=\"text\" id=\"linkname\" name=\"linkname\" style=\"width:400px;\" value=\""+(ds&&ds.usetype=='jdbc'?ds.uname:"")+"\"> <br/><span class=\"inputtext\">连接密码：</span><input type=\"password\" name=\"linkpwd\" id=\"linkpwd\" style=\"width:400px;\" value=\""+(ds&&ds.usetype=='jdbc'?ds.psd:"")+"\"></div></form></div><div data-options=\""+(ds&&ds.usetype=='jndi'?"selected:true":"")+"\" title=\"JNDI\"><div class=\"textpanel\"><span class=\"inputtext\">JNDI名称：</span><input type=\"text\" value=\""+(ds&&ds.usetype=='jndi'?ds.dsname:"")+"\" style=\"width:400px;\" name=\"jndiname\" id=\"jndiname\"><br/><span class=\"inputtext\">数据源类型：</span><select id=\"jndilinktype\" name=\"jndilinktype\" style=\"width:400px;\"><option value=\"mysql\" "+(ds&&ds.use=='jndi'&&ds.linktype=='mysql'?"selected":"")+">MYSQL</option><option value=\"oracle\" "+(ds&&ds.usetype=='jndi'&&ds.linktype=='oracle'?"selected":"")+">ORACLE</option><option value=\"sqlserver\" "+(ds&&ds.usetype=='jndi'&&ds.linktype=='sqlserver'?"selected":"")+">SQL Server</option></select></div></div></div>";
+	 var ctx = "<div id=\"dsource_tab\" style=\"height:auto; width:auto;\"><div title=\"JDBC\"><form id=\"datasourceform\" name=\"datasourceform\"><input type=\"hidden\" name=\"connstate\" id=\"connstate\"><div class=\"textpanel\"><span class=\"inputtext\">数据源名称：</span><input type=\"text\" id=\"dsname\" name=\"dsname\" class=\"inputform\" style=\"width:400px;\" value=\""+(ds&&ds.usetype=='jdbc'?ds.dsname:"")+"\"><br/><span class=\"inputtext\">数据源类型：</span><select id=\"linktype\" name=\"linktype\" style=\"width:400px;\" class=\"inputform\"><option value=\"mysql\" "+(ds&&ds.use=='jdbc'&&ds.linktype=='mysql'?"selected":"")+">MYSQL</option><option value=\"oracle\" "+(ds&&ds.usetype=='jdbc'&&ds.usetype=='jdbc'&&ds.linktype=='oracle'?"selected":"")+">ORACLE</option><option value=\"sqlserver\" "+(ds&&ds.usetype=='jdbc'&&ds.linktype=='sqlserver'?"selected":"")+">SQL Server</option></select><br/><span class=\"inputtext\">连接字符串：</span><input type=\"text\" id=\"linkurl\" name=\"linkurl\" class=\"inputform\" style=\"width:400px;\" value=\""+(ds&&ds.usetype=='jdbc'?ds.linkurl:"jdbc:mysql://ip/database?useUnicode=true&characterEncoding=UTF8")+"\"><br/><span class=\"inputtext\">连接用户名：</span><input type=\"text\" id=\"linkname\" name=\"linkname\" class=\"inputform\" style=\"width:400px;\" value=\""+(ds&&ds.usetype=='jdbc'?ds.uname:"")+"\"> <br/><span class=\"inputtext\">连接密码：</span><input type=\"password\" name=\"linkpwd\" id=\"linkpwd\" style=\"width:400px;\" value=\""+(ds&&ds.usetype=='jdbc'?ds.psd:"")+"\" class=\"inputform\"></div></form></div><div data-options=\""+(ds&&ds.usetype=='jndi'?"selected:true":"")+"\" title=\"JNDI\"><div class=\"textpanel\"><span class=\"inputtext\">JNDI名称：</span><input type=\"text\" value=\""+(ds&&ds.usetype=='jndi'?ds.dsname:"")+"\" style=\"width:400px;\" name=\"jndiname\" id=\"jndiname\" class=\"inputform\"><br/><span class=\"inputtext\">数据源类型：</span><select id=\"jndilinktype\" name=\"jndilinktype\" style=\"width:400px;\" class=\"inputform\"><option value=\"mysql\" "+(ds&&ds.use=='jndi'&&ds.linktype=='mysql'?"selected":"")+">MYSQL</option><option value=\"oracle\" "+(ds&&ds.usetype=='jndi'&&ds.linktype=='oracle'?"selected":"")+">ORACLE</option><option value=\"sqlserver\" "+(ds&&ds.usetype=='jndi'&&ds.linktype=='sqlserver'?"selected":"")+">SQL Server</option></select></div></div></div>";
 	$('#pdailog').dialog({
 		title: isupdate ? "编辑数据源" : '创建数据源',
 		width: 540,
@@ -133,6 +133,7 @@ function newdsource(isupdate, dsid){
 			}
 		},{
 				text:'确定',
+				iconCls:"icon-ok",
 				handler:function(){
 					var tab = $('#dsource_tab').tabs('getSelected');
 					var index = $('#dsource_tab').tabs('getTabIndex',tab);
@@ -219,6 +220,7 @@ function newdsource(isupdate, dsid){
 				}
 			},{
 				text:'取消',
+				iconCls:"icon-cancel",
 				handler:function(){
 					$('#pdailog').dialog('close');
 				}
@@ -232,7 +234,7 @@ function newdsource(isupdate, dsid){
 		if(val == "mysql"){
 			$("#pdailog #linkurl").val("jdbc:mysql://ip/database?useUnicode=true&characterEncoding=UTF8");
 		}else if(val == "oracle"){
-			$("#pdailog #linkurl").val("jdbc:oracle:thin:@ip:1521:sid");
+			$("#pdailog #linkurl").val("jdbc:oracle:thin:@ip:1521/sid");
 		}else if(val == "sqlserver"){
 			$("#pdailog #linkurl").val("jdbc:jtds:sqlserver://ip:1433/database");
 		}

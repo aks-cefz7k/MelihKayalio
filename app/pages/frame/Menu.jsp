@@ -1,24 +1,17 @@
 <%@ page language="java" contentType="text/html;charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page session="false" buffer="none" %>
 <%@ taglib prefix="ext" uri="/WEB-INF/ext-runtime.tld" %>
-<style>
-.textpanel{
-	line-height:30px;
-	margin:10px;
-}
-.inputform {
-	width:200px;
-}
-span.inputtext {
-	display:-moz-inline-box;  
-	display:inline-block;
-	width:90px;
-}
-</style>
 
- <div class="bi_tit2 bi_tit2_underline">菜单管理</div>
- <div style="color:#666; padding:10px;">(请在菜单上点击右键进行编辑。)</div>
-<ul id="ggcatatree"></ul>
+<div class="row">
+    <div class="col-sm-5">
+    <ul id="ggcatatree" style="200px;"></ul>
+	 </div>
+	 <div class="col-sm-6">
+    <p class="text-warning">在菜单上点击鼠标右键来新建或编辑菜单。</p>
+	</div>
+</div>
+
+
 <script language="javascript">
 	var $ = jQuery;
 	$(function(){
@@ -69,7 +62,7 @@ span.inputtext {
 		var ctx = "<div class=\"textpanel\"><span class=\"inputtext\">名称：</span><input type=\"text\" id=\"name\" class=\"inputform\" value=\""+(obj?obj.name:"")+"\"><br/><span class=\"inputtext\">URL：</span><input type=\"text\" id=\"url\" class=\"inputform\" value=\""+((obj?obj.url:""))+"\"><br/><span class=\"inputtext\">排序：</span><input type=\"text\" id=\"order\" class=\"inputform\" value=\""+(obj?obj.order:"1")+"\"><br/><span class=\"inputtext\">备注：</span><input type=\"text\" id=\"desc\" class=\"inputform\" value=\""+(obj?obj.desc:"")+"\"><br/></div>";
 		$('#pdailog').dialog({
 			title: update?'修改菜单':'新建菜单',
-			width: 350,
+			width: 420,
 			height: 220,
 			closed: false,
 			cache: false,

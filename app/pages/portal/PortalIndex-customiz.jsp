@@ -2,24 +2,25 @@
     pageEncoding="utf-8"%>
 <%@ taglib prefix="s" uri="/struts-tags"%>
 <%@ taglib prefix="bi" uri="/WEB-INF/common.tld"%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html>
+<html lang="en">
 <head>
 	 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
    <title>睿思BI - 数据报表</title>
 <link rel="shortcut icon" type="image/x-icon" href="../resource/img/rs_favicon.ico">
-   
+   <link href="../ext-res/css/bootstrap.min.css" rel="stylesheet">
+<link href="../resource/css/style.css" rel="stylesheet">
+<link href="../resource/css/font-awesome.css?v=4.4.0" rel="stylesheet">
+<link href="../resource/css/portal.css" rel="stylesheet">
+<link href="../resource/awesome-bootstrap-checkbox/awesome-bootstrap-checkbox.css" rel="stylesheet">
    <script type="text/javascript" src="../ext-res/js/jquery.min.js"></script>
    <script type="text/javascript" src="../resource/js/json.js"></script>
    <script type="text/javascript" src="../ext-res/js/ext-base.js"></script>
-	<link rel="stylesheet" type="text/css" href="../ext-res/css/fonts-min.css" />
-	<link rel="stylesheet" type="text/css" href="../ext-res/css/boncbase.css" />
-	<link rel="stylesheet" type="text/css" href="../resource/css/portal.css?v2" />
 
-<link rel="stylesheet" type="text/css" href="../resource/jquery-easyui-1.3.4/themes/gray/easyui.css">
-	<link rel="stylesheet" type="text/css" href="../resource/jquery-easyui-1.3.4/themes/icon.css">
-	<script type="text/javascript" src="../resource/jquery-easyui-1.3.4/jquery.easyui.min.js"></script>
-    <script type="text/javascript" src="../resource/jquery-easyui-1.3.4/locale/easyui-lang-zh_CN.js"></script>
+<link rel="stylesheet" type="text/css" href="../resource/jquery-easyui-1.4.4/themes/gray/easyui.css">
+	<link rel="stylesheet" type="text/css" href="../resource/jquery-easyui-1.4.4/themes/icon.css">
+	<script type="text/javascript" src="../resource/jquery-easyui-1.4.4/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="../resource/jquery-easyui-1.4.4/locale/easyui-lang-zh_CN.js"></script>
     <script type="text/javascript" src="../ext-res/My97DatePicker/WdatePicker.js"></script>
     
     <script type="text/javascript" src="../resource/js/portal.js"></script>
@@ -52,12 +53,6 @@ jQuery(function(){
 	initTableTree();
 	//初始化布局
 	initlayout();
-	//初始化关闭按钮图标颜色,及删除动作事件
-	$(".ticon a,span.charticon,a.one_1,a.one_2").live("mouseover", function(){
-		$(this).css("opacity", 1);
-	}).live("mouseout", function(){
-		$(this).css("opacity", 0.6);
-	});
 	//初始化组件拖拽
 	regCompTree();
 	//初始化参数及拖拽
@@ -91,26 +86,27 @@ jQuery(function(){
 <div data-options="region:'west',split:true,title:'对象面板'"  style="width:190px;">
 <div id="comp_tab" data-options="fit:true,border:false" class="easyui-tabs" style="height:auto; width:auto;">
 	<div title="组件">
-  			  <ul class="easyui-tree" id="param_tree" data-options="onContextMenu:function(e){e.preventDefault();}">
-   					<li>
-                    <span>参数</span>
-                     <ul>
-                     	<li data-options="attributes:{tp:'text'},iconCls:'icon-param'">输入框</li>
-                        <li data-options="attributes:{tp:'radio'},iconCls:'icon-param'">单选框</li>
-                        <li data-options="attributes:{tp:'checkbox'},iconCls:'icon-param'">多选框</li>
-                        <li data-options="attributes:{tp:'dateselect'},iconCls:'icon-param'">日历框</li>
-                        <li data-options="attributes:{tp:'monthselect'},iconCls:'icon-param'">月份框</li>
-                         <li data-options="attributes:{tp:'yearselect'},iconCls:'icon-param'">年份框</li>
-                     </ul>
-                    </li>
-                    </ul>
-    			<ul class="easyui-tree" id="comp_tree" data-options="onContextMenu:function(e){e.preventDefault();}">
-                	<li data-options="attributes:{tp:'text'}, iconCls:'icon-text'">文本</li>
-                    <li data-options="attributes:{tp:'box'}, iconCls:'icon-box'">数据块</li>
-                    <li data-options="attributes:{tp:'chart'},iconCls:'icon-chart'">图表</li>
-                    <li data-options="attributes:{tp:'grid'},iconCls:'icon-table'">表格</li>
-                    <li data-options="attributes:{tp:'table'},iconCls:'icon-cross'">交叉表</li>
-                </ul>
+		<ul id="param_tree" data-options="onContextMenu:function(e){e.preventDefault();}">
+			<li>
+			<span>参数</span>
+			 <ul>
+				<li data-options="attributes:{tp:'text'},iconCls:'icon-param'"><span>输入框</span></li>
+				<li data-options="attributes:{tp:'radio'},iconCls:'icon-param'"><span>单选框</span></li>
+				<li data-options="attributes:{tp:'checkbox'},iconCls:'icon-param'"><span>多选框</span></li>
+				<li data-options="attributes:{tp:'dateselect'},iconCls:'icon-param'"><span>日历框</span></li>
+				<li data-options="attributes:{tp:'monthselect'},iconCls:'icon-param'"><span>月份框</span></li>
+				<li data-options="attributes:{tp:'yearselect'},iconCls:'icon-param'"><span>年份框</span></li>
+			 </ul>
+			</li>
+			</ul>
+		<ul id="comp_tree" data-options="onContextMenu:function(e){e.preventDefault();}">
+			<li data-options="attributes:{tp:'text'}, iconCls:'icon-text'"><span>文本</span></li>
+			<li data-options="attributes:{tp:'box'}, iconCls:'icon-box'"><span>数据块</span></li>
+			<li data-options="attributes:{tp:'chart'},iconCls:'icon-chart'"><span>图表</span></li>
+			<li data-options="attributes:{tp:'grid'},iconCls:'icon-table'"><span>表格</span></li>
+			<li data-options="attributes:{tp:'table'},iconCls:'icon-cross'"><span>交叉表</span></li>
+		</ul>
+
     </div>
 	<div title="立方体" style="">
         <ul id="datasettree" class="easyui-tree">
@@ -238,7 +234,5 @@ jQuery(function(){
     <div onclick="setGridColProp()" id="m_set">属性...</div>
     <div onclick="delGridCol()" iconCls="icon-remove">删除</div>
 </div>
-
-<div class='chartloading' id="Cloading"><div class="ldclose" onclick="hideLoading()"></div><div class="ltxt">Loading...</div></div>
 </body>
 </html>

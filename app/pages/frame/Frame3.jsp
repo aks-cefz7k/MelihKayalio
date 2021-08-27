@@ -1,158 +1,206 @@
 ﻿<%@ page language="java" contentType="text/html;charset=UTF-8" import="java.util.*" pageEncoding="UTF-8"%>
 <%@ taglib prefix="s" uri="/struts-tags"%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html>
+<html lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>睿思BI - 商业智能数据分析系统</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>睿思BI - 数据可视化分析系统</title>
 <link rel="shortcut icon" type="image/x-icon" href="../resource/img/rs_favicon.ico">
-<link rel="stylesheet" type="text/css" href="../resource/css/main3.css">
-<link rel="stylesheet" type="text/css" href="../resource/jquery-easyui-1.3.4/themes/default/easyui.css">
-<link rel="stylesheet" type="text/css" href="../resource/jquery-easyui-1.3.4/themes/icon.css">
+<link href="../ext-res/css/bootstrap.min.css" rel="stylesheet">
+<link href="../resource/css/animate.css" rel="stylesheet">
+<link href="../resource/css/style.css" rel="stylesheet">
+<link href="../resource/css/font-awesome.css?v=4.4.0" rel="stylesheet">
+<link href="../resource/sweetalert/sweetalert.css" rel="stylesheet">
 <script type="text/javascript" src="../ext-res/js/jquery.min.js"></script>
-<script type="text/javascript" src="../resource/jquery-easyui-1.3.4/jquery.easyui.min.js"></script>
-<script type="text/javascript" src="../resource/jquery-easyui-1.3.4/locale/easyui-lang-zh_CN.js"></script>
 <script type="text/javascript" src="../ext-res/js/ext-base.js"></script>
+<script type="text/javascript" src="../ext-res/js/bootstrap.min.js?v=3.3.6"></script>
+<script type="text/javascript" src="../resource/sweetalert/sweetalert.min.js"></script>
+<script type="text/javascript" src="../resource/metisMenu/jquery.metisMenu.js"></script>
+<script type="text/javascript" src="../resource/slimscroll/jquery.slimscroll.min.js"></script>
+<script type="text/javascript" src="../resource/layer/layer.min.js"></script>
+<script type="text/javascript" src="../resource/js/hAdmin.js"></script>
+<script type="text/javascript" src="../resource/validate/jquery.validate.min.js"></script>
+<script type="text/javascript" src="../resource/validate/messages_zh.min.js"></script>
 </head>
 
 <script language="javascript" type="text/javascript">
 	function logout(){
-		var u = "Logout.action";
-		if(confirm('是否确认退出登录？')){
-			location.href = 'Logout.action';
-		}
-	}
-	function closeMe(){
-		var obj = jQuery("#id_panel");
-		obj.remove();
-		showMark(false);
-	}
-	function chgpasswd(){
-		closeMe();
-		showMark(true);
-		var obj = jQuery("#id_panel");
-		var url = "../control/extControl?serviceid=frame.Password";
-		var str = "<div class='pw_panel' id='id_panel'><iframe id='i_pswd' frameborder=\"0\" width=\"100%\" height=\"100%\" src=\""+url+"\"></iframe></div>";
-		obj = jQuery(str);
-		obj.appendTo("body");
-		var doc = jQuery(document);
-		var win = jQuery(window);
-		var t = doc.scrollTop() + win.height()/2 - 70;
-		var l = doc.scrollLeft() + win.width()/2 - 200;
-		obj.css({'top':t, 'left':l});
-		obj.css("display", "block");
-	}
-	
-	jQuery(function(){
-		var selIdx = 0;
-		var ischk = false;
-		var urls = [
-		<s:iterator var="ent" value="#request.menu" status="statu">
-		 '${ent.menu_url}',
-		</s:iterator> 
-		''
-		];
-		jQuery('#topmenus').tabs({
-			onSelect:function(title,index){
-				//增加退出确认
-				if(ischk){
-					window.setTimeout(function(){
-						ischk = false;
-					}, 500);
-					return;
-				}
-				var win = document.getElementById("maininfo").contentWindow;
-				if(win.curTmpInfo && win.curTmpInfo.isupdate == true && ischk == false){
-					$.messager.confirm("请确认","页面未保存，是否确认离开？<br/>确认后刚才您更改的内容会丢失！", function(r){
-						if(r){
-							jQuery('#maininfo').attr("src", urls[index]);
-							selIdx = index;
-						}else{
-							ischk = true
-							jQuery('#topmenus').tabs("select", selIdx);
-						}
-					});
-				}else{
-					jQuery('#maininfo').attr("src", urls[index]);
-					selIdx = index;
-				}
-			}
+		swal({
+		  title: "",
+		  text: "是否确认退出登录？",
+		  type: "warning",
+		  showCancelButton: true,
+		  confirmButtonColor: "#27c24c",
+		  confirmButtonText: "确定",
+		  cancelButtonText: "取消",
+		  closeOnConfirm: true
+		},
+		function(){
+		  location.href = 'Logout.action';
 		});
-	});
-	jQuery(function(){
-		var loadFunc = function(){
-			jQuery.getJSON("Frame!onlineUser.action",{t:Math.random()}, function(data){
-				jQuery("#usercnt").html(data.usercnt);
-			})
+	}
+	function showDailog(tp){
+		if(tp == "userInfo"){
+			$("#modelDiv .modal-title").html("用户信息");
+			$.getJSON("User.action", function(json){
+				$("#modelDiv .modal-body").html("<dl class=\"dl-horizontal\"><dt>登录名：</dt><dd>" + json.staff_id+"</dd><dt>所属企业：</dt><dd>"+json.company+"</dd><dt>账号状态：</dt><dd>"+(json.state==1?"正常":(json.state==2?"试用":"停用"))+"</dd><dt>登录次数：</dt><dd>"+json.log_cnt+"次</dd><dt>上次登录时间：</dt><dd>" + formatDate(json.log_date, "yyyy-MM-dd hh:mm:ss")+"</dd> </div>");
+				$("#savepsdbtn").hide();
+				$("#modelDiv").modal("show");
+			});
+			
+		}else if(tp == "chgPsd"){
+			$("#modelDiv .modal-title").html("修改密码");
+			$("#modelDiv .modal-body").html("<div class=\"form-group\"><label class=\"col-sm-4 control-label\" for=\"password1\">原密码：</label><input id=\"password1\" name=\"password1\" class=\"form-control\" type=\"password\" required=\"true\" minlength=\"6\"></div><div class=\"form-group\"><label class=\"col-sm-4 control-label\" for=\"password2\">新密码：</label><input id=\"password2\" name=\"password2\" class=\"form-control\" type=\"password\" required=\"true\" minlength=\"6\"></div><div class=\"form-group\"><label class=\"col-sm-4 control-label\" for=\"password3\">重复密码：</label><input id=\"password3\" name=\"password3\" class=\"form-control\" type=\"password\" required=\"true\" minlength=\"6\"  equalTo=\"#password2\"></div>");
+			$("#savepsdbtn").show();
+			$("#modelDiv").modal("show");
 		}
-		loadFunc();
-		window.setInterval(function(){
-			loadFunc();
-		},10000);
+	}
+	$(function(){
+		$("#form1").validate({
+			submitHandler:function(form){
+			   $.ajax({
+				    type:"POST",
+					data:$(form).serialize(),
+					url:'Password!chgPsd.action',
+					dataType:'json',
+					success:function(ret){
+						if(ret.flag == "n"){
+							msginfo(ret.msg, "error");
+						}else{
+							$('#modelDiv').modal('hide');
+							msginfo("密码修改成功", "success");
+						}
+					}
+			   });
+			}    
+		});
+		
 	});
 </script>
-<style>
-<!--
-#sysmenu .tree-node{
-	height:22px;
-}
-#sysmenu .tree-title {
-	font-size:14px;
-	font-family:Verdana, Geneva, sans-serif;
-}
--->
-</style>
 
-<body class="easyui-layout">
-	<div data-options="region:'north',border:false" style="height:57px; overflow:hidden;">
-    	<div class="pheader">
-        <table width="100%" border="0" cellspacing="0" cellpadding="0" height="100%">
-  <tr>
-  <td width="216" valign="top">
-  <div class="headline">
-   <img src="../resource/img/frame3/log2.png">
-   </div>
-  </td>
-    <td valign="middle" align="left" width="600">
-    	<div style="padding:5px 3px 0px 40px; height:22px;">
-    	您好：<font color="#990000">${uinfo.loginName}</font>
-    	 欢迎登录，本次登录系统时间：<s:date name="#request.uinfo.lastActive" format="yyyy-MM-dd HH:mm:ss"/>。 &nbsp; <a style="text-decoration:underline;" href="javascript:chgpasswd()">修改密码</a>  |  <a href="javascript:logout()" style="text-decoration:underline;">退出登录</a>
-    	 </div>
-         <div id="topmenus"  style="width:700px" data-options="border:false, plain:true">
-         <s:iterator var="ent" value="#request.menu" status="statu">
-         	<div title="${ent.menu_name}"> &nbsp; </div>
-           </s:iterator>
-         </div>
-    	 </td>
-    <td valign="top" align="right" nowrap="nowrap">
-     <div class="headline">
-    	<div class="uinfo">
-       
-       	    <a href="http://www.ruisitech.com/suggest.html" target="_blank">问题反馈</a>  | 
-        	<a href="http://shatter.gitbooks.io/rsbi/content/" target="_blank">使用手册</a>
-          </div>
+<body class="fixed-sidebar full-height-layout gray-bg" style="overflow:hidden">
+    <div id="wrapper">
+        <!--左侧导航开始-->
+        <nav class="navbar-default navbar-static-side" role="navigation">
+            <div class="nav-close"><i class="fa fa-times-circle"></i>
+            </div>
+            <div class="sidebar-collapse">
+                <ul class="nav" id="side-menu">
+                    <li class="nav-header" style="padding:0px;">
+                        <div class="dropdown profile-element">
+                            <a data-toggle="dropdown" class="dropdown-toggle" href="#">
+                                <span class="clear">
+                                    <span class="block m-t-xs" style="font-size:20px;">
+                                        <img src="../resource/img/frame3/log2.png">
+                                    </span>
+                                </span>
+                            </a>
+                        </div>
+                        <div class="logo-element">睿思BI
+                        </div>
+                    </li>
+					<s:iterator var="ent" value="#attr.menu">
+					<li>
+                        <a <s:if test="#attr.children.size() == 0">class="J_menuItem" href="${ent.menu_url}"</s:if>href="#"<s:else></s:else>>
+                            <i class="${ent.avatar}"></i>
+                            <span class="nav-label">${ent.menu_name}</span>
+							<s:if test="#attr.children.size() > 0"><span class="fa arrow"></span></s:if>
+                        </a>
+						<s:if test="#attr.children.size() > 0">
+							<ul class="nav nav-second-level">
+								<s:iterator var="child" value="#attr.children">
+									 <li>
+										<a class="J_menuItem" href="${child.menu_url}">${child.menu_name}</a>
+									</li>
+								</s:iterator>
+							</ul>
+						</s:if>
+                    </li>
+					</s:iterator>
+                </ul>
+            </div>
+        </nav>
+        <!--左侧导航结束-->
+        <!--右侧部分开始-->
+        <div id="page-wrapper" class="gray-bg dashbard-1">
+            <div class="row border-bottom">
+                <nav class="navbar navbar-static-top" role="navigation" style="margin-bottom: 0">
+                    <div class="navbar-header"><a class="navbar-minimalize minimalize-styl-2 btn btn-info " href="javascript:;"><i class="fa fa-bars"></i> </a>
+					<!--
+                        <form role="search" class="navbar-form-custom" method="post" action="search_results.html">
+                            <div class="form-group">
+                                <input type="text" placeholder="请输入您需要查找的内容 …" class="form-control" name="top-search" id="top-search">
+                            </div>
+                        </form>
+						-->
+                    </div>
+                    <ul class="nav navbar-top-links navbar-right">
+						
+                        <li class="dropdown">
+                            <a class="dropdown-toggle count-info" data-toggle="dropdown" href="#">
+                                <i class="fa fa-user"></i> 
+                            </a>
+                            <ul class="dropdown-menu dropdown-alerts">
+								
+								<li>
+                                    <a href="javascript:showDailog('userInfo');">
+                                        <div>个人信息</div>
+                                    </a>
+                                </li>
+								<li>
+                                    <a href="http://www.ruisitech.com/suggest.html" target="_blank">
+                                        <div>问题反馈</div>
+                                    </a>
+                                </li>
+								<li>
+                                    <a href="http://shatter.gitbooks.io/rsbi/content/" target="_blank">
+                                        <div>使用手册</div>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="javascript:showDailog('chgPsd');">
+                                        <div>修改密码</div>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="javascript:logout()">
+                                        <div> 退出登录</div>
+                                    </a>
+                                </li>
+                           
+                            </ul>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+            <div class="row J_mainContent" id="content-main">
+                <iframe id="J_iframe" width="100%" height="100%" src="Frame3!welcome.action" frameborder="0" data-id="index_v1.html" seamless></iframe>
+            </div>
         </div>
-    </td>
-  </tr>
-</table>
-        </div>
+        <!--右侧部分结束-->
     </div>
 	
-	<div data-options="region:'south',border:false" style="height:26px; color:#333; overflow:hidden">
-    	<div class="pfooter">
-            <div align="left" style="float:left; margin:3px 0px 0px 10px;">
+	<!-- 共用模态框 -->
+	<div class="modal inmodal fade" id="modelDiv" role="dialog"  aria-hidden="true">
+		<div class="modal-dialog modal-md">
+			<div class="modal-content">
+			<form class="" id="form1" name="form1">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+					<h4 class="modal-title">XXX</h4>
+				</div>
+				<div class="modal-body">
+					
+				</div>
 
-                当前在线用户数：<span id="usercnt">X</span>人
-
-            </div>
-            <div style="float:right; margin: 3px 20px 0px 0px;">
-                <a href="http://www.ruisitech.com" target="_blank" style="text-decoration:underline">北京睿思科技有限公司(www.ruisitech.com)</a> 版权所有
-            </div>
-        </div>
-    </div>
-	<div data-options="region:'center',title:'', border:false" style="-webkit-overflow-scrolling:touch; overflow: hidden; margin-top:2px;" >
-    <iframe id="maininfo" frameborder="0" width="100%" height="100%"></iframe>
-    </div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-white" data-dismiss="modal">关闭</button>
+					<button type="submit" id="savepsdbtn" class="btn btn-success">保存</button>
+				</div>
+			</form>
+			</div>
+		</div>
+	</div>
 </body>
 </html>

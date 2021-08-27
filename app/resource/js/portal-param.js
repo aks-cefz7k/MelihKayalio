@@ -38,7 +38,7 @@ function initParams(){
 	var strs = "";
 	for(i=0; pageInfo.params&&i<pageInfo.params.length; i++){
 		var obj = pageInfo.params[i];
-		strs = strs + "<span id=\"p"+obj.id+"\" class=\"pppp\"><span class=\"text\" onclick=\"newparam('update','"+obj.type+"','"+obj.id+"')\" title=\"编辑\">"+obj.name+"("+getParamTypeDesc(obj.type)+")</span><a style=\"opacity: 0.6;\" href=\"javascript:;\" onclick=\"optParam(this,'"+obj.id+"', '"+obj.type+"')\" title=\"设置\" class=\"one_1\"> &nbsp; </a><a style=\"opacity: 0.6;\" href=\"javascript:;\" onclick=\"deleteParam('"+obj.id+"')\" title=\"删除\" class=\"one_2\"> &nbsp; </a></span>";
+		strs = strs + "<span id=\"p"+obj.id+"\" class=\"pppp\"><span class=\"text\" onclick=\"newparam('update','"+obj.type+"','"+obj.id+"')\" title=\"编辑\">"+obj.name+"("+getParamTypeDesc(obj.type)+")</span><div class=\"ibox-tools\" style=\"margin-top:3px;\"><button onclick=\"optParam(this,'"+obj.id+"', '"+obj.type+"')\" title=\"设置\" class=\"btn btn-outline btn-success btn-xs\"><i class=\"fa fa-wrench\"></i></button> <button onclick=\"deleteParam('"+obj.id+"')\" title=\"删除\" class=\"btn btn-outline btn-danger btn-xs\"><i class=\"fa fa-times\"></i></button></div></span>";
 	}
 	if(strs != ""){
 		$("#optparam").html(strs);
@@ -87,29 +87,33 @@ function newparam(tp, paramType, pid){
 		}
 	}
 	var str = "";
+	var defstr = "";
 	if(paramType == "dateselect"){
+		defstr = "now表示默认当前日期";
 		var datetype = ['yyyyMMdd', 'yyyy-MM-dd', 'yyyy年MM月dd日'];
 		var datestr = "<option></option>";
 		for(i=0; i<datetype.length; i++){
 			datestr = datestr + "<option value='"+datetype[i]+"' "+(param != null && datetype[i] == param.dtformat ?"selected":"")+">"+datetype[i]+"</option>";
 		}
-		str = "(now表示默认当前日期)<br/><span class=\"inputtext\">日期格式：</span><select id='dtformat' name='dtformat' class='inputform'>"+datestr+"</select><br/><span class=\"inputtext\">最小值：</span><input type=\"text\" class=\"inputform\" name=\"minval\" id=\"minval\" value=\""+(param==null?"":param.minval)+"\" ><br/><span class=\"inputtext\">最大值：</span><input type=\"text\" class=\"inputform\" name=\"maxval\" id=\"maxval\" value=\""+(param==null?"":param.maxval)+"\" >";
+		str = "<br/><span class=\"inputtext\">日期格式：</span><select id='dtformat' name='dtformat' class='inputform2'>"+datestr+"</select><br/><span class=\"inputtext\">最小值：</span><input type=\"text\" class=\"inputform2\" name=\"minval\" id=\"minval\" value=\""+(param==null?"":param.minval)+"\" ><br/><span class=\"inputtext\">最大值：</span><input type=\"text\" class=\"inputform2\" name=\"maxval\" id=\"maxval\" value=\""+(param==null?"":param.maxval)+"\" >";
 	}
 	if(paramType == "monthselect"){
+		defstr = "now表示默认当前月份";
 		var datetype = ['yyyyMM', 'yyyy-MM', 'yyyy年MM月'];
 		var datestr = "<option></option>";
 		for(i=0; i<datetype.length; i++){
 			datestr = datestr + "<option value='"+datetype[i]+"' "+(param != null && datetype[i] == param.dtformat ?"selected":"")+">"+datetype[i]+"</option>";
 		}
-		str = "(now表示默认当前月份)<br/><span class=\"inputtext\">月份格式：</span><select id='dtformat' name='dtformat' class='inputform'>"+datestr+"</select><br/><span class=\"inputtext\">最小值：</span><input type=\"text\" class=\"inputform\" name=\"minval\" id=\"minval\" value=\""+(param==null?"":param.minval)+"\" ><br/><span class=\"inputtext\">最大值：</span><input type=\"text\" class=\"inputform\" name=\"maxval\" id=\"maxval\" value=\""+(param==null?"":param.maxval)+"\" >";
+		str = "<br/><span class=\"inputtext\">月份格式：</span><select id='dtformat' name='dtformat' class='inputform2'>"+datestr+"</select><br/><span class=\"inputtext\">最小值：</span><input type=\"text\" class=\"inputform2\" name=\"minval\" id=\"minval\" value=\""+(param==null?"":param.minval)+"\" ><br/><span class=\"inputtext\">最大值：</span><input type=\"text\" class=\"inputform2\" name=\"maxval\" id=\"maxval\" value=\""+(param==null?"":param.maxval)+"\" >";
 	}
 	if(paramType == "yearselect"){
+		defstr = "now表示默认当前年份";
 		var datetype = ['yyyy', 'yyyy年'];
 		var datestr = "<option></option>";
 		for(i=0; i<datetype.length; i++){
 			datestr = datestr + "<option value='"+datetype[i]+"' "+(param != null && datetype[i] == param.dtformat ?"selected":"")+">"+datetype[i]+"</option>";
 		}
-		str = "(now表示默认当前年份)<br/><span class=\"inputtext\">年份格式：</span><select id='dtformat' name='dtformat' class='inputform'>"+datestr+"</select><br/><span class=\"inputtext\">最小值：</span><input type=\"text\" class=\"inputform\" name=\"minval\" id=\"minval\" value=\""+(param==null?"":param.minval)+"\" ><br/><span class=\"inputtext\">最大值：</span><input type=\"text\" class=\"inputform\" name=\"maxval\" id=\"maxval\" value=\""+(param==null?"":param.maxval)+"\" >";
+		str = "<br/><span class=\"inputtext\">年份格式：</span><select id='dtformat' name='dtformat' class='inputform2'>"+datestr+"</select><br/><span class=\"inputtext\">最小值：</span><input type=\"text\" class=\"inputform2\" name=\"minval\" id=\"minval\" value=\""+(param==null?"":param.minval)+"\" ><br/><span class=\"inputtext\">最大值：</span><input type=\"text\" class=\"inputform2\" name=\"maxval\" id=\"maxval\" value=\""+(param==null?"":param.maxval)+"\" >";
 	}
 	var tmp = "";
 	if(paramType == "checkbox" || paramType == "radio"){
@@ -149,12 +153,12 @@ function newparam(tp, paramType, pid){
 	}
 	
 	var values = reloadParamVals(true);
-	var ctx = "<div class=\"textpanel\"><span class=\"inputtext\">参数标识：</span><input type=\"text\" class=\"inputform\" name=\"paramid\" id=\"paramid\" value=\""+(param==null?"":param.paramid)+"\" "+(tp=='insert'?"":"readonly")+"><font color='#ccc'>(创建后不能更改)</font><br/><span class=\"inputtext\">显示名称：</span><input type=\"text\" class=\"inputform\" name=\"paramname\" id=\"paramname\" value=\""+(param==null?"":param.name)+"\"><br/><span class=\"inputtext\">长度：</span><input type=\"text\" size=\"5\" name=\"size\" id=\"size\" value=\""+(param!=null&&param.size?param.size:"")+"\">(取值5-30)<br/><span class=\"inputtext\">默认值：</span><input type=\"text\" size=\"15\" name=\"defvalue\" id=\"defvalue\" value=\""+(param==null?"":param.defvalue)+"\" >"+str +"<br/><span class=\"inputtext\">隐藏参数</span><input type='checkbox' id='hiddenprm' name='hiddenprm' value='y' "+(param!=null&&param.hiddenprm=='y'?"checked":"")+">(隐藏参数不会在页面中显示)" + (paramType=="radio"||paramType=="checkbox"?"<div id=\"values\"><fieldset><legend>值列表</legend><div style='margin:0px 3px 3px 3px;'><label><input type='radio' id='valtype' name='valtype' value=\"static\" "+(param==null||param.valtype=='static'?"checked":"")+">静态值</label> <label><input type='radio' id='valtype' name='valtype' value=\"dynamic\" "+(param!=null&&param.valtype=='dynamic'?"checked":"")+">动态值</label></div><div class=\"param_left\" style=\"display:"+(param==null||param.valtype=='static'?"block":"none")+"\"><table cellspacing=\"0\" cellpadding=\"0\" class=\"grid3\"><tr><th width='33%'>Value</th><th width='33%'>Text</th><th width='33%'>操作</th></tr>"+values+"</table></div><div style=\"display:"+(param==null||param.valtype=='static'?"block":"none")+"\" class=\"param_right\"><a href=\"javascript:newparamval(false);\"><img src='../resource/img/edit_add.png' border='0' title='新增'></a><br/></div><div id=\"dynamic_div\" style=\"display:"+(param!=null&&param.valtype=='dynamic'?"block":"none")+"\"><span class=\"inputtext\">数据：</span><select id=\"dataset\" name=\"dataset\" class=\"inputform\"><option vlaue=''></option>"+tmp+"</select><br/><span class=\"inputtext\">映射字段：</span><select id=\"param_option_val\" name=\"param_option_val\" class=\"inputform\">"+valOption+"</select></div></fieldset></div>":"") +"</div>";
+	var ctx = "<div class=\"textpanel\"><span class=\"inputtext\">参数标识：</span><input type=\"text\" class=\"inputform2\" name=\"paramid\" id=\"paramid\" value=\""+(param==null?"":param.paramid)+"\" "+(tp=='insert'?"":"readonly")+" placeholder=\"创建后不能更改\"><br/><span class=\"inputtext\">显示名称：</span><input type=\"text\" class=\"inputform2\" name=\"paramname\" id=\"paramname\" value=\""+(param==null?"":param.name)+"\"><br/><span class=\"inputtext\">长度：</span><input type=\"text\" size=\"5\" name=\"size\" class=\"inputform2\" id=\"size\" value=\""+(param!=null&&param.size?param.size:"")+"\" placeholder=\"取值5-30\"><br/><span class=\"inputtext\">默认值：</span><input type=\"text\" size=\"15\" name=\"defvalue\" id=\"defvalue\" value=\""+(param==null?"":param.defvalue)+"\" class=\"inputform2\" placeholder=\""+defstr+"\">"+str +"<br/><span class=\"inputtext\">隐藏参数：</span><div class=\"checkbox checkbox-info checkbox-inline\" style=\"line-height:20px;\"><input type='checkbox' id='hiddenprm' name='hiddenprm' value='y' "+(param!=null&&param.hiddenprm=='y'?"checked":"")+"><label for=\"hiddenprm\">隐藏参数不会在页面中显示</label></div>" + (paramType=="radio"||paramType=="checkbox"?"<div id=\"values\"><fieldset><legend>值列表</legend><div style='margin:0px 3px 3px 3px;'><div class=\"radio radio-info radio-inline\" style=\"line-height:20px;\"><input type='radio' id='valtype1' name='valtype' value=\"static\" "+(param==null||param.valtype=='static'?"checked":"")+"><label for=\"valtype1\">静态值</label></div> <div class=\"radio radio-info radio-inline\" style=\"line-height:20px;\"><input type='radio' id='valtype2' name='valtype' value=\"dynamic\" "+(param!=null&&param.valtype=='dynamic'?"checked":"")+"><label for=\"valtype2\">动态值</label></div></div><div class=\"param_left\" style=\"display:"+(param==null||param.valtype=='static'?"block":"none")+"\"><table cellspacing=\"0\" cellpadding=\"0\" class=\"grid3\"><tr><th width='33%'>Value</th><th width='33%'>Text</th><th width='33%'>操作</th></tr>"+values+"</table></div><div style=\"display:"+(param==null||param.valtype=='static'?"block":"none")+"\" class=\"param_right\"><a href=\"javascript:newparamval(false);\"><img src='../resource/img/edit_add.png' border='0' title='新增'></a><br/></div><div id=\"dynamic_div\" style=\"display:"+(param!=null&&param.valtype=='dynamic'?"block":"none")+"\"><span class=\"inputtext\">数据：</span><select id=\"dataset\" name=\"dataset\" class=\"inputform2\"><option vlaue=''></option>"+tmp+"</select><br/><span class=\"inputtext\">映射字段：</span><select id=\"param_option_val\" name=\"param_option_val\" class=\"inputform2\">"+valOption+"</select></div></fieldset></div>":"") +"</div>";
 	var tpname = getParamTypeDesc(paramType);
 	$('#pdailog').dialog({
 		title: (tp == 'insert' ? '创建参数' : '编辑参数') + " - " + tpname,
 		width: 410,
-		height: paramType == "dateselect" || paramType == "monthselect"||paramType == "yearselect" ? 330 : (paramType=="text"?230:480),
+		height: paramType == "dateselect" || paramType == "monthselect"||paramType == "yearselect" ? 340 : (paramType=="text"?240:490),
 		closed: false,
 		cache: false,
 		modal: true,
@@ -163,6 +167,7 @@ function newparam(tp, paramType, pid){
 		onLoad:function(){},
 		buttons:[{
 			text:'确定',
+			iconCls:"icon-ok",
 			handler:function(){
 				var paramid = $("#pdailog #paramid").val();
 				if(paramid == ''){
@@ -231,7 +236,7 @@ function newparam(tp, paramType, pid){
 							obj.option = {"tableId":tss[0], "tname":tss[1],"dimId":vls[0], "alias":vls[1]};
 						}
 					}
-					var str = "<span id=\"p"+obj.id+"\" class=\"pppp\"><span class=\"text\" onclick=\"newparam('update','"+paramType+"','"+obj.id+"')\" >"+name+"("+tpname+")</span><a style=\"opacity: 0.6;\" href=\"javascript:;\" onclick=\"optParam(this,'"+obj.id+"', '"+obj.type+"')\" title=\"设置\" class=\"one_1\"> &nbsp; </a><a style=\"opacity: 0.6;\" href=\"javascript:;\" onclick=\"deleteParam('"+obj.id+"')\" title=\"删除\" class=\"one_2\"> &nbsp; </a></span>";
+					var str = "<span id=\"p"+obj.id+"\" class=\"pppp\"><span class=\"text\" onclick=\"newparam('update','"+paramType+"','"+obj.id+"')\" >"+name+"("+tpname+")</span><div class=\"ibox-tools\" style=\"margin-top:3px;\"><button class=\"btn btn-outline btn-success btn-xs\"  onclick=\"optParam(this,'"+obj.id+"', '"+obj.type+"')\" title=\"设置\"><i class=\"fa fa-wrench\"></i></button> <button class=\"btn btn-outline btn-danger btn-xs\" onclick=\"deleteParam('"+obj.id+"')\" title=\"删除\"><i class=\"fa fa-times\"></i></button></div></span>";
 					$("#optparam").append(str);
 					if(!pageInfo.params){
 						pageInfo.params = [];
@@ -269,12 +274,13 @@ function newparam(tp, paramType, pid){
 		}
 		,{
 			text:'取消',
+			iconCls:"icon-cancel",
 			handler:function(){
 				$('#pdailog').dialog('close');
 			}
 		}]
 	});
-	$("#pdailog #valtype").bind("click", function(){
+	$("#pdailog #valtype1,#pdailog #valtype2").bind("click", function(){
 		var val = $(this).val();
 		if(val == 'static'){
 			$("#pdailog #dynamic_div").css("display", "none");
@@ -557,12 +563,12 @@ function setcompfilter(compId){
 		compId = curTmpInfo.compId;
 	}
 	var comp = findCompById(compId);
-	var str = "<div style=\"margin:5px 0px 0px 0px;\"><a href=\"javascript:newdatasetparam(false, '', '"+compId+"');\">新增</a><table class=\"grid3\" id=\"T_report54\" cellpadding=\"0\" cellspacing=\"0\">";
+	var str = "<div style=\"margin:5px;\"><button style=\"margin-bottom:5px;\" class=\"btn btn-primary btn-sm\" onclick=\"newdatasetparam(false, '', '"+compId+"');\">新增筛选条件</button><table class=\"grid3\" id=\"T_report54\" cellpadding=\"0\" cellspacing=\"0\">";
 	str = str + "<tr><th width='30%'>筛选字段</th><th width='15%'>判断条件</th><th width='20%'>筛选值</th><th width='15%'>值类型</th><th width='20%'>操作</th></tr>";
 	var t = comp.params;
 	for(var i=0; t&&i<t.length; i++){
 		var o = t[i];
-		str = str + "<tr><td class=\"kpiData1 grid3-td\">"+(o.col)+"/"+o.tname+"</td><td class=\"kpiData1 grid3-td\">"+o.type+"</td><td class=\"kpiData1 grid3-td\">"+(o.usetype!='param'?(o.val+(o.val2 =='' ? "":"/"+o.val2)):"连接到参数")+"</td><td class=\"kpiData1 grid3-td\">"+o.valuetype+"</td><td class=\"kpiData1 grid3-td\"><a href=\"javascript:newdatasetparam(true,'"+o.id+"','"+compId+"');\">编辑</a> <a href=\"javascript:delDatasetFilter('"+o.id+"', '"+compId+"');\">删除</a></td></tr>";
+		str = str + "<tr><td class=\"kpiData1 grid3-td\">"+(comp.type=="grid"||comp.type=="box"?o.col:o.colname)+"/"+o.tname+"</td><td class=\"kpiData1 grid3-td\">"+o.type+"</td><td class=\"kpiData1 grid3-td\">"+(o.usetype!='param'?(o.val+(o.val2 =='' ? "":"/"+o.val2)):"连接到参数")+"</td><td class=\"kpiData1 grid3-td\">"+o.valuetype+"</td><td class=\"kpiData1 grid3-td\"><button onclick=\"newdatasetparam(true,'"+o.id+"','"+compId+"');\" class=\"btn btn-info btn-xs\">编辑</button> <button onclick=\"delDatasetFilter('"+o.id+"', '"+compId+"');\" class=\"btn btn-danger btn-xs\">删除</button></td></tr>";
 	}
 	str = str + "</table></div>";
 	$('#pdailog').dialog({
@@ -577,6 +583,7 @@ function setcompfilter(compId){
 		onLoad:function(){},
 		buttons:[{
 			text:'确定',
+			iconCls:"icon-ok",
 			handler:function(){
 				if(comp.type == 'table'){
 					tableView(comp, comp.id);
@@ -588,6 +595,7 @@ function setcompfilter(compId){
 		}
 		,{
 			text:'取消',
+			iconCls:"icon-cancel",
 			handler:function(){
 				$('#pdailog').dialog('close');
 			}
@@ -650,7 +658,7 @@ function newdatasetparam(isupdate, paramId, compId){
 	if($("#dsColumn_div").size() == 0){
 		$("<div id=\"dsColumn_div\" class=\"easyui-menu\"></div>").appendTo("body");
 	}
-	var cols = "<select id=\"filtercolumn\" name=\"filtercolumn\" class=\"inputform\"><option value=''></option>";
+	var cols = "<select id=\"filtercolumn\" name=\"filtercolumn\" class=\"inputform2\"><option value=''></option>";
 	var dsetCol = dset.cols;
 	for(i=0; i<dsetCol.length; i++){
 		cols = cols + "<option value=\""+dsetCol[i].name+","+dsetCol[i].tname+"\" "+( t!=null&&t.col==dsetCol[i].name?"selected":"" )+">"+ (dsetCol[i].tname+"."+dsetCol[i].name)+"</option>";
@@ -659,13 +667,13 @@ function newdatasetparam(isupdate, paramId, compId){
 	
 	cols = cols + "</select>";
 	var colLogic = ["=",">",">=","<", "<=", "!=", "between", "in", "like"];
-	var ftp = "<select id=\"filtertype\" name=\"filtertype\" class=\"inputform\">";
+	var ftp = "<select id=\"filtertype\" name=\"filtertype\" class=\"inputform2\">";
 	for(i=0; i<colLogic.length; i++){
 		ftp = ftp + "<option value=\""+colLogic[i]+"\" "+(t!=null&&t.type==colLogic[i]?"selected":"")+">"+colLogic[i]+"</option>";
 	}
 	ftp = ftp + "</select>";
 	
-	var pms = "<select id=\"linkparam\" name=\"linkparam\" class=\"inputform\" "+(t==null||t.usetype=='gdz'?"style=\"display:none\"":"")+">";
+	var pms = "<select id=\"linkparam\" name=\"linkparam\" class=\"inputform2\" "+(t==null||t.usetype=='gdz'?"style=\"display:none\"":"")+">";
 	for(i=0;pageInfo.params&&i<pageInfo.params.length;i++){
 		if(pageInfo.params[i].type == "casca"){  //处理级联
 			var obj = pageInfo.params[i];
@@ -678,7 +686,7 @@ function newdatasetparam(isupdate, paramId, compId){
 		}
 	}
 	pms = pms + "</select>";
-	var pms2 = "<select id=\"linkparam2\" name=\"linkparam2\" class=\"inputform\" "+(t==null||t.usetype=='gdz'?"style=\"display:none\"":"")+">";
+	var pms2 = "<select id=\"linkparam2\" name=\"linkparam2\" class=\"inputform2\" "+(t==null||t.usetype=='gdz'?"style=\"display:none\"":"")+">";
 	for(i=0;pageInfo.params&&i<pageInfo.params.length;i++){
 		if(pageInfo.params[i].type == "casca"){  //处理级联
 			var obj = pageInfo.params[i];
@@ -691,7 +699,7 @@ function newdatasetparam(isupdate, paramId, compId){
 		}
 	}
 	pms2 = pms2 + "</select>";
-	var ctx = "<div class=\"textpanel\"><span class=\"inputtext\">筛选字段：</span>"+cols+"<br/><span class=\"inputtext\">判断条件：</span>"+ftp+"<br/><span class=\"inputtext\">筛选值：</span><input type=\"text\" name=\"filtervalue\" id=\"filtervalue\" "+(t!=null&&t.usetype=='param'?"style=\"display:none\"":"")+" value=\""+(t!=null?t.val:"")+"\" class=\"inputform\">"+pms+"<span class=\"link_param icon-param\" tp=\""+(t!=null&&t.usetype=='param'?"param":"gdz")+"\" title=\"链接到参数\" onclick=\"chglinkparam(this, 1)\"></span><div id=\"selval2\" style=\""+(t != null && (t.type == 'between')?"display:block":"display:none")+"\"><span class=\"inputtext\">筛选值2：</span><input type=\"text\" name=\"filtervalue2\" id=\"filtervalue2\" value=\""+(t!=null?t.val2:"")+"\" "+(t!=null&&t.usetype=='param'?"style=\"display:none\"":"")+" class=\"inputform\">"+pms2+"<span class=\"link_param icon-param\" tp=\""+(t!=null&&t.usetype=='param'?"param":"gdz")+"\" title=\"链接到参数\" onclick=\"chglinkparam(this, 2)\"></span></div><span class=\"inputtext\">筛选值类型：</span><select name=\"valuetype\" id=\"valuetype\" class=\"inputform\"><option value=\"string\" "+(t!=null&&t.valuetype=='string'?"selected":"")+">字符类型</option><option value=\"number\" "+(t!=null&&t.valuetype=='number'?"selected":"")+">数字类型</option></select></div>";
+	var ctx = "<div class=\"textpanel\"><span class=\"inputtext\">筛选字段：</span>"+cols+"<br/><span class=\"inputtext\">判断条件：</span>"+ftp+"<br/><span class=\"inputtext\">筛选值：</span><input type=\"text\" name=\"filtervalue\" id=\"filtervalue\" "+(t!=null&&t.usetype=='param'?"style=\"display:none\"":"")+" value=\""+(t!=null?t.val:"")+"\" class=\"inputform2\">"+pms+"<span class=\"link_param icon-param\" tp=\""+(t!=null&&t.usetype=='param'?"param":"gdz")+"\" title=\"链接到参数\" onclick=\"chglinkparam(this, 1)\"></span><div id=\"selval2\" style=\""+(t != null && (t.type == 'between')?"display:block":"display:none")+"\"><span class=\"inputtext\">筛选值2：</span><input type=\"text\" name=\"filtervalue2\" id=\"filtervalue2\" value=\""+(t!=null?t.val2:"")+"\" "+(t!=null&&t.usetype=='param'?"style=\"display:none\"":"")+" class=\"inputform2\">"+pms2+"<span class=\"link_param icon-param\" tp=\""+(t!=null&&t.usetype=='param'?"param":"gdz")+"\" title=\"链接到参数\" onclick=\"chglinkparam(this, 2)\"></span></div><span class=\"inputtext\">筛选值类型：</span><select name=\"valuetype\" id=\"valuetype\" class=\"inputform2\"><option value=\"string\" "+(t!=null&&t.valuetype=='string'?"selected":"")+">字符类型</option><option value=\"number\" "+(t!=null&&t.valuetype=='number'?"selected":"")+">数字类型</option></select></div>";
 	$('#dsColumn_div').dialog({
 		title: (isupdate == false ? '添加筛选条件':'编辑筛选条件'),
 		width: 380,
@@ -707,6 +715,7 @@ function newdatasetparam(isupdate, paramId, compId){
 		},
 		buttons:[{
 				text:'确定',
+				iconCls:"icon-ok",
 				handler:function(){
 					if(!comp.params){
 						comp.params = [];
@@ -747,6 +756,7 @@ function newdatasetparam(isupdate, paramId, compId){
 				}
 			},{
 				text:'取消',
+				iconCls:"icon-cancel",
 				handler:function(){
 					$('#dsColumn_div').dialog('close');
 				}

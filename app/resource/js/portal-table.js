@@ -140,7 +140,7 @@ function editGridData(compId){
 			$("#gridData").css("border", "1px dotted #666");
 			
 			//获取TREE
-			var node = $("#gridData").tree("getNode", source);
+			var node = $("#tabletree").tree("getNode", source);
 			
 			if(grid.dsetId && grid.dsetId != node.attributes.dsetId){
 				msginfo("你拖入的字段"+node.text+"与表格已有的内容不在同一个表中，拖放失败！");
@@ -187,18 +187,18 @@ function gridView(grid){
 	if(!grid.cols || grid.cols.length==0){
 		return;
 	}
-	showloading();
+	__showLoading();
 	$.ajax({
 	   type: "POST",
 	   url: "GridView.action",
 	   dataType:"html",                                            
 	   data: {"gridJson":JSON.stringify(grid), params:(pageInfo.params?JSON.stringify(pageInfo.params):"[]")},
 	   success: function(resp){
-		   hideLoading();
+		   __hideLoading();
 		   $("#c_" + grid.id + " div.cctx").html(resp);
 	   },
 	   error:function(resp){
-		   hideLoading();
+		   __hideLoading();
 		   $.messager.alert('出错了','系统出错，请查看后台日志。','error');
 	   }
 	});
@@ -224,7 +224,7 @@ function setGridCol(ts, id, name, compId){
 		$("#gridoptmenu").menu("setIcon", {target:$("#gridoptmenu").menu("getItem", $("#col_ord2")).target, iconCls:"icon-blank"});
 		$("#gridoptmenu").menu("setIcon", {target:$("#gridoptmenu").menu("getItem", $("#col_ord3")).target, iconCls:"icon-ok"});
 	}
-	$("#gridoptmenu").menu("show", {left:offset.left, top:offset.top - 5});
+	$("#gridoptmenu").menu("show", {left:offset.left, top:offset.top - 96});
 }
 function gridColsort(tp){
 	var id = curTmpInfo.ckid;
@@ -249,13 +249,13 @@ function setGridColProp(){
 	
 	var fmtstr = "";
 	if(col.type == "Double" || col.type == "Int"){
-		fmtstr =  "<span class='inputtext'>格 式 化：</span><select id=\"fmt\" name=\"fmt\" class=\"inputform\"><option value=\"\"></option><option value=\"###,##0\" "+(col.fmt=="###,##0"?"selected":"")+">整数</option><option value=\"###,##0.0\" "+(col.fmt=="###,##0.0"?"selected":"")+">小数(保留1位)</option><option value=\"###,##0.00\" "+(col.fmt=="###,##0.00"?"selected":"")+">小数(保留2位)</option><option value=\"0.00%\" "+(col.fmt=="0.00%"?"selected":"")+">百分比</option></select><br/>";
+		fmtstr =  "<span class='inputtext'>格 式 化：</span><select id=\"fmt\" name=\"fmt\" class=\"inputform2\"><option value=\"\"></option><option value=\"###,##0\" "+(col.fmt=="###,##0"?"selected":"")+">整数</option><option value=\"###,##0.0\" "+(col.fmt=="###,##0.0"?"selected":"")+">小数(保留1位)</option><option value=\"###,##0.00\" "+(col.fmt=="###,##0.00"?"selected":"")+">小数(保留2位)</option><option value=\"0.00%\" "+(col.fmt=="0.00%"?"selected":"")+">百分比</option></select><br/>";
 	}
 	if(col.type == "Date" || col.type == "Datetime"){
-		fmtstr = "<span class='inputtext'>格 式 化：</span><input type='text' id='fmt' name='fmt' class='inputform' value=\""+(col.fmt?col.fmt:"")+"\"><br/>";
+		fmtstr = "<span class='inputtext'>格 式 化：</span><input type='text' id='fmt' name='fmt' class='inputform2' value=\""+(col.fmt?col.fmt:"")+"\"><br/>";
 	}
 	
-	var ctx = "<div class=\"textpanel\"><span class='inputtext'>显示名称：</span><input type=\"text\" id=\"dispName\" name=\"dispName\" class=\"inputform\" value=\""+(col.dispName?col.dispName:"")+"\"><br><span class='inputtext'>所 属 表： </span>"+col.tname+"<br><span class='inputtext'>对应字段：</span> "+col.name+"<br>"+fmtstr+"<span class='inputtext'>位置：</span><select id=\"palign\" name=\"palign\" class=\"inputform\"><option value=\"\"></option><option value=\"left\" "+(col.align=="left"?"selected":"")+">居左</option><option value=\"center\" "+(col.align=="center"?"selected":"")+">居中</option><option value=\"right\" "+(col.align=="right"?"selected":"")+">居右</option></select></div>";
+	var ctx = "<div class=\"textpanel\"><span class='inputtext'>显示名称：</span><input type=\"text\" id=\"dispName\" name=\"dispName\" class=\"inputform2\" value=\""+(col.dispName?col.dispName:"")+"\"><br><span class='inputtext'>所 属 表： </span>"+col.tname+"<br><span class='inputtext'>对应字段：</span> "+col.name+"<br>"+fmtstr+"<span class='inputtext'>位置：</span><select id=\"palign\" name=\"palign\" class=\"inputform2\"><option value=\"\"></option><option value=\"left\" "+(col.align=="left"?"selected":"")+">居左</option><option value=\"center\" "+(col.align=="center"?"selected":"")+">居中</option><option value=\"right\" "+(col.align=="right"?"selected":"")+">居右</option></select></div>";
 	$('#pdailog').dialog({
 		title: '表格字段属性',
 		width: 350,
@@ -267,6 +267,7 @@ function setGridColProp(){
 		content: ctx,
 		buttons:[{
 					text:'确定',
+					iconCls:"icon-ok",
 					handler:function(){
 						var dispName = $("#pdailog #dispName").val();
 						var fmt = $("#pdailog #fmt").val();
@@ -280,6 +281,7 @@ function setGridColProp(){
 					}
 				},{
 					text:'取消',
+					iconCls:"icon-cancel",
 					handler:function(){
 						$('#pdailog').dialog('close');
 					}
@@ -544,18 +546,18 @@ function boxView(comp){
 	if(!comp.kpiJson){
 		return;
 	}
-	showloading();
+	__showLoading();
 	$.ajax({
 	   type: "POST",
 	   url: "BoxView.action",
 	   dataType:"html",                                            
 	   data: {"kpiJson":JSON.stringify(comp.kpiJson), "dsource":comp.dsid, "dset":comp.dsetId, params:comp.params ? JSON.stringify(comp.params) : "[]", pageParams:(pageInfo.params?JSON.stringify(pageInfo.params):"[]")},
 	   success: function(resp){
-		   hideLoading();
+		   __hideLoading();
 		  $("#c_"+comp.id + " div.cctx").html(resp);
 	   },
 	   error:function(resp){
-		   hideLoading();
+		   __hideLoading();
 		   $.messager.alert('出错了','系统出错，请查看后台日志。','error');
 	   }
 	});

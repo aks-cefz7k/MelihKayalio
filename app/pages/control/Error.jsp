@@ -14,7 +14,7 @@
     box-shadow: 5px 5px 5px #DDDDDD;
 	background-color:#FFF;
 	line-height:20px;
-	font-size:12px;
+	font-size:14px;
   }
   .erinfo {
 	  margin-left:25px;
@@ -33,7 +33,7 @@
  
 
   <br/><br/><br/>
-  <div align="center" class="p_err">
+  <div align="center" class="p_err animated fadeInDown">
   <table width="100%" border="0" cellspacing="0" cellpadding="0">
   <tr>
     <td valign="top"><img style="margin-top:20px;" src="../resource/img/error.gif"></td>

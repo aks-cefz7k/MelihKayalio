@@ -1,9 +1,6 @@
 ﻿if($ == undefined){
 	$ = jQuery;
 }
-function insertTable(){
-	addComp(getMaxCompId(), "表格组件", null, true, 'table');
-}
 //创建交叉表
 function crtCrossTable(){
 	var ret = "<table class='d_table'><tr><td class='blank'>"
@@ -81,9 +78,9 @@ function initDropDiv(id){
 			var node = $("#datasettree").tree("getNode", source);
 			
 			//判断拖入的维度及度量是否和以前维度及度量在同一个表。
-			if(json.cubeId != undefined){
-				if(json.cubeId != node.attributes.cubeId){
-					msginfo("您拖入的"+ (node.attributes.col_type == 2 ? "度量" : "维度") +"与组件已有的内容不在同一个数据表中，拖放失败。");
+			if(json.tid != undefined){
+				if(json.tid != node.attributes.tid){
+					msginfo("您拖入的"+ (node.attributes.col_type == 2 ? "度量" : "维度") +"与组件已有的内容不在同一个数据表中，拖放失败。", "error");
 					return;
 				}
 			}
@@ -92,15 +89,16 @@ function initDropDiv(id){
 			/**  放入度量计算菜单判断
 			if(node.attributes.calc_kpi == 1){
 				if(!isExistDateDim(json, 'table')){
-					msginfo("您拖入的度量需要表格中先有时间类型的维度(年/季度/月/日)。");
+					msginfo("您拖入的度量需要表格中先有时间类型的维度(年/季度/月/日)。", "error");
 					return;
 				}
 			}
 			**/
 			
-			json.cubeId = node.attributes.cubeId;
-			json.dsid = node.attributes.dsid;
-			json.dsetId = node.attributes.dsetId;
+			json.tid = node.attributes.tid;
+			json.tname = node.attributes.tname;
+			json.ttype = node.attributes.ttype;
+			json.dsource = node.attributes.dsource; //组件所使用的数据源
 			
 			if(json.kpiJson == undefined){
 				json.kpiJson = [];
@@ -112,9 +110,9 @@ function initDropDiv(id){
 			if(node.attributes.col_type == 2 && $(this).attr("id") == "d_kpi"){
 				//如果度量存在就忽略
 				if(!kpiExist(node.attributes.col_id, json.kpiJson)){
-					json.kpiJson.push({"kpi_id":node.attributes.col_id, "kpi_name" : node.text, "col_name":node.attributes.col_name, "aggre":node.attributes.aggre, "fmt":node.attributes.fmt, "alias":node.attributes.alias,"tname":node.attributes.tname,"unit":node.attributes.unit,"rate":node.attributes.rate,"calc":node.attributes.calc});
+					json.kpiJson.push({"kpi_id":node.attributes.col_id, "kpi_name" : node.text, "col_name":node.attributes.col_name, "aggre":node.attributes.aggre, "fmt":node.attributes.fmt, "alias":node.attributes.alias,"tid":json.tid,"unit":node.attributes.unit,"rate":node.attributes.rate});
 				}else{
-					msginfo("度量已经存在。");
+					msginfo("度量已经存在。", "error");
 					return;
 				}
 				curTmpInfo.isupdate = true;
@@ -125,32 +123,32 @@ function initDropDiv(id){
 				//写col维度
 				if($(this).attr("id") == "d_colDims"){
 					if(dimExist(node.attributes.col_id, json.tableJson.cols) || dimExist(node.attributes.col_id, json.tableJson.rows)){
-						msginfo("维度已经存在。");
+						msginfo("维度已经存在。", "error");
 						return;
 					}
 					//如果维度有分组，分组必须相同
 					var group = node.attributes.grouptype;
 					if(group != null && findGroup(json.tableJson.rows, group)){
-						msginfo("拖放失败，同一分组的维度必须在同一行/列标签。");
+						msginfo("拖放失败，同一分组的维度必须在同一行/列标签。", "error");
 						return;
 					}
-					json.tableJson.cols.push({"id":node.attributes.col_id, "dimdesc" : node.text, "type":node.attributes.dim_type, "colname":node.attributes.col_name,"alias":node.attributes.alias,"tname":node.attributes.tname,"iscas":node.attributes.iscas, "tableName":node.attributes.tableName, "tableColKey":node.attributes.tableColKey,"tableColName":node.attributes.tableColName, "dimord":node.attributes.dimord, "grouptype":node.attributes.grouptype,"valType":node.attributes.valType,ordcol:node.attributes.ordcol,dateformat:node.attributes.dateformat,"calc":node.attributes.calc});
+					json.tableJson.cols.push({"id":node.attributes.col_id, "dimdesc" : node.text, "type":node.attributes.dim_type, "colname":node.attributes.col_name,"alias":node.attributes.alias,"tid":json.tid,"iscas":node.attributes.iscas, "tableName":node.attributes.tableName, "tableColKey":node.attributes.tableColKey,"tableColName":node.attributes.tableColName, "dimord":node.attributes.dimord, "grouptype":node.attributes.grouptype,"valType":node.attributes.valType,"endlvl":node.attributes.endlvl,ordcol:node.attributes.ordcol,dateformat:node.attributes.dateformat});
 					curTmpInfo.isupdate = true;
 					tableView(json, Number(id));
 				}
 				//写row维度
 				if($(this).attr("id") == "d_rowDims"){
 					if(dimExist(node.attributes.col_id, json.tableJson.rows) || dimExist(node.attributes.col_id, json.tableJson.cols)){
-						msginfo("维度已经存在。");
+						msginfo("维度已经存在。", "error");
 						return;
 					}
 					//如果维度有分组，分组必须相同
 					var group = node.attributes.grouptype;
 					if(group != null && findGroup(json.tableJson.cols, group)){
-						msginfo("拖放失败，同一分组的维度必须在同一行/列标签。");
+						msginfo("拖放失败，同一分组的维度必须在同一行/列标签。", "error");
 						return;
 					}
-					json.tableJson.rows.push({"id":node.attributes.col_id, "dimdesc" : node.text, "type":node.attributes.dim_type, "colname":node.attributes.col_name,"alias":node.attributes.alias,"tname":node.attributes.tname,"iscas":node.attributes.iscas, "tableName":node.attributes.tableName, "tableColKey":node.attributes.tableColKey,"tableColName":node.attributes.tableColName, "dimord":node.attributes.dimord,"grouptype":node.attributes.grouptype,"valType":node.attributes.valType,ordcol:node.attributes.ordcol,dateformat:node.attributes.dateformat,"calc":node.attributes.calc});
+					json.tableJson.rows.push({"id":node.attributes.col_id, "dimdesc" : node.text, "type":node.attributes.dim_type, "colname":node.attributes.col_name,"alias":node.attributes.alias,"tid":json.tid,"iscas":node.attributes.iscas, "tableName":node.attributes.tableName, "tableColKey":node.attributes.tableColKey,"tableColName":node.attributes.tableColName, "dimord":node.attributes.dimord,"grouptype":node.attributes.grouptype,"valType":node.attributes.valType,"endlvl":node.attributes.endlvl,ordcol:node.attributes.ordcol,dateformat:node.attributes.dateformat});
 					curTmpInfo.isupdate = true;
 					tableView(json, Number(id));
 				}
@@ -222,12 +220,12 @@ function kpicompute(tp){
 		kpi.compute = "jxpm";
 	}else{
 		if(!isExistDateDim(comp, 'table')){
-			msginfo("当前度量计算需要表格中先有时间类型的维度(年/季度/月/日)。");
+			msginfo("当前度量计算需要表格中先有时间类型的维度(年/季度/月/日)。", "error");
 			return;
 		}		
 		//如果有参数,并且参数是时间维度，需要判断表格中是否有同样的参数维度，如果没有提示用户添加
 		if(!paramsamedimdate(comp)){
-			msginfo("度量计算时，需要表格中具有和参数相同的维度。");
+			msginfo("度量计算时，需要表格中具有和参数相同的维度。", "error");
 			return;
 		}
 		//先判断已经存在的，如果是时间偏移计算就追加，或者替换.
@@ -286,6 +284,38 @@ function tableView(table, compId){
 		initDropDiv(compId);
 		return;
 	}
+	//如果是接口调用，移除部分中文内容，减少URL数字及中文问题
+	if(curTmpInfo.face){
+		var delfunc = function(t){
+			delete t.dimdesc;
+			delete t.tableColKey;
+			delete t.colname;
+			delete t.dim_name;
+			delete t.tableName;
+			delete t.tableColName;
+			delete t.grouptype;
+			delete t.type;
+			delete t.valType;
+		};
+		var cols = table.tableJson.cols;
+		for(i=0; i<cols.length; i++){
+			var t = cols[i];
+			delfunc(t);
+		}
+		var rows = table.tableJson.rows;
+		for(i=0; i<rows.length; i++){
+			var t = rows[i];
+			delfunc(t);
+		}
+		//删除度量内容
+		for(i=0; i<table.kpiJson.length; i++){
+			var t = table.kpiJson[i];
+			delete t.col_name;
+			delete t.unit;
+			delete t.alias;
+			delete t.kpi_name;
+		}
+	}
 	
 	//先添加度量维，在列维度上
 	table.tableJson.cols.push({"type":"kpiOther","id":"kpi"});
@@ -307,26 +337,43 @@ function tableView(table, compId){
 		initDropDiv(compId);
 	});
 	**/
-	showloading();
-	
-	$.ajax({
-	   type: "POST",
-	   url: curTmpInfo.tvUrl ? curTmpInfo.tvUrl : "TableView.action",
-	   dataType:"html",
-	   data: {"tableJson":tableJson, "kpiJson":kpiJson, dsource:table.dsid, dset:table.dsetId, "compId":compId, "params":params},
-	   success: function(resp){
-		  hideLoading();
-		  $("#T" + compId + " div.ctx").html(resp);
-		   
-		 //重新注册拖放事件(从度量拖入的事件)
-		  initDropDiv(compId);
-	   },
-	   error:function(resp){
-			hideLoading();
-		   $.messager.alert('出错了','系统出错，请联系管理员。','error');
-	   }
-	});
-	
+	__showLoading();
+	if(curTmpInfo.face){
+		$.ajax({
+		   type: "get",
+		   dataType:"jsonp",
+		    jsonp:"jsonpcallback",
+		   url: curTmpInfo.tvUrl ? curTmpInfo.tvUrl : "TableView!face.action",
+		   data: {"tableJson":tableJson, "kpiJson":kpiJson, "compId":compId, "params":params, "dsource":table.dsource==null?"":table.dsource},
+		   success: function(resp){
+			  __hideLoading();
+			  $("#T" + compId + " div.ctx").html(resp.ctx);
+			  table.kpiJson = resp.kpiJson;  //回写值
+			  table.tableJson = resp.tableJson;
+			   
+			 //重新注册拖放事件(从度量拖入的事件)
+			  initDropDiv(compId);
+		   }
+		});
+	}else{
+		$.ajax({
+		   type: "POST",
+		   url: curTmpInfo.tvUrl ? curTmpInfo.tvUrl : "TableView.action",
+		   dataType:"html",
+		   data: {"tableJson":tableJson, "kpiJson":kpiJson, "compId":compId, "params":params, "dsource":table.dsource==null?"":table.dsource},
+		   success: function(resp){
+			  __hideLoading();
+			  $("#T" + compId + " div.ctx").html(resp);
+			   
+			 //重新注册拖放事件(从度量拖入的事件)
+			  initDropDiv(compId);
+		   },
+		   error:function(resp){
+				__hideLoading();
+			   $.messager.alert('出错了','系统出错，请联系管理员。','error');
+		   }
+		});
+	}
 	
 }
 //指标预警
@@ -336,12 +383,12 @@ function kpiwarning(){
 	var comp = findCompById(compId);
 	var kpi = findKpiById(kpiId, comp.kpiJson);
 	var warn = kpi.warning;
-	var str = "<div style='margin:10px;line-height:30px;'><span class=\"inputtext\">图片样式：</span><select id=\"wctype\"><option value=\"1\" "+(warn&&warn.pictype=="1"?"selected":"")+">交通灯</option><option value=\"2\" "+(warn&&warn.pictype=="2"?"selected":"")+">箭头</option></select> &nbsp; <input type=\"checkbox\" value=\"y\" id=\"fztp\" name=\"fztp\" "+(warn&&warn.reverse=="y"?"checked":"")+"><label for=\"fztp\">反转图片</label><br/>";
-	str = str + "<span id=\"w1\" class=\""+(warn?warn.pic1:"warning6")+"\"></span> <span class=\"logictext\">当前值</span> <select id=\"logic1\" name=\"logic1\" style=\"width:50px;\"><option value=\">=\" "+(warn&&warn.logic1==">="?"selected":"")+">&gt;=</option><option value=\">\" "+(warn&&warn.logic1==">"?"selected":"")+">&gt;</option></select> <input type=\"text\" id=\"val1\" class=\"inputform\" value=\""+(warn?warn.val1:"")+"\"> <br/><span id=\"w2\" class=\""+(warn?warn.pic2:"warning5")+"\"></span> <span class=\"logictext\">当前值 &lt; <span id=\"and1\">"+(warn?warn.val1:"X")+"</span> 且 </span> <select id=\"logic2\" name=\"logic2\" style=\"width:50px;\"><option value=\">=\" "+(warn&&warn.logic2==">="?"selected":"")+">&gt;=</option><option value=\">\" "+(warn&&warn.logic2=="="?"selected":"")+">&gt;</option></select> <input type=\"text\" id=\"val2\" class=\"inputform\" value=\""+(warn?warn.val2:"")+"\"><br/> <span id=\"w3\" class=\""+(warn?warn.pic3:"warning4")+"\"></span> <span class=\"logictext\"> 当前值 &lt;  <span id=\"and2\">"+(warn?warn.val2:"X")+"</span></span> <br/><br/>    <input type=\"checkbox\" value=\"y\" id=\"clear\" name=\"clear\" ><label for=\"clear\">清除预警信息</label></div>";
+	var str = "<div style='margin:10px;'><span class=\"inputtext\">图片样式：</span><select id=\"wctype\" class=\"inputform2\" style=\"width:90px;\"><option value=\"1\" "+(warn&&warn.pictype=="1"?"selected":"")+">交通灯</option><option value=\"2\" "+(warn&&warn.pictype=="2"?"selected":"")+">箭头</option></select> <div class=\"checkbox checkbox-inline\"><input type=\"checkbox\" value=\"y\" id=\"fztp\" name=\"fztp\" "+(warn&&warn.reverse=="y"?"checked":"")+"><label for=\"fztp\">反转图片</label></div><br/>";
+	str = str + "<span id=\"w1\" class=\""+(warn?warn.pic1:"warning6")+"\"></span> <span class=\"inputtext\">当前值</span> <select id=\"logic1\" name=\"logic1\" class=\"inputform2\" style=\"width:50px;\"><option value=\">=\" "+(warn&&warn.logic1==">="?"selected":"")+">&gt;=</option><option value=\">\" "+(warn&&warn.logic1==">"?"selected":"")+">&gt;</option></select> <input type=\"text\" id=\"val1\" name=\"val1\" idx=\"1\" value=\""+(warn?warn.val1:"")+"\"> <br/><span id=\"w2\" class=\""+(warn?warn.pic2:"warning5")+"\"></span> <span class=\"inputtext\">当前值 &lt; <span id=\"and1\">"+(warn?warn.val1:"X")+"</span> 且 </span> <select id=\"logic2\" name=\"logic2\" class=\"inputform2\" style=\"width:50px;\"><option value=\">=\" "+(warn&&warn.logic2==">="?"selected":"")+">&gt;=</option><option value=\">\" "+(warn&&warn.logic2=="="?"selected":"")+">&gt;</option></select> <input type=\"text\" name=\"val2\" idx=\"2\" id=\"val2\" value=\""+(warn?warn.val2:"")+"\"><br/> <span id=\"w3\" class=\""+(warn?warn.pic3:"warning4")+"\"></span> <span class=\"inputtext\"> 当前值 &lt;  <span id=\"and2\">"+(warn?warn.val2:"X")+"</span></span> <br/><div class=\"checkbox checkbox-info\"><input type=\"checkbox\" value=\"y\" id=\"clear\" name=\"clear\" ><label for=\"clear\">清除预警信息</label></div></div>";
 	$('#pdailog').dialog({
 		title: '指标预警',
-		width: 400,
-		height: 270,
+		width: 360,
+		height: 240,
 		closed: false,
 		cache: false,
 		modal: true,
@@ -381,13 +428,16 @@ function kpiwarning(){
 			}
 		}]
 	});
-	$("#pdailog #val1,#pdailog #val2").numberbox();
-	$("#pdailog #val1").blur(function(){
-		$("#pdailog #and1").text($(this).val());
+	$("#pdailog #val1,#pdailog #val2").numberbox({width:100,height:28, onChange:function(a, b){
+			var idx = $(this).attr("idx");
+			$("#pdailog #and" + idx).text(a);
+		}
 	});
-	$("#pdailog #val2").blur(function(){
-		$("#pdailog #and2").text($(this).val());
+	/**
+	$("#pdailog #val2").numberbox("onChange", function(){
+		$("#pdailog #and2").text($("#pdailog #val2").numberbox("getValue"));
 	});
+	**/
 	$("#pdailog #wctype").change(function(){
 		if($(this).val() == 1){
 			$("#pdailog #w1").attr("class", "warning6");
@@ -425,8 +475,8 @@ function kpiwarning(){
 	});
 	$("#pdailog #clear").change(function(){
 		if(this.checked){
-			$("#pdailog #val1").val("");
-			$("#pdailog #val2").val("");
+			$("#pdailog #val1").numberbox("clear");
+			$("#pdailog #val2").numberbox("clear");
 		}
 	});
 }
@@ -446,11 +496,11 @@ function kpiFilter(tp){
 	}else if(kpi.rate == 100000000){
 		unitStr = "亿";
 	}
-	var ctx = "<div style='line-height:25px; margin:5px;'><br/> "+kpi.kpi_name+" &nbsp; <select id=\"ftype\"><option value=\"\"></option><option value=\">\" "+(ft&&ft.filterType==">"?"selected":"")+">大于</option><option value=\"<\" "+(ft&&ft.filterType=="<"?"selected":"")+">小于</option><option value=\"=\" "+(ft&&ft.filterType=="="?"selected":"")+">等于</option><option value=\"between\" "+(ft&&ft.filterType=="between"?"selected":"")+">区间</option></select> &nbsp; <input type=\"text\" id=\"startval\" size=\"5\" value=\""+(ft?ft.val1:"")+"\"><span id=\"endvalspan\" style=\"display:"+(ft&&ft.filterType=='between'?"inline":"none")+"\"> - <input type=\"text\" id=\"endval\" size=\"5\" value=\""+(ft?ft.val2:"")+"\"></span>" + unitStr+kpi.unit+"<br/>[<a id=\"clear\" href='javascript:;'>清除筛选</a>]</div>";
+	var ctx = "<div style='margin:5px; line-height:25px;'><span class=\"inputtext\">"+kpi.kpi_name+"：</span> <select id=\"ftype\" class=\"inputform\" style=\"width:100px;\"><option value=\"\"></option><option value=\">\" "+(ft&&ft.filterType==">"?"selected":"")+">大于</option><option value=\"<\" "+(ft&&ft.filterType=="<"?"selected":"")+">小于</option><option value=\"=\" "+(ft&&ft.filterType=="="?"selected":"")+">等于</option><option value=\"between\" "+(ft&&ft.filterType=="between"?"selected":"")+">区间</option></select> <br/>  <span class=\"inputtext\"> </span> <input type=\"text\" style=\"\" id=\"startval\" size=\"5\" value=\""+(ft?ft.val1:"")+"\"><span id=\"endvalspan\" style=\"display:"+(ft&&ft.filterType=='between'?"inline":"none")+"\"> - <input class=\"inputform\" type=\"text\" id=\"endval\" size=\"5\" value=\""+(ft?ft.val2:"")+"\"></span>" + unitStr+kpi.unit+"<br/><button id=\"clear\" class=\"btn btn-success btn-xs\">清除筛选</button></div>";
 	$('#pdailog').dialog({
 		title: '度量筛选',
-		width: 330,
-		height: 180,
+		width: 350,
+		height: 220,
 		closed: false,
 		cache: false,
 		modal: true,
@@ -485,7 +535,7 @@ function kpiFilter(tp){
 					}
 				}]
 	});
-	$('#pdailog #startval,#pdailog #endval').numberbox();
+	$('#pdailog #startval,#pdailog #endval').numberbox({width:100,height:28});
 	$("#pdailog #ftype").bind("change", function(){
 		var o = $(this);
 		if(o.val() == 'between'){
@@ -496,8 +546,8 @@ function kpiFilter(tp){
 	});
 	$("#pdailog #clear").bind("click", function(){
 		$("#pdailog #ftype").val("");
-		$("#pdailog #startval").val("");
-		$("#pdailog #endval").val("");
+		$("#pdailog #startval").numberbox("clear");
+		$("#pdailog #endval").numberbox("clear");
 	});
 }
 //从表格JSON中删除KPI
@@ -705,7 +755,7 @@ function searchDims(val, vls){
 	var compId = curTmpInfo.compId.replace("T", "");
 	var comp = findCompById(compId);
 	
-	var url = 'DimFilter!search.action?dimId='+dimid+'&cubeId=' + comp.cubeId+"&dsid="+comp.dsid;
+	var url = 'DimFilter!search.action?dimId='+dimid+'&tid=' + comp.tid;
 	$.ajax({
 		type:"POST",
 		url:url,
@@ -715,7 +765,7 @@ function searchDims(val, vls){
 			$('#dimfiltertab').tabs('update', {
 				tab: tab,
 				options: {
-					content: resp
+					content:"<div class=\"dfilter\">"+resp+"</div>"
 				}
 			});
 		}
@@ -745,7 +795,7 @@ function filterDims(){
 	$('#pdailog').dialog({
 		title: name + ' - 维度筛选',
 		width: 300,
-		height: dim_type=="frd" ? 341 : 302,
+		height: dim_type=="frd" ? 341 : 310,
 		closed: false,
 		cache: false,
 		modal: true,
@@ -771,7 +821,7 @@ function filterDims(){
 							var ed = $("#dimfiltertab #dft1").val();
 							//判断是否st < ed
 							if(Number(st.replace(/-/g, "")) > Number(ed.replace(/-/g, ""))){
-								msginfo("您选择的开始日期不能大于结束日期。");
+								msginfo("您选择的开始日期不能大于结束日期。", "error");
 								return;
 							}
 							dim.startdt = st;
@@ -783,7 +833,7 @@ function filterDims(){
 							var ed = $("#dimfiltertab #dfm1").val();
 							//判断是否st < ed
 							if(Number(st) > Number(ed)){
-								msginfo("您选择的开始月份不能大于结束月份。");
+								msginfo("您选择的开始月份不能大于结束月份。", "error");
 								return;
 							}
 							dim.startmt = st;
@@ -839,7 +889,7 @@ function filterDims(){
 			break;
 		}
 	}
-	var url =  (curTmpInfo.filterUrl ? curTmpInfo.filterUrl :"DimFilter.action")+"?dsid="+comp.dsid+"&cubeId="+comp.cubeId+"&filtertype="+filtertype+"&dimId="+dimid;
+	var url =  (curTmpInfo.filterUrl ? curTmpInfo.filterUrl :"DimFilter.action")+"?tid="+comp.tid+"&dimType="+curDim.type+"&filtertype="+filtertype+"&dimId="+dimid;
 	if(dimtp == 'month'){
 		url = url + "&dfm2="+(curDim.startmt == undefined ? "" : curDim.startmt);
 		url = url + "&dfm1="+(curDim.endmt == undefined ? "" : curDim.endmt);
@@ -879,10 +929,10 @@ function aggreDim(){
 		return;
 	}
 	
-	var ctx = "<div style='line-height:30px; margin:20px 20px 20px 40px;'>聚合方式：<select id=\"dimaggre\" name=\"dimaggre\"><option value=\"sum\">求和</option><option value=\"count\">计数</option><option value=\"avg\">平均</option><option value=\"max\">最大</option><option value=\"min\">最小</option><option value=\"var\">方差</option><option value=\"sd\">标准差</option><option value=\"middle\">中位数</option></select></div>";
+	var ctx = "<div style='line-height:30px; margin:20px 20px 20px 40px;'><span class=\"inputtext\">聚合方式：</span><select id=\"dimaggre\" name=\"dimaggre\" class=\"inputform2\"><option value=\"sum\">求和</option><option value=\"count\">计数</option><option value=\"avg\">平均</option><option value=\"max\">最大</option><option value=\"min\">最小</option><option value=\"var\">方差</option><option value=\"sd\">标准差</option><option value=\"middle\">中位数</option></select></div>";
 	$('#pdailog').dialog({
 		title: '维度聚合',
-		width: 280,
+		width: 300,
 		height: 180,
 		closed: false,
 		cache: false,
@@ -966,11 +1016,11 @@ function kpiproperty(){
 	var compId = curTmpInfo.compId.replace("T", "");
 	var comp = findCompById(compId);
 	var kpi = findKpiById(kpiId, comp.kpiJson);
-	var ctx = "<div style='line-height:30px; margin:5px;'>度量名称："+kpi.kpi_name+"<br>所 属 表： "+comp.tname+"<br>度量单位：<select id=\"kpiunit\" name=\"kpiunit\"><option value='1'></option><option value='1000'>千</option><option value='10000'>万</option><option value='1000000'>百万</option><option value='100000000'>亿</option></select>"+kpi.unit+"<br>格 式 化："+
-		"<select id=\"fmt\" name=\"fmt\"><option value=\"###,##0\">整数</option><option value=\"###,##0.0\">小数(保留1位)</option><option value=\"###,##0.00\">小数(保留2位)</option><option value=\"0.00%\">百分比</option></select></div>";
+	var ctx = "<div style='line-height:30px; margin:5px;'><span class=\"inputtext\">度量名称：</span>"+kpi.kpi_name+"<br><span class=\"inputtext\">所 属 表：</span>"+comp.tname+"<br><span class=\"inputtext\">度量单位：</span><select id=\"kpiunit\" name=\"kpiunit\" class=\"inputform\"><option value='1'></option><option value='1000'>千</option><option value='10000'>万</option><option value='1000000'>百万</option><option value='100000000'>亿</option></select>"+kpi.unit+"<br><span class=\"inputtext\">格 式 化：</span>"+
+		"<select id=\"fmt\" name=\"fmt\" class=\"inputform\"><option value=\"###,##0\">整数</option><option value=\"###,##0.0\">小数(保留1位)</option><option value=\"###,##0.00\">小数(保留2位)</option><option value=\"0.00%\">百分比</option></select></div>";
 	$('#pdailog').dialog({
 		title: '度量属性',
-		width: 280,
+		width: 400,
 		height: 230,
 		closed: false,
 		cache: false,
@@ -998,7 +1048,7 @@ function kpiproperty(){
 	//让格式化、聚合方式选中
 	$("#pdailog #fmt").find("option[value='"+kpi.fmt+"']").attr("selected",true);
 	$("#pdailog #kpiunit").find("option[value='"+kpi.rate+"']").attr("selected",true);
-	$("#pdailog #aggreType").find("option[value='"+kpi.aggre+"']").attr("selected",true);
+	//$("#pdailog #aggreType").find("option[value='"+kpi.aggre+"']").attr("selected",true);
 }
 function getDimTop(){
 	var dimid = curTmpInfo.ckid;
@@ -1018,10 +1068,10 @@ function getDimTop(){
 			dim = dims[i];
 		}
 	}
-	var ctx = "<div style=\"margin:20px 20px 20px 30px;line-height:25px;\">维度取Top： <input type=\"text\" id=\"top\" name=\"top\" size=\"5\" value=\""+(dim.top?dim.top:"")+"\"> <select id=\"type\" name=\"type\"><option value=\"number\" "+(dim.topType=="number"?"selected":"")+">数字</option><option value=\"percent\" "+(dim.topType=="percent"?"selected":"")+">百分比</option></select></div>";
+	var ctx = "<div style=\"margin:20px;\"><span class=\"inputtext\">维度取Top：</span><input type=\"text\" id=\"top\" name=\"top\" size=\"5\" value=\""+(dim.top?dim.top:"")+"\"><br/><span class=\"inputtext\"></span><select id=\"type\" name=\"type\" class=\"inputform2\"><option value=\"number\" "+(dim.topType=="number"?"selected":"")+">数字</option><option value=\"percent\" "+(dim.topType=="percent"?"selected":"")+">百分比</option></select></div>";
 	$('#pdailog').dialog({
 		title: '维度取Top',
-		width: 270,
+		width: 360,
 		height: 170,
 		closed: false,
 		cache: false,
@@ -1032,7 +1082,7 @@ function getDimTop(){
 				text:'完成',
 				iconCls:"icon-ok",
 				handler:function(){
-					var top = $("#pdailog #top").val();
+					var top = $("#pdailog #top").numberbox("getValue");
 					var type = $("#pdailog #type").val();
 					dim.top = top;
 					dim.topType = type;
@@ -1047,7 +1097,7 @@ function getDimTop(){
 				}
 			}]
 	});
-	$("#pdailog #top").numberbox();
+	$("#pdailog #top").numberbox({width:180, height:28});
 }
 function kpisort(tp){
 	var kpiId = curTmpInfo.ckid;
@@ -1114,7 +1164,7 @@ function dimexchange(){
 		//如果维度有分组，分组必须相同
 		var group = tmp.grouptype;
 		if(group != null && findGroup(comp.tableJson.cols, group, tmp)){
-			msginfo("移动失败，同一分组的维度必须在同一行/列标签。");
+			msginfo("移动失败，同一分组的维度必须在同一行/列标签。", "error");
 			return;
 		}
 		comp.tableJson.cols.splice(idx, 1);
@@ -1136,7 +1186,7 @@ function dimexchange(){
 		//如果维度有分组，分组必须相同
 		var group = tmp.grouptype;
 		if(group != null && findGroup(comp.tableJson.rows, group, tmp)){
-			msginfo("移动失败，同一分组的维度必须在同一行/列标签。");
+			msginfo("移动失败，同一分组的维度必须在同一行/列标签。", "error");
 			return;
 		}
 		comp.tableJson.rows.splice(idx, 1);
@@ -1160,14 +1210,14 @@ function dimmove(tp){
 		dims = comp.tableJson.rows;
 	}
 	if(dims.length <= 1){
-		msginfo('无效移动。');
+		msginfo('无效移动。', "error");
 		return;
 	}
 	for(var i=0; i<dims.length; i++){
 		if(dims[i].id == dimid){
 			if(tp == 'left'){
 				if(i <= 0){
-					msginfo('无效移动。');
+					msginfo('无效移动。', "error");
 					return;
 				}else{
 					var tp = dims[i - 1];
@@ -1181,7 +1231,7 @@ function dimmove(tp){
 			}else
 			if(tp == 'right'){
 				if( i >= dims.length - 1){
-					msginfo('无效移动。');
+					msginfo('无效移动。', "error");
 					return;
 				}else{
 					var tp = dims[i + 1];
@@ -1214,7 +1264,7 @@ function getTableHeadJson(compId){
 	
 	var comp = findCompById(compId);
 	if(comp == null){
-		msginfo("组件不存在！");
+		msginfo("组件不存在！", "error");
 	}
 	var ret;
 	$.ajax({

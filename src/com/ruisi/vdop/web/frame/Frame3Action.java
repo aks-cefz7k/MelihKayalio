@@ -1,16 +1,14 @@
 package com.ruisi.vdop.web.frame;
 
 import java.io.IOException;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletResponse;
-
-import net.sf.json.JSONArray;
-
 import com.ruisi.ext.engine.dao.DaoHelper;
-import com.ruisi.ext.engine.util.ContextUtils;
+import com.ruisi.ext.engine.init.XmlParser;
+import com.ruisi.ext.engine.view.context.ExtContext;
+import com.ruisi.ispire.dc.grid.GridDataUtils;
 import com.ruisi.vdop.bean.User;
 import com.ruisi.vdop.util.VDOPUtils;
 
@@ -18,47 +16,52 @@ public class Frame3Action {
 	
 	private DaoHelper daoHelper;
 	private String userId;
-	private String id; //tree id
-	
-	private String defaultId = "1"; // 默认的 tree id ,只有在 id 为 null的时候起作用
-	private Integer menuId; //默认显示的顶级菜单
-	private Integer submenuId;  //默认显示的子菜单
 
 	public String execute() {
 		User u = VDOPUtils.getLoginedUser();
 		VDOPUtils.getRequest().setAttribute("uinfo", u);
 		userId = u.getUserId();
-		//查询一级菜单
-		List menuList = daoHelper.getSqlMapClientTemplate().queryForList("vdop.frame.frame.frametop", this);
-		VDOPUtils.getRequest().setAttribute("menu", menuList);
+		//查询所有菜单
+		List menuList = daoHelper.getSqlMapClientTemplate().queryForList("vdop.frame.frame.menus", this);
+		List roots = this.findMenuChildren(0, menuList);
+		for(int i=0; i<roots.size(); i++){
+			Map root = (Map)roots.get(i);
+			Double id = GridDataUtils.getKpiData(root, "menu_id");
+			root.put("children", findMenuChildren(id, menuList));
+		}
+		VDOPUtils.getRequest().setAttribute("menu", roots);
 		
 		return "success";
 	}
 	
-	public String tree() throws IOException{
-
-		User u = VDOPUtils.getLoginedUser();
-		this.userId = u.getUserId();
-		if(id == null || id.length() == 0){
-			this.id = defaultId;
-		}
-		List menuList = daoHelper.getSqlMapClientTemplate().queryForList("vdop.frame.frame.frametop2", this);
-		
+	private List findMenuChildren(double pid, List menuList){
+		List ret = new ArrayList();
 		for(int i=0; i<menuList.size(); i++){
 			Map m = (Map)menuList.get(i);
-			Map attr = new HashMap();
-			m.put("attributes", attr);
-			attr.put("url", m.get("url"));
-			
-			if("open".equals(m.get("state"))){
-				m.put("iconCls", "icon-gears");
+			Double value = GridDataUtils.getKpiData(m, "pid");
+			if(value != null && value.equals(pid) ){
+				ret.add(m);
 			}
 		}
+		return ret;
+	}
+	
+	public String welcome() {
+		String useSyts = ExtContext.getInstance().getConstant("syts");
+		if("true".equals(useSyts)){
+			int syts;
+			try {
+				syts = XmlParser.getEndDate(VDOPUtils.getServletContext());
+			} catch (Exception e) {
+				syts = -10;
+			}
+			VDOPUtils.getRequest().setAttribute("syts", syts);
+		}
+		return "welcome";
+	}
+	
+	public String onlineUser() throws IOException{
 		
-		HttpServletResponse resp = VDOPUtils.getResponse();
-		resp.setContentType("text/xml; charset=UTF-8");
-		String ctx = JSONArray.fromObject(menuList).toString();
-		resp.getWriter().println(ctx);
 		return null;
 	}
 	
@@ -80,38 +83,6 @@ public class Frame3Action {
 
 	public void setUserId(String userId) {
 		this.userId = userId;
-	}
-
-	public String getId() {
-		return id;
-	}
-
-	public void setId(String id) {
-		this.id = id;
-	}
-
-	public String getDefaultId() {
-		return defaultId;
-	}
-
-	public void setDefaultId(String defaultId) {
-		this.defaultId = defaultId;
-	}
-
-	public Integer getMenuId() {
-		return menuId;
-	}
-
-	public Integer getSubmenuId() {
-		return submenuId;
-	}
-
-	public void setMenuId(Integer menuId) {
-		this.menuId = menuId;
-	}
-
-	public void setSubmenuId(Integer submenuId) {
-		this.submenuId = submenuId;
 	}
 	
 }

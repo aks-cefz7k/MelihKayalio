@@ -1,114 +1,74 @@
 ﻿<%@page contentType="text/html; charset=UTF-8"%>
-<%@page contentType="text/html; charset=UTF-8"%>
-
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<%@ taglib prefix="s" uri="/struts-tags"%>
+<!DOCTYPE html>
+<html lang="en">
 <head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>睿思BI-开源商业智能|数据可视化系统 - 用户登录</title>
+<title>睿思BI - 用户登录</title>
+<meta name="keywords" content="睿思BI">
+<meta name="description" content="“睿思BI”商业智能系统是由北京睿思科技有限公司自主研发的企业数据分析系统。 包含数据建模、数据报表、多维分析、仪表盘、移动BI等功能模块，方便企业快速建立一套易用，灵活、低成本的商业智能平台，实现数据的快速分析及可视化。 ">
 <link rel="shortcut icon" type="image/x-icon" href="resource/img/rs_favicon.ico">
-
-<link rel="stylesheet" href="resource/css/ht.css" type="text/css">
-<link rel="stylesheet" type="text/css" href="resource/jquery-easyui-1.3.4/themes/gray/easyui.css">
-<link rel="stylesheet" type="text/css" href="resource/jquery-easyui-1.3.4/themes/icon.css">
-<script type="text/javascript" src="ext-res/js/jquery.js"></script>
+<link href="ext-res/css/bootstrap.min.css" rel="stylesheet">
+<link href="resource/css/font-awesome.css?v=4.4.0" rel="stylesheet">
+<link href="resource/css/animate.css" rel="stylesheet">
+<link href="resource/css/style.css" rel="stylesheet">
+<link href="resource/css/login.css" rel="stylesheet">
+<link href="resource/css/font-awesome.css?v=4.4.0" rel="stylesheet">
+<link href="resource/sweetalert/sweetalert.css" rel="stylesheet">
+<script type="text/javascript" src="ext-res/js/jquery.min.js"></script>
 <script type="text/javascript" src="ext-res/js/ext-base.js"></script>
-<script type="text/javascript" src="resource/jquery-easyui-1.3.4/jquery.easyui.min.js"></script>
-<style type="text/css">
-<!--
-body  {
-	margin-left: 0px;
-	margin-top: 0px;
-	margin-right: 0px;
-	margin-bottom: 0px;
-	font-family: "songti";
-	font-size: 12px;
-	background-image: url(resource/img/bg.png);
-	background-color:#D6DEE0;
-	background-repeat: no-repeat;
-	background-position: top center;
-}
--->
-</style>
+<script type="text/javascript" src="resource/validate/jquery.validate.min.js"></script>
+<script type="text/javascript" src="resource/validate/messages_zh.min.js"></script>
+<script type="text/javascript" src="ext-res/js/bootstrap.min.js?v=3.3.6"></script>
+<script type="text/javascript" src="resource/sweetalert/sweetalert.min.js"></script>
+
+
 <script language="javascript">
 if(window.top != window.self){
 	window.top.location.href = 'Login.action'
 }
-
-function chkpw(ff){
-	if(ff.userName.value == ''){
-		alert('请输入账号！');
-		return false;
-	}
-	if(ff.password.value == ''){
-		alert('请输入口令！');
-		return false;
-	}
-}
 </script>
 </head>
 
-<body>
-
-<div class="denglu " id="denglu">
-		<form name="form1" method="post" action="Login!login.action" onsubmit="return chkpw(document.form1)">
-        <div style="margin-bottom:30px;"><img src="resource/img/rsyun.png"></div>
-   <table width="508" border="0" align="center" cellpadding="0" cellspacing="0" style="background-image:url(resource/img/tcs.png); background-repeat:no-repeat;">
-    <tr>
-      <td height="99" colspan="3" align="center" valign="middle"><div style="padding-top:20px;" align="center">
-      <img src="resource/img/logtitle.png">
-      </div></td>
-    </tr>
-
-    <tr>
-      <td width="284" rowspan="3" align="center">
-      <img src="resource/img/xsqq.png">
-      </td>
-      <td width="49" height="43" align="left">帐号：</td>
-      <td width="175" align="left"><input name="userName" type="text" size="24" style="height:20px; font-size:12px; width: 140px;" value="${userName}" placeholder="您的账号"/></td>
-      
-    </tr>
-
-    <tr>
-      <td height="31" align="left">口令：</td>
-      <td align="left"><input name="password" type="password" size="24"  style="height:20px; font-size:12px; width: 140px;" placeholder="您的密码"/></td>
-    </tr>
-    <tr>
-      <td height="32" align="left">&nbsp;</td>
-      <td align="left" height="32">
-      <input name="button3" src="resource/img/login.png" type="submit"  value=" 登 录 " />
-      </td>
-    </tr>
-
-   
-    <tr>
-
-      <td height="62" align="left" colspan="">
-      </td>
-      <td></td>
-      <td>
-      
-      </td>
-    </tr>
-  </table>
-  </form>
-  
-  管理员账号： admin/123456
-  
-  <div align="center" style="color:#666; font-size:14px; margin:20px;">
-   © <a href="http://www.ruisitech.com" target="_blank" style="color:#666;">北京睿思科技有限公司</a> 2016 版权所有</div>
-</div>
-
-	<%
-      	String einfo = (String)request.getAttribute("errorInfo");
-      	if(einfo != null && einfo.length() > 0){
-      	%>
-      	<script>
-      		jQuery(function(){
-      			alert("操作失败：${errorInfo}");
-      		});
-      		</script>
-      <%}%>
-<div id="pdailog"></div>
+<body class="signin">
+<s:if test="#request.errorInfo != null && #request.errorInfo != ''">
+			<div class="panel panel-danger">
+				<div class="panel-heading">
+					${errorInfo}
+				</div>
+			</div>
+			<script>
+			$(function(){
+				window.setTimeout(function(){
+					$("div.panel-danger").remove();
+				}, 4000);
+			});
+			</script>
+	  </s:if>
+   <div class="signinpanel animated fadeInDown">
+        <div class="row">
+            <div class="col-sm-12">
+				<div align="center" style="margin:10px;"><img src="resource/img/rsyun.png"></div>
+                <form method="post" action="Login!login.action">
+					<div align="center"><img src="resource/img/logtitle.png"></div>
+					<div class="row">
+						<div class="col-sm-6"><div style="padding:20px 10px 20px 0px;"><img src="resource/img/xsqq.png"></div></div>
+						<div class="col-sm-6">
+							<input type="text" name="userName" value="${userName}" class="form-control uname" placeholder="您的账号" required="true" aria-required="true"/>
+							<input type="password" name="password" value="${password}" class="form-control pword m-b" placeholder="您的密码" required="true" aria-required="true"/>
+							<button class="btn btn-success btn-block full-width m-b" type="submit">登录</button>
+							 <p>账号/密码： admin/123456 </p>
+						</div>
+					</div>
+                </form>
+            </div>
+        </div>
+        <div class="signup-footer">
+            <div align="center"> 
+               © <a href="http://www.ruisitech.com" target="_blank">北京睿思科技有限公司</a> 2016 版权所有
+            </div>
+        </div>
+    </div>
 </body>
 </html>

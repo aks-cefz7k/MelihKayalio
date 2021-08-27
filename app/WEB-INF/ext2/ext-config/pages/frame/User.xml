@@ -27,7 +27,7 @@
 				<button action="frame.User" desc="新建" method="preAdd" checkParam="false" submit="get"></button>
 				<button action="frame.User" method="preMod" submit="get" desc="修改">
 				</button>
-				<button action="frame.User" method="del" desc="删除" confirm="true" submit="get"></button>
+				<button action="frame.User" method="del" desc="删除" styleClass="btn btn-danger btn-sm" confirm="true" submit="get"></button>
 			</div>
 			
 			<dataGrid>
@@ -39,8 +39,8 @@
 					<col alias="log_cnt" desc="登陆次数" width="10%" align="center"/>
 					<col alias="LOG_DATE" desc="登陆时间" width="15%" align="center" formatPattern="yyyy-MM-dd HH:mm:ss"/>
 					<col alias="user_id" desc="操作" width="20%">
-						<colLink byAlias="user_id" action="frame.UserPermission" desc=" 关联角色 " method="roleList" />
-						<colLink byAlias="user_id" action="frame.UserPermission" desc=" 授权菜单 " method="menuList" />
+						<colLink byAlias="user_id" action="frame.UserPermission" desc=" 关联角色 " styleClass="btn btn-primary btn-xs" method="roleList" />
+						<colLink byAlias="user_id" action="frame.UserPermission" desc=" 授权菜单 " styleClass="btn btn-primary btn-xs" method="menuList" />
 					</col>
 				</col-config>
 				<ds pageSize="15">

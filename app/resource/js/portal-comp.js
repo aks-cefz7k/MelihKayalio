@@ -339,7 +339,7 @@ function addComp(comp, layoutId, ispush){
 			textcss = textcss + "height:"+sty.theight+"px;";
 		}
 	}
-	var str = "<div class=\"cbox-edit\" id=\"c_"+json.id+"\"><div class=\"ctitle\"><div title=\"双击改名\" ondblclick=\"chgcompname(this, '"+json.id+"')\" class=\"ctit\" style=\""+style+"\">"+json.name+"</div>"+"<div class=\"ticon\"><a class=\"mcomp\" href=\"javascript:;\" title=\"移动组件\" cid=\""+json.id+"\"></a><a href=\"javascript:;\" onclick=\"showcompmenu(this,'"+layoutId+"','"+comp.id+"')\" class=\"icon-set cedit\" title=\"设置组件\" ></a><a class=\"del\" href=\"javascript:deletecomp('"+layoutId+"', '"+comp.id+"');\" title=\"删除组件\" cid=\""+json.id+"\"></a></div></div><div class=\"cctx\" style=\""+textcss+"\">";
+	var str = "<div class=\"ibox\" id=\"c_"+json.id+"\"><div class=\"ibox-title\"><div title=\"双击改名\" ondblclick=\"chgcompname(this, '"+json.id+"')\" class=\"ctit\" style=\""+style+"\"><h5>"+json.name+"</h5></div>"+"<div class=\"ibox-tools\"><button class=\"btn btn-outline btn-success btn-xs mvcomp\" title=\"移动组件\" cid=\""+json.id+"\"><i class=\"fa fa-hand-grab-o\"></i></button> <button class=\"btn btn-outline btn-success btn-xs\" onclick=\"showcompmenu(this,'"+layoutId+"','"+comp.id+"')\" title=\"设置组件\" ><i class=\"fa fa-wrench\"></i></button> <button class=\"btn btn-outline btn-danger btn-xs\" onclick=\"deletecomp('"+layoutId+"', '"+comp.id+"');\" title=\"删除组件\" cid=\""+json.id+"\"><i class=\"fa fa-times\"></i></button></div></div><div class=\"cctx ibox-content\" style=\""+textcss+"\">";
 	if(json.type == 'text'){
 		str = str + comp.desc.replace(/\n/g,"<br>")
 	}else if(json.type == "table"){
@@ -392,7 +392,7 @@ function bindCompEvent(obj){
 	//注册移动事件
 	$("#c_" + obj.id).draggable({
 		revert:true,
-		handle:$("#c_" + obj.id + " .ctitle .ticon a.mcomp"),
+		handle:$("#c_" + obj.id + " button.mvcomp"),
 		proxy:function(source){
 			var width = $(source).width();
 			var height = $(source).height();
@@ -410,7 +410,7 @@ function bindCompEvent(obj){
 	});
 	
 	$("#c_" + obj.id).droppable({
-		accept:".cbox-edit",
+		accept:"div.ibox, #comp_tree .tree-node",
 		onDragEnter:function(e,source){
 			curTmpInfo.id = $(this).attr("id");
 			curTmpInfo.tp = "before";
@@ -423,7 +423,7 @@ function bindCompEvent(obj){
 			e.stopPropagation(); //阻止事件冒泡
 		},
 		onDragLeave:function(e,source){
-			if($(this).hasClass("cbox-edit")){
+			if($(this).hasClass("div.ibox")){
 				var obj = $(this).parent();
 				var last = obj.children().last();
 				if(last.attr("id") ==  $(source).attr("id")){
@@ -455,17 +455,6 @@ function bindCompEvent(obj){
 		}
 
 	});
-}
-
-function showloading(){
-	var doc = jQuery(document);
-	var win = jQuery(window);
-	var t = doc.scrollTop() +  60;
-	var l = doc.scrollLeft() + win.width() - 200;
-	$("#Cloading").css({'top':t, 'left':l, 'display':'block'});
-}
-function hideLoading(){
-	$("#Cloading").css("display", "none");
 }
 function editComp(layoutId, compId){
 	if(!layoutId){
@@ -987,18 +976,18 @@ function tableView(table, compId){
 	//移除度量维
 	//removeKpiOther(table.tableJson.cols);
 	var kpiJson = JSON.stringify(table.kpiJson);
-	showloading();
+	__showLoading();
 	$.ajax({
 	   type: "POST",
 	   url: "TableView.action",
 	   dataType:"html",
 	   data: {"tableJson":tableJson, "kpiJson":kpiJson, dset:table.dsetId, dsource:table.dsid, "params":params, "pageParams":pageParam},
 	   success: function(resp){
-		  hideLoading();
+		  __hideLoading();
 		  $("#c_" + compId + " div.cctx").html(resp);
 	   },
 	   error:function(resp){
-		    hideLoading();
+		    __hideLoading();
 		   $.messager.alert('出错了','系统出错，请联系管理员。','error');
 	   }
 	});
@@ -1243,8 +1232,8 @@ function kpiproperty(){
 	var compId = curTmpInfo.compId;
 	var comp = findCompById(compId);
 	var kpi = findKpiById(kpiId, comp.kpiJson);
-	var ctx = "<div id=\"table_cell_tab\" style=\"height:auto; width:auto;\"><div title=\"基本信息\"><div style='line-height:25px; margin:10px;'>度量名称：<input type=\"text\" id=\"name\" name=\"name\" class=\"inputform\" value=\""+(kpi.kpi_name)+"\"><br>所 属 表： "+comp.tname+"<br>对应字段： "+kpi.col_name+"<br>度量单位：<select id=\"kpiunit\" name=\"kpiunit\"><option value='1'></option><option value='1000'>千</option><option value='10000'>万</option><option value='1000000'>百万</option><option value='100000000'>亿</option></select>"+kpi.unit+"<br>格 式 化："+
-		"<select id=\"fmt\" name=\"fmt\"><option value=\"###,##0\">整数</option><option value=\"###,##0.0\">小数(保留1位)</option><option value=\"###,##0.00\">小数(保留2位)</option><option value=\"0.00%\">百分比</option></select><br/>表头排序：<input type=\"checkbox\" id=\"headsort\" name=\"headsort\" "+(kpi.order&&kpi.order=="y"?"checked":"")+"></div></div><div title=\"回调函数\"><div class=\"textpanel\">function <input type=\"text\" id=\"funcname\" name=\"funcname\" size=\"5\" value=\""+(kpi.funcname?kpi.funcname:"")+"\">(<b>value</b>, <b>col</b>, <b>row</b>, <b>data</b>){<br/><textarea id=\"code\" name=\"code\" cols=\"50\" rows=\"5\">"+(kpi.code?unescape(kpi.code):"")+"</textarea><br/>}<br/><a target=\"_blank\" href=\"../helper/callback.html\" id=\"helper\">帮助</a></div></div>";
+	var ctx = "<div id=\"table_cell_tab\" style=\"height:auto; width:auto;\"><div title=\"基本信息\"><div style='line-height:25px; margin:10px;'><span class=\"inputtext\">度量名称：</span><input type=\"text\" id=\"name\" name=\"name\" class=\"inputform2\" value=\""+(kpi.kpi_name)+"\"><br><span class=\"inputtext\">所 属 表：</span> "+comp.tname+"<br><span class=\"inputtext\">对应字段：</span>"+kpi.col_name+"<br><span class=\"inputtext\">度量单位：</span><select id=\"kpiunit\" name=\"kpiunit\" class=\"inputform2\"><option value='1'></option><option value='1000'>千</option><option value='10000'>万</option><option value='1000000'>百万</option><option value='100000000'>亿</option></select>"+kpi.unit+"<br><span class=\"inputtext\">格 式 化：</span>"+
+		"<select id=\"fmt\" name=\"fmt\" class=\"inputform2\"><option value=\"###,##0\">整数</option><option value=\"###,##0.0\">小数(保留1位)</option><option value=\"###,##0.00\">小数(保留2位)</option><option value=\"0.00%\">百分比</option></select><br/><span class=\"inputtext\">表头排序：</span><div class=\"checkbox checkbox-info checkbox-inline\" style=\"line-height:20px;\"><input type=\"checkbox\" id=\"headsort\" name=\"headsort\" "+(kpi.order&&kpi.order=="y"?"checked":"")+"><label for=\"headsort\"> </label></div></div></div><div title=\"回调函数\"><div class=\"textpanel\">function <input type=\"text\" id=\"funcname\" name=\"funcname\" style=\"width:120px;\" class=\"inputform2\" value=\""+(kpi.funcname?kpi.funcname:"")+"\">(<b>value</b>, <b>col</b>, <b>row</b>, <b>data</b>){<br/><textarea id=\"code\" name=\"code\" cols=\"50\" rows=\"5\">"+(kpi.code?unescape(kpi.code):"")+"</textarea><br/>}<br/><a target=\"_blank\" href=\"../helper/callback.html\" id=\"helper\">帮助</a></div></div>";
 	$('#pdailog').dialog({
 		title: '度量属性',
 		width: 400,
@@ -1331,7 +1320,7 @@ function setKpiInfo(ts, id, compId){
 		$("#kpioptmenu").menu("setIcon", {target:$("#kpioptmenu").menu("getItem", $("#k_kpi_ord2")).target, iconCls:"icon-blank"});
 		$("#kpioptmenu").menu("setIcon", {target:$("#kpioptmenu").menu("getItem", $("#k_kpi_ord3")).target, iconCls:"icon-ok"});
 	}
-	$("#kpioptmenu").menu("show", {left:offset.left, top:offset.top - 5});
+	$("#kpioptmenu").menu("show", {left:offset.left, top:offset.top - 100});
 }
 function setCdimInfo(ts, id, name, compId){
 	var offset = $(ts).offset();
@@ -1363,7 +1352,7 @@ function setCdimInfo(ts, id, name, compId){
 	var aggr = $("#dimoptmenu").menu("getItem", $("#m_moveto"));
 	$("#dimoptmenu").menu("setText", {target:aggr.target, text:"移至行字段"});
 	
-	$("#dimoptmenu").menu("show", {left:offset.left, top:offset.top - 5});
+	$("#dimoptmenu").menu("show", {left:offset.left, top:offset.top - 124});
 }
 function setRdimInfo(ts, id, name, compId){
 	var offset = $(ts).offset();
@@ -1392,7 +1381,7 @@ function setRdimInfo(ts, id, name, compId){
 		$("#dimoptmenu").menu("setText", {target:aggr.target, text:"聚合"});
 	}
 	$("#dimoptmenu").menu("setText", {target:$("#m_moveto"), text:"移至列字段"});
-	$("#dimoptmenu").menu("show", {left:offset.left, top:offset.top - 5});
+	$("#dimoptmenu").menu("show", {left:offset.left, top:offset.top - 120});
 }
 /**
 判断是否存在date类型的维度，比如day/month/quarter/year

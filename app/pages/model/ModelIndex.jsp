@@ -2,21 +2,22 @@
     pageEncoding="utf-8"%>
 <%@ taglib prefix="s" uri="/struts-tags"%>
 <%@ taglib prefix="bi" uri="/WEB-INF/common.tld"%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html>
+<html lang="en">
 <head>
 	 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
    <title>数据建模工具</title>
 <link rel="shortcut icon" type="image/x-icon" href="../resource/img/rs_favicon.ico">
+   <link href="../ext-res/css/bootstrap.min.css" rel="stylesheet">
+<link href="../resource/css/style.css" rel="stylesheet">
    <script type="text/javascript" src="../ext-res/js/jquery.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="../resource/css/etl.css" />
 	<script type="text/javascript" src="../ext-res/My97DatePicker/WdatePicker.js"></script>
 	<script language="javascript" src="../resource/js/json.js"></script>
     <script language="javascript" src="../ext-res/js/ext-base.js"></script>
-	<link rel="stylesheet" type="text/css" href="../resource/jquery-easyui-1.3.4/themes/gray/easyui.css">
-	<link rel="stylesheet" type="text/css" href="../resource/jquery-easyui-1.3.4/themes/icon.css">
-	<script type="text/javascript" src="../resource/jquery-easyui-1.3.4/jquery.easyui.min.js"></script>
-    <script type="text/javascript" src="../resource/jquery-easyui-1.3.4/locale/easyui-lang-zh_CN.js"></script>
+	<link rel="stylesheet" type="text/css" href="../resource/jquery-easyui-1.4.4/themes/gray/easyui.css">
+	<link rel="stylesheet" type="text/css" href="../resource/jquery-easyui-1.4.4/themes/icon.css">
+	<script type="text/javascript" src="../resource/jquery-easyui-1.4.4/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="../resource/jquery-easyui-1.4.4/locale/easyui-lang-zh_CN.js"></script>
 	<script language="javascript" src="../resource/js/model.js"></script>
 	<script language="javascript" src="../resource/js/model-dsource.js"></script>
 	<script language="javascript" src="../resource/js/model-dset.js"></script>
