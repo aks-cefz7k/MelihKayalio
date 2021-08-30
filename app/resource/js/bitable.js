@@ -78,9 +78,9 @@ function initDropDiv(id){
 			var node = $("#datasettree").tree("getNode", source);
 			
 			//判断拖入的维度及度量是否和以前维度及度量在同一个表。
-			if(json.tid != undefined){
-				if(json.tid != node.attributes.tid){
-					msginfo("您拖入的"+ (node.attributes.col_type == 2 ? "度量" : "维度") +"与组件已有的内容不在同一个数据表中，拖放失败。", "error");
+			if(json.cubeId != undefined){
+				if(json.cubeId != node.attributes.cubeId){
+					msginfo("您拖入的"+ (node.attributes.col_type == 2 ? "度量" : "维度") +"与组件已有的内容不在同一个数据表中，拖放失败。");
 					return;
 				}
 			}
@@ -89,16 +89,15 @@ function initDropDiv(id){
 			/**  放入度量计算菜单判断
 			if(node.attributes.calc_kpi == 1){
 				if(!isExistDateDim(json, 'table')){
-					msginfo("您拖入的度量需要表格中先有时间类型的维度(年/季度/月/日)。", "error");
+					msginfo("您拖入的度量需要表格中先有时间类型的维度(年/季度/月/日)。");
 					return;
 				}
 			}
 			**/
 			
-			json.tid = node.attributes.tid;
-			json.tname = node.attributes.tname;
-			json.ttype = node.attributes.ttype;
-			json.dsource = node.attributes.dsource; //组件所使用的数据源
+			json.cubeId = node.attributes.cubeId;
+			json.dsid = node.attributes.dsid;
+			json.dsetId = node.attributes.dsetId;
 			
 			if(json.kpiJson == undefined){
 				json.kpiJson = [];
@@ -110,9 +109,9 @@ function initDropDiv(id){
 			if(node.attributes.col_type == 2 && $(this).attr("id") == "d_kpi"){
 				//如果度量存在就忽略
 				if(!kpiExist(node.attributes.col_id, json.kpiJson)){
-					json.kpiJson.push({"kpi_id":node.attributes.col_id, "kpi_name" : node.text, "col_name":node.attributes.col_name, "aggre":node.attributes.aggre, "fmt":node.attributes.fmt, "alias":node.attributes.alias,"tid":json.tid,"unit":node.attributes.unit,"rate":node.attributes.rate});
+					json.kpiJson.push({"kpi_id":node.attributes.col_id, "kpi_name" : node.text, "col_name":node.attributes.col_name, "aggre":node.attributes.aggre, "fmt":node.attributes.fmt, "alias":node.attributes.alias,"tname":node.attributes.tname,"unit":node.attributes.unit,"rate":node.attributes.rate,"calc":node.attributes.calc});
 				}else{
-					msginfo("度量已经存在。", "error");
+					msginfo("度量已经存在。");
 					return;
 				}
 				curTmpInfo.isupdate = true;
@@ -123,32 +122,32 @@ function initDropDiv(id){
 				//写col维度
 				if($(this).attr("id") == "d_colDims"){
 					if(dimExist(node.attributes.col_id, json.tableJson.cols) || dimExist(node.attributes.col_id, json.tableJson.rows)){
-						msginfo("维度已经存在。", "error");
+						msginfo("维度已经存在。");
 						return;
 					}
 					//如果维度有分组，分组必须相同
 					var group = node.attributes.grouptype;
 					if(group != null && findGroup(json.tableJson.rows, group)){
-						msginfo("拖放失败，同一分组的维度必须在同一行/列标签。", "error");
+						msginfo("拖放失败，同一分组的维度必须在同一行/列标签。");
 						return;
 					}
-					json.tableJson.cols.push({"id":node.attributes.col_id, "dimdesc" : node.text, "type":node.attributes.dim_type, "colname":node.attributes.col_name,"alias":node.attributes.alias,"tid":json.tid,"iscas":node.attributes.iscas, "tableName":node.attributes.tableName, "tableColKey":node.attributes.tableColKey,"tableColName":node.attributes.tableColName, "dimord":node.attributes.dimord, "grouptype":node.attributes.grouptype,"valType":node.attributes.valType,"endlvl":node.attributes.endlvl,ordcol:node.attributes.ordcol,dateformat:node.attributes.dateformat});
+					json.tableJson.cols.push({"id":node.attributes.col_id, "dimdesc" : node.text, "type":node.attributes.dim_type, "colname":node.attributes.col_name,"alias":node.attributes.alias,"tname":node.attributes.tname,"iscas":node.attributes.iscas, "tableName":node.attributes.tableName, "tableColKey":node.attributes.tableColKey,"tableColName":node.attributes.tableColName, "dimord":node.attributes.dimord, "grouptype":node.attributes.grouptype,"valType":node.attributes.valType,ordcol:node.attributes.ordcol,dateformat:node.attributes.dateformat,"calc":node.attributes.calc});
 					curTmpInfo.isupdate = true;
 					tableView(json, Number(id));
 				}
 				//写row维度
 				if($(this).attr("id") == "d_rowDims"){
 					if(dimExist(node.attributes.col_id, json.tableJson.rows) || dimExist(node.attributes.col_id, json.tableJson.cols)){
-						msginfo("维度已经存在。", "error");
+						msginfo("维度已经存在。");
 						return;
 					}
 					//如果维度有分组，分组必须相同
 					var group = node.attributes.grouptype;
 					if(group != null && findGroup(json.tableJson.cols, group)){
-						msginfo("拖放失败，同一分组的维度必须在同一行/列标签。", "error");
+						msginfo("拖放失败，同一分组的维度必须在同一行/列标签。");
 						return;
 					}
-					json.tableJson.rows.push({"id":node.attributes.col_id, "dimdesc" : node.text, "type":node.attributes.dim_type, "colname":node.attributes.col_name,"alias":node.attributes.alias,"tid":json.tid,"iscas":node.attributes.iscas, "tableName":node.attributes.tableName, "tableColKey":node.attributes.tableColKey,"tableColName":node.attributes.tableColName, "dimord":node.attributes.dimord,"grouptype":node.attributes.grouptype,"valType":node.attributes.valType,"endlvl":node.attributes.endlvl,ordcol:node.attributes.ordcol,dateformat:node.attributes.dateformat});
+					json.tableJson.rows.push({"id":node.attributes.col_id, "dimdesc" : node.text, "type":node.attributes.dim_type, "colname":node.attributes.col_name,"alias":node.attributes.alias,"tname":node.attributes.tname,"iscas":node.attributes.iscas, "tableName":node.attributes.tableName, "tableColKey":node.attributes.tableColKey,"tableColName":node.attributes.tableColName, "dimord":node.attributes.dimord,"grouptype":node.attributes.grouptype,"valType":node.attributes.valType,ordcol:node.attributes.ordcol,dateformat:node.attributes.dateformat,"calc":node.attributes.calc});
 					curTmpInfo.isupdate = true;
 					tableView(json, Number(id));
 				}
@@ -272,9 +271,6 @@ function delExtKpi(ts, kpiId, compute){
 	}
 	tableView(comp, compId);
 }
-/**
-compId 是组件的ID
-**/
 function tableView(table, compId){
 	if(table.tableJson == undefined || table.kpiJson == undefined){
 		return;
@@ -283,38 +279,6 @@ function tableView(table, compId){
 		$("#T" + compId + " div.ctx").html(crtCrossTable());
 		initDropDiv(compId);
 		return;
-	}
-	//如果是接口调用，移除部分中文内容，减少URL数字及中文问题
-	if(curTmpInfo.face){
-		var delfunc = function(t){
-			delete t.dimdesc;
-			delete t.tableColKey;
-			delete t.colname;
-			delete t.dim_name;
-			delete t.tableName;
-			delete t.tableColName;
-			delete t.grouptype;
-			delete t.type;
-			delete t.valType;
-		};
-		var cols = table.tableJson.cols;
-		for(i=0; i<cols.length; i++){
-			var t = cols[i];
-			delfunc(t);
-		}
-		var rows = table.tableJson.rows;
-		for(i=0; i<rows.length; i++){
-			var t = rows[i];
-			delfunc(t);
-		}
-		//删除度量内容
-		for(i=0; i<table.kpiJson.length; i++){
-			var t = table.kpiJson[i];
-			delete t.col_name;
-			delete t.unit;
-			delete t.alias;
-			delete t.kpi_name;
-		}
 	}
 	
 	//先添加度量维，在列维度上
@@ -338,43 +302,24 @@ function tableView(table, compId){
 	});
 	**/
 	__showLoading();
-	if(curTmpInfo.face){
-		$.ajax({
-		   type: "get",
-		   dataType:"jsonp",
-		    jsonp:"jsonpcallback",
-		   url: curTmpInfo.tvUrl ? curTmpInfo.tvUrl : "TableView!face.action",
-		   data: {"tableJson":tableJson, "kpiJson":kpiJson, "compId":compId, "params":params, "dsource":table.dsource==null?"":table.dsource},
-		   success: function(resp){
-			  __hideLoading();
-			  $("#T" + compId + " div.ctx").html(resp.ctx);
-			  table.kpiJson = resp.kpiJson;  //回写值
-			  table.tableJson = resp.tableJson;
-			   
-			 //重新注册拖放事件(从度量拖入的事件)
-			  initDropDiv(compId);
-		   }
-		});
-	}else{
-		$.ajax({
-		   type: "POST",
-		   url: curTmpInfo.tvUrl ? curTmpInfo.tvUrl : "TableView.action",
-		   dataType:"html",
-		   data: {"tableJson":tableJson, "kpiJson":kpiJson, "compId":compId, "params":params, "dsource":table.dsource==null?"":table.dsource},
-		   success: function(resp){
-			  __hideLoading();
-			  $("#T" + compId + " div.ctx").html(resp);
-			   
-			 //重新注册拖放事件(从度量拖入的事件)
-			  initDropDiv(compId);
-		   },
-		   error:function(resp){
-				__hideLoading();
-			   $.messager.alert('出错了','系统出错，请联系管理员。','error');
-		   }
-		});
-	}
 	
+	$.ajax({
+	   type: "POST",
+	   url: curTmpInfo.tvUrl ? curTmpInfo.tvUrl : "TableView.action",
+	   dataType:"html",
+	   data: {"tableJson":tableJson, "kpiJson":kpiJson, dsource:table.dsid, dset:table.dsetId, "compId":compId, "params":params},
+	   success: function(resp){
+		 __hideLoading();
+		  $("#T" + compId + " div.ctx").html(resp);
+		   
+		 //重新注册拖放事件(从度量拖入的事件)
+		  initDropDiv(compId);
+	   },
+	   error:function(resp){
+			__hideLoading();
+		   $.messager.alert('出错了','系统出错，请联系管理员。','error');
+	   }
+	});
 }
 //指标预警
 function kpiwarning(){
@@ -889,7 +834,7 @@ function filterDims(){
 			break;
 		}
 	}
-	var url =  (curTmpInfo.filterUrl ? curTmpInfo.filterUrl :"DimFilter.action")+"?tid="+comp.tid+"&dimType="+curDim.type+"&filtertype="+filtertype+"&dimId="+dimid;
+	var url =  (curTmpInfo.filterUrl ? curTmpInfo.filterUrl :"DimFilter.action")+"?dsid="+comp.dsid+"&cubeId="+comp.cubeId+"&filtertype="+filtertype+"&dimId="+dimid;
 	if(dimtp == 'month'){
 		url = url + "&dfm2="+(curDim.startmt == undefined ? "" : curDim.startmt);
 		url = url + "&dfm1="+(curDim.endmt == undefined ? "" : curDim.endmt);

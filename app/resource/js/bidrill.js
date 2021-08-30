@@ -57,7 +57,7 @@ function drill(dimId, compId, pos, val, vdesc, oldDimId, islink){
 				break;
 			}
 		}
-		var ooo = {"id":json.dim_id, "dimdesc" : json.dim_desc, "type":json.dim_type, "colname":json.col_name,"alias":json.alias,"tid":json.tid,"iscas":'', "tableName":(json.dim_tname == null ? "" : json.dim_tname), "tableColKey":(json.tableColKey == null ? "" : json.tableColKey),"tableColName":(json.tableColName == null ? "" : json.tableColName), "dimord":(json.dim_ord==null?"":json.dim_ord), "dim_name":json.dim_name, "iscas":(json.iscas == null ? "" : json.iscas), "grouptype":json.grouptype, "valType":json.valType,"endlvl":json.endlvl, "ordcol":(json.ordcol == null ? "": json.ordcol), "dateformat":(json.dateformat==null?"":json.dateformat)};
+		var ooo = {"id":json.dim_id, "dimdesc" : json.dim_desc, "type":json.dim_type, "colname":json.col_name,"alias":json.alias,"cubeId":json.cubeId,"iscas":'', tname:json.tname, "tableName":(json.dim_tname == null ? "" : json.dim_tname), "tableColKey":(json.tableColKey == null ? "" : json.tableColKey),"tableColName":(json.tableColName == null ? "" : json.tableColName), "dimord":(json.dim_ord==null?"":json.dim_ord), "dim_name":json.dim_name, "iscas":(json.iscas == null ? "" : json.iscas), "grouptype":json.grouptype, "valType":json.valType,calc:json.calc, "ordcol":(json.ordcol == null ? "": json.ordcol), "dateformat":(json.dateformat==null?"":json.dateformat)};
 		dims.splice(oldDimIndex + 1, 0, ooo);
 		curTmpInfo.isupdate = true;
 		tableView(comp, comp.id);
@@ -70,7 +70,7 @@ function drill(dimId, compId, pos, val, vdesc, oldDimId, islink){
 				type:"get",
 				 jsonp:"jsonpcallback",
 				url: curTmpInfo.qdimUrl ? curTmpInfo.qdimUrl :"Dim!queryDimsByFace.action",
-				data:{"tableId": comp.tid},
+				data:{"cubeId": comp.cubeId},
 				dataType:"jsonp",
 				success:function(resp){
 					comp.dims = resp;
@@ -82,7 +82,7 @@ function drill(dimId, compId, pos, val, vdesc, oldDimId, islink){
 				async:false,
 				type:"POST",
 				url: curTmpInfo.qdimUrl ? curTmpInfo.qdimUrl :"Dim!queryDims.action",
-				data:{"tableId": comp.tid},
+				data:{"cubeId": comp.cubeId},
 				dataType:"json",
 				success:function(resp){
 					comp.dims = resp;
@@ -135,7 +135,7 @@ function openTheDim(compId, pos, val, vdesc, oldDimId){
 				type:"get",
 				 jsonp:"jsonpcallback",
 				url: curTmpInfo.qdimUrl ? curTmpInfo.qdimUrl :"Dim!queryDimsByFace.action",
-				data:{"tableId": comp.tid},
+				data:{"cubeId": comp.cubeId},
 				dataType:"jsonp",
 				success:function(resp){
 					comp.dims = resp;
@@ -147,7 +147,7 @@ function openTheDim(compId, pos, val, vdesc, oldDimId){
 				async:false,
 				type:"POST",
 				url: curTmpInfo.qdimUrl ? curTmpInfo.qdimUrl :"Dim!queryDims.action",
-				data:{"tableId": comp.tid},
+				data:{"cubeId": comp.cubeId},
 				dataType:"json",
 				success:function(resp){
 					comp.dims = resp;
@@ -243,7 +243,7 @@ function drillDim(compId, ts, pos, val, vdesc, oldDimId){
 				type:"get",
 				 jsonp:"jsonpcallback",
 				url: curTmpInfo.qdimUrl ? curTmpInfo.qdimUrl :"Dim!queryDimsByFace.action",
-				data:{"tableId": comp.tid},
+				data:{"cubeId": comp.cubeId},
 				dataType:"jsonp",
 				success:function(resp){
 					comp.dims = resp;
@@ -255,7 +255,7 @@ function drillDim(compId, ts, pos, val, vdesc, oldDimId){
 				async:false,
 				type:"POST",
 				url: curTmpInfo.qdimUrl ? curTmpInfo.qdimUrl :"Dim!queryDims.action",
-				data:{"tableId": comp.tid},
+				data:{"cubeId": comp.cubeId},
 				dataType:"json",
 				success:function(resp){
 					comp.dims = resp;
@@ -425,7 +425,7 @@ function drillChart(xvalue, xvalueDesc,yvalue, svalue, pos, compId, oldDimId){
 				type:"get",
 				 jsonp:"jsonpcallback",
 				url: curTmpInfo.qdimUrl ? curTmpInfo.qdimUrl :"Dim!queryDimsByFace.action",
-				data:{"tableId": comp.tid},
+				data:{"cubeId": comp.cubeId},
 				dataType:"jsonp",
 				success:function(resp){
 					comp.dims = resp;
@@ -437,7 +437,7 @@ function drillChart(xvalue, xvalueDesc,yvalue, svalue, pos, compId, oldDimId){
 				async:false,
 				type:"POST",
 				url: curTmpInfo.qdimUrl ? curTmpInfo.qdimUrl :"Dim!queryDims.action",
-				data:{"tableId": comp.tid},
+				data:{"cubeId": comp.cubeId},
 				dataType:"json",
 				success:function(resp){
 					comp.dims = resp;
@@ -456,7 +456,7 @@ function drillingChart(id, compId, pos, xvalue, xvalueDesc, oldDimId, islink){
 			async:false,
 			type:"POST",
 			url:curTmpInfo.qdimUrl ? curTmpInfo.qdimUrl :"Dim!queryDims.action",
-			data:{"tableId": comp.tid},
+			data:{"cubeId": comp.cubeId},
 			dataType:"json",
 			success:function(resp){
 				comp.dims = resp;
@@ -507,7 +507,7 @@ function drillingChart(id, compId, pos, xvalue, xvalueDesc, oldDimId, islink){
 			break;
 		}
 	}
-	var nxcol = {"id":json.dim_id, "dimdesc" : json.dim_desc, "type":json.dim_type, "colname":json.col_name,"alias":json.alias,"tid":json.tid,"iscas":'', "tableName":(json.dim_tname == null ? "" : json.dim_tname), "tableColKey":(json.tableColKey == null ? "" : json.tableColKey),"tableColName":(json.tableColName == null ? "" : json.tableColName), "dimord":json.dim_ord, "dim_name":json.dim_name, "iscas":(json.iscas == null ? "" : json.iscas),"grouptype":json.grouptype,"valType":json.valType, "ordcol":(json.ordcol==null?"":json.ordcol), "dateformat":(json.dateformat==null?"":json.dateformat)};
+	var nxcol = {"id":json.dim_id, "dimdesc" : json.dim_desc, "type":json.dim_type, "colname":json.col_name,"alias":json.alias,"cubeId":json.cubeId,tname:json.tname,"iscas":'', "tableName":(json.dim_tname == null ? "" : json.dim_tname), "tableColKey":(json.tableColKey == null ? "" : json.tableColKey),"tableColName":(json.tableColName == null ? "" : json.tableColName), "dimord":json.dim_ord, "dim_name":json.dim_name, "iscas":(json.iscas == null ? "" : json.iscas),"grouptype":json.grouptype,"valType":json.valType, "ordcol":(json.ordcol==null?"":json.ordcol), "dateformat":(json.dateformat==null?"":json.dateformat),calc:json.calc};
 	if(pos == "row"){
 		comp.chartJson.xcol = nxcol;
 	}else{

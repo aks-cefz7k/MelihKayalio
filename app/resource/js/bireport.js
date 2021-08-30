@@ -103,7 +103,7 @@ function initparam(){
 					return;
 				}
 				var id = node.attributes.col_id;
-				var p = {"id":id, "name":node.text, "type":node.attributes.dim_type, "colname":node.attributes.col_name,"alias":node.attributes.alias, "tname":node.attributes.tname,"tid":node.attributes.tid,"valType":node.attributes.valType,"tableName":node.attributes.tableName, "tableColKey":node.attributes.tableColKey,"tableColName":node.attributes.tableColName, "dimord":node.attributes.dimord, "grouptype":node.attributes.grouptype,"dateformat":(node.attributes.dateformat==null?"":node.attributes.dateformat)};
+				var p = {"id":id, "name":node.text, "type":node.attributes.dim_type, "colname":node.attributes.col_name,"alias":node.attributes.alias, "tname":node.attributes.tname,"cubeId":node.attributes.cubeId,"valType":node.attributes.valType,"tableName":node.attributes.tableName, "tableColKey":node.attributes.tableColKey,"tableColName":node.attributes.tableColName, "dimord":node.attributes.dimord, "grouptype":node.attributes.grouptype,"dateformat":(node.attributes.dateformat==null?"":node.attributes.dateformat),dsid:node.attributes.dsid};
 				pageInfo.params.push(p);
 				var obj = $(this);
 				obj.find("div.ptabhelpr").remove();
@@ -186,7 +186,7 @@ function paramFilter(id, type, name){
 				}
 			}]
 	});
-	var url =  (curTmpInfo.filterUrl ? curTmpInfo.filterUrl :"DimFilter!paramFilter.action") + "?dimType="+param.type+"&tid="+param.tid+"&dimId="+id;
+	var url =  (curTmpInfo.filterUrl ? curTmpInfo.filterUrl :"DimFilter!paramFilter.action") + "?cubeId="+param.cubeId+"&dimId="+id+"&dsid="+param.dsid;
 	if(param.type == "month"){
 		url = url + "&dfm2="+(param.st?param.st:"")+"&dfm1="+(param.end?param.end:"");
 	}else if(param.type == "day"){
@@ -198,7 +198,7 @@ function paramFilter(id, type, name){
 }
 function searchDims2(val, id){
 	var param = findParamById(id);
-	var url = "DimFilter!search.action?tid="+param.tid+"&dimId="+id+"" ;
+	var url = "DimFilter!search.action?cubeId="+param.cubeId+"&dimId="+id+"&dsid=" + param.dsid ;
 	$.ajax({
 		type:"POST",
 		url:url,
@@ -440,13 +440,13 @@ function addComp(id, name, ctx, ispush, tp, curComp){
 function selectdataset(){
 	$('#pdailog').dialog({
 		title: '选择数据模型 ',
-		width: 620,
+		width: 520,
 		height: 400,
 		closed: false,
 		cache: false,
 		modal: true,
 		toolbar:null,
-		content:"<div align=\"right\" style=\"margin:5px;\"><input id=\"subSearchBox\" style=\"width:160px\"></input></div><table id=\"subjectlist\" title=\"\" style=\"width:610px;height:300px;\" ><thead><tr><th data-options=\"field:'ck',checkbox:true\"><th data-options=\"field:'name',width:160\">名称</th><th data-options=\"field:'fl',width:100\">分类</th><th data-options=\"field:'note',width:300\">说明</th></tr></thead></table>",
+		content:"<div align=\"right\" style=\"margin:5px;\"><input id=\"subSearchBox\" style=\"width:200px\"></input></div><table id=\"subjectlist\" title=\"\" style=\"width:510px;height:300px;\" ><thead><tr><th data-options=\"field:'ck',checkbox:true\"><th data-options=\"field:'cubeName',width:160\">名称</th><th data-options=\"field:'desc',width:300\">说明</th></tr></thead></table>",
 		buttons:[{
 					text:'确定',
 					iconCls:'icon-ok',
@@ -456,7 +456,7 @@ function selectdataset(){
 							msginfo("请勾选数据。", "error");
 							return;
 						  }
-						pageInfo.selectDs = row[0].tid;
+						pageInfo.selectDs = row[0].cubeId;
 						$('#pdailog').dialog('close');
 						//更新页面为已修改
 						curTmpInfo.isupdate = true;
@@ -483,7 +483,7 @@ function selectdataset(){
 		pagination:true,
 		pageSize:20,
 		border:true,
-		url:'DataSet!listSubject.action',
+		url:'../model/Cube!list.action',
 		method:'post',
 		queryParams:{id:"0", t: Math.random()}
 	});

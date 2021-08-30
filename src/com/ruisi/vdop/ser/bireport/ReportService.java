@@ -103,11 +103,14 @@ public class ReportService {
 	 * @throws IOException
 	 * @throws ParseException
 	 */
-	public CrossReportContext createTable(MVContext mv, JSONObject json, JSONArray params, int release) throws IOException, ParseException{
+	public void createTable(MVContext mv, JSONObject json, JSONArray params, int release) throws IOException, ParseException{
+		String dsid = (String)json.get("dsid");
+		if(dsid == null || dsid.length() == 0){
+			return;
+		}
+		String dsetId = json.getString("dsetId");
 		JSONObject tableJson = json.getJSONObject("tableJson");
 		JSONArray kpiJson = json.getJSONArray("kpiJson");
-		String dsid = json.getString("dsid");
-		String dsetId = json.getString("dsetId");
 		tableSer.setDset(ModelCacheManager.getDset(dsetId, VDOPUtils.getDaoHelper()));
 		tableSer.setDsource(ModelCacheManager.getDset(dsid, VDOPUtils.getDaoHelper()));
 		TableSqlJsonVO sqlVO = TableJsonService.json2TableSql(tableJson, kpiJson);
@@ -134,14 +137,16 @@ public class ReportService {
 		Map crs = new HashMap();
 		crs.put(cr.getId(), cr);
 		mv.setCrossReports(crs);
-		return cr;
 	}
 	
-	public ChartContext createChart(MVContext mv, JSONObject json,  JSONArray params, int release) throws IOException, ParseException{
+	public void createChart(MVContext mv, JSONObject json,  JSONArray params, int release) throws IOException, ParseException{
+		String dsid = (String)json.get("dsid");
+		if(dsid == null || dsid.length() == 0){
+			return;
+		}
+		String dsetId = (String)json.get("dsetId");
 		JSONObject chartJson = json.getJSONObject("chartJson");
 		JSONArray kpiJson = json.getJSONArray("kpiJson");
-		String dsid = json.getString("dsid");
-		String dsetId = json.getString("dsetId");
 		ser.setDset(ModelCacheManager.getDset(dsetId, VDOPUtils.getDaoHelper()));
 		ser.setDsource(ModelCacheManager.getDsource(dsid, VDOPUtils.getDaoHelper()));
 		TableSqlJsonVO sqlVO = ser.json2ChartSql(chartJson, kpiJson);
@@ -217,7 +222,6 @@ public class ReportService {
 		Map crs = new HashMap();
 		crs.put(cr.getId(), cr);
 		mv.setCharts(crs);
-		return cr;
 	}
 	
 	public String getFilePath(ServletContext ctx){
@@ -690,26 +694,25 @@ public class ReportService {
 	public static String htmlPage(String body, String host, String type){
 		StringBuffer sb = new StringBuffer();
 		
-		sb.append("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">");
-		sb.append("<html xmlns=\"http://www.w3.org/1999/xhtml\">");
+		sb.append("<!DOCTYPE html>");
+		sb.append("<html lang=\"en\">");
 		sb.append("<head>");
 		sb.append("<title>睿思BI</title>");
+		sb.append("<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, maximum-scale=1.0\">");
 		sb.append("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">");
 		sb.append("<script type=\"text/javascript\" src=\""+host+"/ext-res/js/jquery.min.js\"></script>");
 		sb.append("<script type=\"text/javascript\" src=\""+host+"/ext-res/js/ext-base.js\"></script>");
 		sb.append("<script type=\"text/javascript\" src=\""+host+"/ext-res/js/echarts.min.js\"></script>");
 		sb.append("<script type=\"text/javascript\" src=\""+host+"/ext-res/js/sortabletable.js\"></script>");
-		sb.append("<link rel=\"stylesheet\" type=\"text/css\" href=\""+host+"/ext-res/css/fonts-min.css\" />");
-		sb.append("<link rel=\"stylesheet\" type=\"text/css\" href=\""+host+"/ext-res/css/boncbase.css\" />");
+		sb.append("<link rel=\"stylesheet\" type=\"text/css\" href=\""+host+"/ext-res/css/bootstrap.min.css\" />");
+		sb.append("<link rel=\"stylesheet\" type=\"text/css\" href=\""+host+"/resource/css/animate.css\" />");
+		sb.append("<link rel=\"stylesheet\" type=\"text/css\" href=\""+host+"/resource/css/style.css\" />");
+		sb.append("<link rel=\"stylesheet\" type=\"text/css\" href=\""+host+"/resource/css/font-awesome.css?v=4.4.0\" />");
 		sb.append("</head>");
-		sb.append("<body class=\"yui-skin-sam\">");
-		if("report".equals(type)){  //报表类型需要限制宽度
-			sb.append("<div style=\"width:960px; margin:0 auto;\">");
-		}
+		sb.append("<body class=\"gray-bg\">");
+	
 		sb.append(body);
-		if("report".equals(type)){
-			sb.append("</div>");
-		}
+		
 		sb.append("</body>");
 		sb.append("</html>");
 		

@@ -129,7 +129,7 @@ function chartview(json, compId){
 	   type: "POST",
 	   url: "ChartView.action",
 	   dataType:"html",
-	   data: {"chartJson":chartJson, "kpiJson":kpiJson, "kpiType":kpiType, "compId":compId, "params":params, "dsource":(json.dsource==null?"":json.dsource)},
+	   data: {"chartJson":chartJson, "kpiJson":kpiJson, "compId":compId, "params":params, dsource:json.dsid, dset:json.dsetId},
 	   success: function(resp){
 		   __hideLoading();
 		  //清除DIV高度
@@ -138,7 +138,7 @@ function chartview(json, compId){
 		  $("#T" + compId + " div.chartctx").html(resp);
 	   },
 	   error:function(resp){
-		   __hideLoading();
+		  __hideLoading();
 		   $.messager.alert('出错了','系统出错，请联系管理员。','error');
 	   }
 	});
@@ -183,8 +183,8 @@ function initChartKpiDrop(id){
 			e.stopPropagation(); //阻止事件冒泡
 			
 			//判断拖入的维度及度量是否和以前维度及度量在同一个表。
-			if(json.tid != undefined){
-				if(json.tid != node.attributes.tid){
+			if(json.cubeId != undefined){
+				if(json.cubeId != node.attributes.cubeId){
 					msginfo("您拖入的"+ (node.attributes.col_type == 2 ? "度量" : "维度") +"与组件已有的内容不在同一个数据表中，拖放失败。");
 					return;
 				}
@@ -193,15 +193,15 @@ function initChartKpiDrop(id){
 			//判断拖入的度量是否是（同比、环比），如果是，需要判断当前维度是否有date类型
 			if(node.attributes.calc_kpi == 1){
 				if(!isExistDateDim(json, 'chart')){
-					msginfo("您拖入的度量需要图表中有时间类型的维度(年/季度/月/日)。");
+					msginfo("您拖入的度量需要图形中有时间类型的维度(年/季度/月/日)。");
 					return;
 				}
 			}
 		
-			json.tid = node.attributes.tid;
-			json.tname = node.attributes.tname;
-			json.ttype = node.attributes.ttype;
-			json.dsource = node.attributes.dsource; //组件所使用的数据源
+			json.cubeId = node.attributes.cubeId;
+			json.dsid = node.attributes.dsid;
+			json.dsetId = node.attributes.dsetId;
+			json.chartJson.label = "PIC";
 			
 			if(json.kpiJson == undefined){
 				json.kpiJson = [];
@@ -223,7 +223,7 @@ function initChartKpiDrop(id){
 			
 			if(node.attributes.col_type == 2 && $(this).attr("id") == "ycol"){
 				json.kpiJson = [];
-				json.kpiJson.push({"kpi_id":node.attributes.col_id, "kpi_name" : node.text, "col_name":node.attributes.col_name, "aggre":node.attributes.aggre, "fmt":node.attributes.fmt, "alias":node.attributes.alias,"tid":json.tid,"unit":node.attributes.unit,"rate":node.attributes.rate});
+				json.kpiJson.push({"kpi_id":node.attributes.col_id, "kpi_name" : node.text, "col_name":node.attributes.col_name, "aggre":node.attributes.aggre, "fmt":node.attributes.fmt, "alias":node.attributes.alias,"tname":node.attributes.tname,"unit":node.attributes.unit,"rate":node.attributes.rate,"calc":node.attributes.calc});
 				json.chartJson.ycol = {"type":"kpi"};
 				$(this).html("<span title=\""+node.text+"\" class=\"charttxt\">" + node.text + "</span><span class=\"charticon\" title=\"配置\" onclick=\"chartmenu(this, "+node.attributes.col_id+",'ycol','"+node.text+"')\"></span>");
 				curTmpInfo.isupdate = true;
@@ -245,7 +245,7 @@ function initChartKpiDrop(id){
 					}
 				}
 				
-				json.chartJson.xcol = {"id":node.attributes.col_id, "dimdesc" : node.text, "type":node.attributes.dim_type, "colname":node.attributes.col_name,"alias":node.attributes.alias,"tid":json.tid,"iscas":node.attributes.iscas, "tableName":node.attributes.tableName, "tableColKey":node.attributes.tableColKey,"tableColName":node.attributes.tableColName, "dimord":node.attributes.dimord, "dim_name":node.attributes.dim_name, "grouptype":node.attributes.grouptype,"valType":node.attributes.valType, "ordcol":node.attributes.ordcol,dateformat:node.attributes.dateformat};
+				json.chartJson.xcol = {"id":node.attributes.col_id, "dimdesc" : node.text, "type":node.attributes.dim_type, "colname":node.attributes.col_name,"alias":node.attributes.alias,"tname":node.attributes.tname,"iscas":node.attributes.iscas, "tableName":node.attributes.tableName, "tableColKey":node.attributes.tableColKey,"tableColName":node.attributes.tableColName, "dimord":node.attributes.dimord, "dim_name":node.attributes.dim_name, "grouptype":node.attributes.grouptype,"valType":node.attributes.valType, "ordcol":node.attributes.ordcol,dateformat:node.attributes.dateformat,"calc":node.attributes.calc};
 				$(this).html("<span title=\""+node.text+"\" class=\"charttxt\">" + node.text + "</span><span class=\"charticon\" title=\"配置\" onclick=\"chartmenu(this, "+node.attributes.col_id+",'xcol', '"+node.text+"')\"></span>");
 				curTmpInfo.isupdate = true;
 				chartview(json, id);
@@ -266,7 +266,7 @@ function initChartKpiDrop(id){
 					}
 				}
 				
-				json.chartJson.scol = {"id":node.attributes.col_id, "dimdesc" : node.text, "type":node.attributes.dim_type, "colname":node.attributes.col_name,"alias":node.attributes.alias,"tid":json.tid,"iscas":node.attributes.iscas, "tableName":node.attributes.tableName, "tableColKey":node.attributes.tableColKey,"tableColName":node.attributes.tableColName, "dimord":node.attributes.dimord, "dim_name":node.attributes.dim_name, "grouptype":node.attributes.grouptype,"valType":node.attributes.valType, "ordcol":node.attributes.ordcol};
+				json.chartJson.scol = {"id":node.attributes.col_id, "dimdesc" : node.text, "type":node.attributes.dim_type, "colname":node.attributes.col_name,"alias":node.attributes.alias,"tname":node.attributes.tname,"iscas":node.attributes.iscas, "tableName":node.attributes.tableName, "tableColKey":node.attributes.tableColKey,"tableColName":node.attributes.tableColName, "dimord":node.attributes.dimord, "dim_name":node.attributes.dim_name, "grouptype":node.attributes.grouptype,"valType":node.attributes.valType, "ordcol":node.attributes.ordcol,"calc":node.attributes.calc};
 				$(this).html("<span title=\""+node.text+"\" class=\"charttxt\">" + node.text + "</span><span class=\"charticon\" title=\"配置\" onclick=\"chartmenu(this,"+node.attributes.col_id+", 'scol', '"+node.text+"')\"></span>");
 				curTmpInfo.isupdate = true;
 				chartview(json, id);
@@ -316,8 +316,8 @@ function initChartByScatter(id){
 			e.stopPropagation(); //阻止事件冒泡
 			
 			//判断拖入的维度及度量是否和以前维度及度量在同一个表。
-			if(json.tid != undefined){
-				if(json.tid != node.attributes.tid){
+			if(json.cubeId != undefined){
+				if(json.cubeId != node.attributes.cubeId){
 					msginfo("您拖入的"+ (node.attributes.col_type == 2 ? "度量" : "维度") +"与组件已有的内容不在同一个数据表中，拖放失败。");
 					return;
 				}
@@ -326,15 +326,15 @@ function initChartByScatter(id){
 			//判断拖入的度量是否是（同比、环比），如果是，需要判断当前维度是否有date类型
 			if(node.attributes.calc_kpi == 1){
 				if(!isExistDateDim(json, 'chart')){
-					msginfo("您拖入的度量需要图表中有时间类型的维度(年/季度/月/日)。");
+					msginfo("您拖入的度量需要图形中有时间类型的维度(年/季度/月/日)。");
 					return;
 				}
 			}
 		
-			json.tid = node.attributes.tid;
-			json.tname = node.attributes.tname;
-			json.ttype = node.attributes.ttype;
-			json.dsource = node.attributes.dsource; //组件所使用的数据源
+			json.cubeId = node.attributes.cubeId;
+			json.dsid = node.attributes.dsid;
+			json.dsetId = node.attributes.dsetId;
+			json.chartJson.label = "PIC";
 			
 			if(json.kpiJson == undefined){
 				json.kpiJson = [];
@@ -358,7 +358,7 @@ function initChartByScatter(id){
 					msginfo("您拖放的度量已存在当前图表中。")
 					return;
 				}
-				json.kpiJson[0] = {"kpi_id":node.attributes.col_id, "kpi_name" : node.text, "col_name":node.attributes.col_name, "aggre":node.attributes.aggre, "fmt":node.attributes.fmt, "alias":node.attributes.alias,"tid":json.tid,"unit":node.attributes.unit,"rate":node.attributes.rate};
+				json.kpiJson[0] = {"kpi_id":node.attributes.col_id, "kpi_name" : node.text, "col_name":node.attributes.col_name, "aggre":node.attributes.aggre, "fmt":node.attributes.fmt, "alias":node.attributes.alias,"tname":node.attributes.tname,"unit":node.attributes.unit,"rate":node.attributes.rate,"calc":node.attributes.calc};
 				json.chartJson.ycol = {"type":"kpi"};
 				$(this).html("<span title=\""+node.text+"\" class=\"charttxt\">" + node.text + "</span><span class=\"charticon\" title=\"配置\" onclick=\"chartmenu(this, "+node.attributes.col_id+",'ycol','"+node.text+"')\"></span>");
 				curTmpInfo.isupdate = true;
@@ -382,7 +382,7 @@ function initChartByScatter(id){
 					msginfo("您拖放的度量已存在当前图表中。")
 					return;
 				}
-				var kpi = {"kpi_id":node.attributes.col_id, "kpi_name" : node.text, "col_name":node.attributes.col_name, "aggre":node.attributes.aggre, "fmt":node.attributes.fmt, "alias":node.attributes.alias,"tid":json.tid,"unit":node.attributes.unit,"rate":node.attributes.rate};
+				var kpi = {"kpi_id":node.attributes.col_id, "kpi_name" : node.text, "col_name":node.attributes.col_name, "aggre":node.attributes.aggre, "fmt":node.attributes.fmt, "alias":node.attributes.alias,"tname":node.attributes.tname,"unit":node.attributes.unit,"rate":node.attributes.rate,"calc":node.attributes.calc};
 				json.kpiJson[1] = kpi;
 				$(this).html("<span title=\""+node.text+"\" class=\"charttxt\">" + node.text + "</span><span class=\"charticon\" title=\"配置\" onclick=\"chartmenu(this, "+node.attributes.col_id+",'y2col','"+node.text+"')\"></span>");
 				curTmpInfo.isupdate = true;
@@ -406,7 +406,7 @@ function initChartByScatter(id){
 					msginfo("您拖放的度量已存在当前图表中。")
 					return;
 				}
-				var kpi = {"kpi_id":node.attributes.col_id, "kpi_name" : node.text, "col_name":node.attributes.col_name, "aggre":node.attributes.aggre, "fmt":node.attributes.fmt, "alias":node.attributes.alias,"tid":json.tid,"unit":node.attributes.unit,"rate":node.attributes.rate};
+				var kpi = {"kpi_id":node.attributes.col_id, "kpi_name" : node.text, "col_name":node.attributes.col_name, "aggre":node.attributes.aggre, "fmt":node.attributes.fmt, "alias":node.attributes.alias,"tname":node.attributes.tname,"unit":node.attributes.unit,"rate":node.attributes.rate,"calc":node.attributes.calc};
 				json.kpiJson[2] = kpi;
 				$(this).html("<span title=\""+node.text+"\" class=\"charttxt\">" + node.text + "</span><span class=\"charticon\" title=\"配置\" onclick=\"chartmenu(this, "+node.attributes.col_id+",'y3col','"+node.text+"')\"></span>");
 				curTmpInfo.isupdate = true;
@@ -437,7 +437,7 @@ function initChartByScatter(id){
 					}
 				}
 				
-				json.chartJson.xcol = {"id":node.attributes.col_id, "dimdesc" : node.text, "type":node.attributes.dim_type, "colname":node.attributes.col_name,"alias":node.attributes.alias,"tid":json.tid,"iscas":node.attributes.iscas, "tableName":node.attributes.tableName, "tableColKey":node.attributes.tableColKey,"tableColName":node.attributes.tableColName, "dimord":node.attributes.dimord, "dim_name":node.attributes.dim_name, "grouptype":node.attributes.grouptype,"valType":node.attributes.valType, "ordcol":node.attributes.ordcol};
+				json.chartJson.xcol = {"id":node.attributes.col_id, "dimdesc" : node.text, "type":node.attributes.dim_type, "colname":node.attributes.col_name,"alias":node.attributes.alias,"tname":node.attributes.tname,"iscas":node.attributes.iscas, "tableName":node.attributes.tableName, "tableColKey":node.attributes.tableColKey,"tableColName":node.attributes.tableColName, "dimord":node.attributes.dimord, "dim_name":node.attributes.dim_name, "grouptype":node.attributes.grouptype,"valType":node.attributes.valType, "ordcol":node.attributes.ordcol,"calc":node.attributes.calc};
 				$(this).html("<span title=\""+node.text+"\" class=\"charttxt\">" + node.text + "</span><span class=\"charticon\" title=\"配置\" onclick=\"chartmenu(this, "+node.attributes.col_id+",'xcol', '"+node.text+"')\"></span>");
 				curTmpInfo.isupdate = true;
 				if(json.chartJson.type == 'scatter'){
@@ -467,7 +467,7 @@ function initChartByScatter(id){
 					}
 				}
 				
-				json.chartJson.scol = {"id":node.attributes.col_id, "dimdesc" : node.text, "type":node.attributes.dim_type, "colname":node.attributes.col_name,"alias":node.attributes.alias,"tid":json.tid,"iscas":node.attributes.iscas, "tableName":node.attributes.tableName, "tableColKey":node.attributes.tableColKey,"tableColName":node.attributes.tableColName, "dimord":node.attributes.dimord, "dim_name":node.attributes.dim_name, "grouptype":node.attributes.grouptype,"valType":node.attributes.valType, "ordcol":node.attributes.ordcol};
+				json.chartJson.scol = {"id":node.attributes.col_id, "dimdesc" : node.text, "type":node.attributes.dim_type, "colname":node.attributes.col_name,"alias":node.attributes.alias,"tname":node.attributes.tname,"iscas":node.attributes.iscas, "tableName":node.attributes.tableName, "tableColKey":node.attributes.tableColKey,"tableColName":node.attributes.tableColName, "dimord":node.attributes.dimord, "dim_name":node.attributes.dim_name, "grouptype":node.attributes.grouptype,"valType":node.attributes.valType, "ordcol":node.attributes.ordcol,"calc":node.attributes.calc};
 				$(this).html("<span title=\""+node.text+"\" class=\"charttxt\">" + node.text + "</span><span class=\"charticon\" title=\"配置\" onclick=\"chartmenu(this,"+node.attributes.col_id+", 'scol', '"+node.text+"')\"></span>");
 				curTmpInfo.isupdate = true;
 				if(json.chartJson.type == 'scatter'){

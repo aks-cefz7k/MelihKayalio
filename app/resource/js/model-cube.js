@@ -700,8 +700,11 @@ function cube2ds(){
 		var id = right.attributes.alias;   //通过 refId 引用s数据集的字段ID
 		//var root = $("#cubelefttree").tree("getRoot");
 		var cld = $("#cubelefttree").tree("getChildren", $("#cubelefttree").tree("find", "leftroot").target);
-		var cld2 = $("#cubelefttree").tree("getChildren", $("#cubelefttree").tree("find", "dynaroot").target);
-		cld = cld.concat(cld2);
+		var dynaroot = $("#cubelefttree").tree("find", "dynaroot");
+		if(dynaroot != null){
+			var cld2 = $("#cubelefttree").tree("getChildren", dynaroot.target);
+			cld = cld.concat(cld2);
+		}
 		for(i=0; i<cld.length; i++){
 			if(cld[i].id == id){
 				$(cld[i].target).attr("hide", "n").show();
