@@ -2,7 +2,6 @@ package com.ruisi.vdop.ser.portal;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,6 +10,7 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONNull;
 import net.sf.json.JSONObject;
 
+import com.ruisi.bi.engine.view.context.chart.ChartContext;
 import com.ruisi.ext.engine.ExtConstants;
 import com.ruisi.ext.engine.dao.DaoHelper;
 import com.ruisi.ext.engine.init.TemplateManager;
@@ -18,7 +18,6 @@ import com.ruisi.ext.engine.util.IdCreater;
 import com.ruisi.ext.engine.view.context.Element;
 import com.ruisi.ext.engine.view.context.ExtContext;
 import com.ruisi.ext.engine.view.context.MVContext;
-import com.ruisi.ext.engine.view.context.chart.ChartContext;
 import com.ruisi.ext.engine.view.context.cross.BaseKpiField;
 import com.ruisi.ext.engine.view.context.cross.CrossKpi;
 import com.ruisi.ext.engine.view.context.cross.CrossReportContext;

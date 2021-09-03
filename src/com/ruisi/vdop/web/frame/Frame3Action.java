@@ -47,16 +47,6 @@ public class Frame3Action {
 	}
 	
 	public String welcome() {
-		String useSyts = ExtContext.getInstance().getConstant("syts");
-		if("true".equals(useSyts)){
-			int syts;
-			try {
-				syts = XmlParser.getEndDate(VDOPUtils.getServletContext());
-			} catch (Exception e) {
-				syts = -10;
-			}
-			VDOPUtils.getRequest().setAttribute("syts", syts);
-		}
 		return "welcome";
 	}
 	

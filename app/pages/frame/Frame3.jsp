@@ -139,7 +139,7 @@
 						
                         <li class="dropdown">
                             <a class="dropdown-toggle count-info" data-toggle="dropdown" href="#">
-                                <i class="fa fa-user"></i> 
+                                <i class="fa fa-user"></i>${uinfo.loginName}
                             </a>
                             <ul class="dropdown-menu dropdown-alerts">
 								
@@ -175,7 +175,7 @@
                 </nav>
             </div>
             <div class="row J_mainContent" id="content-main">
-                <iframe id="J_iframe" width="100%" height="100%" src="Frame3!welcome.action" frameborder="0" data-id="index_v1.html" seamless></iframe>
+                <iframe id="J_iframe" width="100%" height="100%" src="Frame3!welcome.action" frameborder="0" seamless></iframe>
             </div>
         </div>
         <!--右侧部分结束-->

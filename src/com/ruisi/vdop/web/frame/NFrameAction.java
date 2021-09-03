@@ -33,15 +33,7 @@ public class NFrameAction {
 	}
 	
 	public String welcome() throws IOException {
-		//查询有效天数
-		try{
-			int end = XmlParser.getEndDate(VDOPUtils.getServletContext());
-			VDOPUtils.getRequest().setAttribute("enddt", end);
-			return "welcome";
-		}catch(Exception e){
-			VDOPUtils.getResponse().sendRedirect("../control/AuthError.action");
-			return null;
-		}
+		return null;
 	}
 	
 	public String welcome2() throws IOException {

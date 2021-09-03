@@ -9,7 +9,6 @@ import net.sf.json.JSONArray;
 
 import com.ruisi.ext.engine.dao.DaoHelper;
 import com.ruisi.vdop.util.VDOPUtils;
-import com.ruisi.vdop.util.VdopConstant;
 
 public class MyReportAction {
 	
