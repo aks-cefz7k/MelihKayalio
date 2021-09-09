@@ -15,13 +15,13 @@ function backpage(){
 			var bk = function(){
 				if(pageInfo.id && pageInfo.id != ''){
 					if(curTmpInfo.is3g=="y"){
-						location.href = "../report/SiteConfig.action";
+						location.href = "../m/PushManager.action";
 					}else{
 						location.href = 'PortalIndex!show.action?pageId='+pageInfo.id;
 					}
 				}else{
 					if(curTmpInfo.is3g=="y"){
-						location.href = "../report/SiteConfig.action";
+						location.href = "../m/PushManager.action";
 					}else{
 						location.href = "PortalIndex.action";
 					}
@@ -31,13 +31,13 @@ function backpage(){
 		}else{
 			if(pageInfo.id && pageInfo.id != ''){
 				if(curTmpInfo.is3g=="y"){
-					location.href = "../report/SiteConfig.action";
+					location.href = "../m/PushManager.action";
 				}else{
 					location.href = 'PortalIndex!show.action?pageId='+pageInfo.id;
 				}
 			}else{
 				if(curTmpInfo.is3g=="y"){
-					location.href = "../report/SiteConfig.action";
+					location.href = "../m/PushManager.action";
 				}else{
 					location.href = "PortalIndex.action";
 				}
@@ -46,13 +46,13 @@ function backpage(){
 	}else{
 		if(pageInfo.id && pageInfo.id != ''){
 			if(curTmpInfo.is3g=="y"){
-				location.href = "../report/SiteConfig.action";
+				location.href = "../m/PushManager.action";
 			}else{
 				location.href = 'PortalIndex!show.action?pageId='+pageInfo.id;
 			}
 		}else{
 			if(curTmpInfo.is3g=="y"){
-				location.href = "../report/SiteConfig.action";
+				location.href = "../m/PushManager.action";
 			}else{
 				location.href = "PortalIndex.action";
 			}

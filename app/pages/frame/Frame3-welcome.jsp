@@ -53,7 +53,7 @@
 <p>5.权限管理</p>
 
 <p class="text-warning">请注意：此版本为开原版。</p>
-<p><button class="btn btn-primary btn-sm" onclick="window.open('http://www.ruisitech.com/')">购买标准版</button></p>
+<p><button class="btn btn-primary btn-sm" onclick="window.open('http://www.ruisitech.com/product.html')">购买标准版</button></p>
 		</div>
 </div>
  </div>

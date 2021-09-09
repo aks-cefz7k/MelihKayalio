@@ -1,7 +1,6 @@
 package com.ruisi.vdop.ser.portal;
 
 import java.io.IOException;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -27,10 +26,8 @@ import com.ruisi.ext.engine.view.context.face.OptionsLoader;
 import com.ruisi.ext.engine.view.context.form.ButtonContext;
 import com.ruisi.ext.engine.view.context.form.ButtonContextImpl;
 import com.ruisi.ext.engine.view.context.form.CheckBoxContextImpl;
-import com.ruisi.ext.engine.view.context.form.DateSelectContext;
 import com.ruisi.ext.engine.view.context.form.DateSelectContextImpl;
 import com.ruisi.ext.engine.view.context.form.InputField;
-import com.ruisi.ext.engine.view.context.form.MultiSelectContextImpl;
 import com.ruisi.ext.engine.view.context.form.RadioContextImpl;
 import com.ruisi.ext.engine.view.context.form.SelectContextImpl;
 import com.ruisi.ext.engine.view.context.form.TextFieldContext;
@@ -50,21 +47,17 @@ import com.ruisi.ext.engine.view.context.html.table.TrContext;
 import com.ruisi.ext.engine.view.context.html.table.TrContextImpl;
 import com.ruisi.ext.engine.view.exception.ExtConfigException;
 import com.ruisi.vdop.cache.ModelCacheManager;
-import com.ruisi.vdop.ser.webreport.DataService;
 import com.ruisi.vdop.util.VDOPUtils;
-import com.ruisi.vdop.util.VdopConstant;
 
 public class PortalPageService {
 	
 	public final static String deftMvId = "mv.portal.tmp";
 	
-	private Map<String, InputField> mvParams = new HashMap(); //mv的参数
+	private Map<String, InputField> mvParams = new HashMap<String, InputField>(); //mv的参数
 	private StringBuffer css = new StringBuffer(); //在创建页面过程中生成所需要的组件样式文件
 	
 	private JSONObject pageJson;
-	
-	private String mvid; //发布时，使用的mvid
-	
+		
 	private ServletContext sctx;
 	
 	private List<String> dsids = new ArrayList<String>(); //用到的数据原
@@ -74,16 +67,10 @@ public class PortalPageService {
 		this.sctx = sctx;
 	}
 	
-	public PortalPageService(JSONObject pageJson, ServletContext sctx, String mvid){
-		this.pageJson = pageJson;
-		this.sctx = sctx;
-		this.mvid = mvid;
-	}
-	
 	public MVContext json2MV(boolean release, boolean export) throws Exception{
 		//创建MV
 		MVContext mv = new MVContextImpl();
-		mv.setChildren(new ArrayList());
+		mv.setChildren(new ArrayList<Element>());
 		String formId = ExtConstants.formIdPrefix + IdCreater.create();
 		mv.setFormId(formId);
 		mv.setMvid(deftMvId);
@@ -101,11 +88,19 @@ public class PortalPageService {
 		//解析参数
 		Object param = pageJson.get("params");
 		if(param != null && ((JSONArray)param).size()>0){
+			DivContext outdiv = new DivContextImpl();
+			outdiv.setStyleClass("ibox");
+			outdiv.setStyle("margin:10px;");
+			outdiv.setChildren(new ArrayList<Element>());
+			outdiv.setParent(mv);
+			mv.getChildren().add(outdiv);
 			DivContext div = new DivContextImpl();
-			div.setStyleClass("mv_param");
-			div.setParent(mv);
-			div.setChildren(new ArrayList());
-			mv.getChildren().add(div);
+			div.setStyleClass("ibox-content");
+			div.setStyle("padding:5px;");
+			div.setParent(outdiv);
+			div.setChildren(new ArrayList<Element>());
+			outdiv.getChildren().add(div);
+			
 			JSONArray pp = (JSONArray)param;
 			for(int i=0; i<pp.size(); i++){
 				this.parserParam(pp.getJSONObject(i), div, mv, release?false:true);
@@ -141,7 +136,7 @@ public class PortalPageService {
 		
 		TableContext tab = new TableContextImpl();
 		tab.setStyleClass("r_layout");
-		tab.setChildren(new ArrayList());
+		tab.setChildren(new ArrayList<Element>());
 		mv.getChildren().add(tab);
 		tab.setParent(mv);
 		for(int i=1; true; i++){
@@ -151,14 +146,14 @@ public class PortalPageService {
 			}
 			JSONArray trs = (JSONArray)tmp;
 			TrContext tabTr = new TrContextImpl();
-			tabTr.setChildren(new ArrayList());
+			tabTr.setChildren(new ArrayList<Element>());
 			tab.getChildren().add(tabTr);
 			tabTr.setParent(tab);
 			for(int j=0; j<trs.size(); j++){
 				JSONObject td = trs.getJSONObject(j);
 				TdContext tabTd = new TdContextImpl();
 				tabTd.setStyleClass("layouttd");
-				tabTd.setChildren(new ArrayList());
+				tabTd.setChildren(new ArrayList<Element>());
 				tabTd.setParent(tabTr);
 				tabTr.getChildren().add(tabTd);
 				tabTd.setColspan(String.valueOf(td.getInt("colspan")));
@@ -176,7 +171,7 @@ public class PortalPageService {
 						//生成外层div
 						DivContext div = new DivContextImpl(); //外层div
 						div.setStyleClass("ibox");
-						div.setChildren(new ArrayList());
+						div.setChildren(new ArrayList<Element>());
 						tabTd.getChildren().add(div);
 						div.setParent(tabTd);
 						
@@ -186,7 +181,7 @@ public class PortalPageService {
 							
 						}else{   //生成head
 							DivContext head = new DivContextImpl(); //内层head Div
-							head.setChildren(new ArrayList());
+							head.setChildren(new ArrayList<Element>());
 							head.setStyleClass("ibox-title");
 							div.getChildren().add(head);
 							head.setParent(div);
@@ -204,7 +199,7 @@ public class PortalPageService {
 						DivContext content = new DivContextImpl(); //内层content Div
 						content.setStyleClass("ibox-content");
 						//content.setStyle("margin:3px;");
-						content.setChildren(new ArrayList());
+						content.setChildren(new ArrayList<Element>());
 						div.getChildren().add(content);
 						content.setParent(div);
 						

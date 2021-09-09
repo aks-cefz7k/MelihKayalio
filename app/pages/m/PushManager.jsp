@@ -42,6 +42,13 @@ jQuery(function(){
 		pagination:false,
 		queryParams:{t:Math.random()},
 		method:'get',
+		toolbar:[{
+			 text:'新增',
+			 iconCls:'icon-add',
+			 handler:function(){
+				 location.href = '../portal/PortalIndex!customization.action?is3g=y&menus={print:0,export:0}';
+			 }
+		}],
 		onDblClickRow: function(index, data){
 			editr();
 		},
