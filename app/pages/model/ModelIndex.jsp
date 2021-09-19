@@ -61,6 +61,24 @@ function banBackSpace(e){
 	}
 }  
 </script>
+<style>
+.msginfo{
+	width:85%;
+	height:90%;
+	padding-left:40px;
+	line-height:20px;
+}
+.msgerr{
+	background-image:url(../resource/img/icon-error.gif);
+	background-position:left center;
+	background-repeat:no-repeat;
+}
+.msgsuc{
+	background-image:url(../resource/img/icon-suc.gif);
+	background-position:left center;
+	background-repeat:no-repeat;
+}
+</style>
 
 
 <body id="metalayout" class="easyui-layout">

@@ -41,6 +41,8 @@ public class PortalIndexAction {
 	
 	private Map curGroup; //当前分组对象.
 	
+	private String income;
+	
 	/**
 	 * 门户定制
 	 * @return
@@ -370,6 +372,14 @@ public class PortalIndexAction {
 
 	public void setSelectDsIds(String selectDsIds) {
 		this.selectDsIds = selectDsIds;
+	}
+
+	public String getIncome() {
+		return income;
+	}
+
+	public void setIncome(String income) {
+		this.income = income;
 	}
 	
 }

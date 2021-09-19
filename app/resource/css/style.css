@@ -8026,13 +8026,13 @@ TABLE.grid3 TR.row-embed{
 }
 .tablesleft {
 	float:left;
-	width:220px;
+	width:230px;
 	height:295px;
 	overflow:hidden;
 	border:1px solid #999;
 }
 .tablesright {
-	width:220px;
+	width:230px;
 	height:295px;
 	float:right;
 	border:1px solid #999;

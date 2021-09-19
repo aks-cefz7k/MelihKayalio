@@ -78,7 +78,9 @@ table.r_layout td.layouttd {
     <div>
         <!--向左对齐-->
         <ul class="nav navbar-nav navbar-left">
+		<s:if test="#request.income != 'menu'">
 		<li><a href="PortalIndex!customization.action?pageId=${pageId}">定制</a></li>
+		</s:if>
 		<li class="dropdown">
         	<a href="#" class="dropdown-toggle" data-toggle="dropdown">
             	导出
@@ -93,7 +95,9 @@ table.r_layout td.layouttd {
             </ul>
         </li>
 		<li><a href="javascript:printpage();">打印</a></li>
+		<s:if test="#request.income != 'menu'">
 		<li><a href="PortalIndex.action">返回</a></li>
+		</s:if>
         </ul>
     </div>
 </nav>

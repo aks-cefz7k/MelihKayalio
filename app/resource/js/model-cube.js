@@ -102,7 +102,7 @@ function newCube(isupdate, cubeId){
 	}
 	
 	//立方体
-	var cstr = "<div style='margin-top:10px;'><table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\"><tr><td valign=\"top\" align=\"right\"><div class=\"easyui-panel\" data-options=\"width:220,height:380,cls:'cubecfg'\" title=\"待选字段\"><ul id=\"cubelefttree\"></ul></div></td> <td align=\"center\" valign=\"top\"><p style=\"height:150px;\"></p><input type=\"button\" title=\"选择\" value=\"&gt;\" onclick=\"ds2cube()\"><br/><br/><input type=\"button\" onclick=\"cube2ds()\" value=\"&lt;\" title=\"移除\"></td><td valign=\"top\"><div class=\"easyui-panel\" data-options=\"width:220,height:380,cls:'cubecfg'\" title=\"维度和度量\"><ul id=\"cuberighttree\"></ul></div></td><td valign=\"top\"><div style=\"width:60px;\"><a href=\"javascript:addgroup();\" id=\"crtfz\" data-options=\"plain:true,iconCls:'icon-add'\">分组</a><br/><a href=\"javascript:editCalcKpi(false);\" id=\"crtcalckpi\" data-options=\"plain:true,iconCls:'icon-add2'\">度量</a><br/><a href=\"javascript:editcubecol();\" id=\"dim_editbtn\" data-options=\"plain:true,iconCls:'icon-edit'\">编辑</a><br/><a href=\"javascript:cube2ds();\"  id=\"dim_delbtn\" data-options=\"plain:true,iconCls:'icon-remove'\">删除</a></div></td></tr></table></div>";
+	var cstr = "<div style='margin-top:10px;'><table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\"><tr><td valign=\"top\" align=\"right\"><div class=\"easyui-panel\" data-options=\"width:220,height:380,cls:'cubecfg'\" title=\"待选字段\"><ul id=\"cubelefttree\"></ul></div></td> <td align=\"center\" valign=\"top\"><p style=\"height:150px;\"></p><input type=\"button\" title=\"选择\" value=\"&gt;\" onclick=\"ds2cube()\" class=\"btn btn-primary btn-sm\"><br/><br/><input type=\"button\" onclick=\"cube2ds()\" value=\"&lt;\" title=\"移除\" class=\"btn btn-primary btn-sm\"></td><td valign=\"top\"><div class=\"easyui-panel\" data-options=\"width:220,height:380,cls:'cubecfg'\" title=\"维度和度量\"><ul id=\"cuberighttree\"></ul></div></td><td valign=\"top\"><div style=\"width:60px;\"><a href=\"javascript:addgroup();\" id=\"crtfz\" data-options=\"plain:true,iconCls:'icon-add'\">分组</a><br/><a href=\"javascript:editCalcKpi(false);\" id=\"crtcalckpi\" data-options=\"plain:true,iconCls:'icon-add2'\">度量</a><br/><a href=\"javascript:editcubecol();\" id=\"dim_editbtn\" data-options=\"plain:true,iconCls:'icon-edit'\">编辑</a><br/><a href=\"javascript:cube2ds();\"  id=\"dim_delbtn\" data-options=\"plain:true,iconCls:'icon-remove'\">删除</a></div></td></tr></table></div>";
 	
 	var ctx = "<div id=\"crtdataset\" data-options=\"fit:true,border:false,tabPosition:'left'\"><div title=\"基本信息\"><div class=\"textpanel\"><span class=\"inputtext\">立方体名称：</span><input type=\"text\" value=\""+(cube?cube.cubeName:"")+"\" class=\"inputform2\" id=\"name\"><br/><span class=\"inputtext\">立方体说明：</span><input type=\"text\" value=\""+(!cube||cube.desc==null?"":cube.desc)+"\" size=\"50\" id=\"note\" class=\"inputform2\"><br/><span class=\"inputtext\">对应数据集：</span><select id=\"dsetId\" class=\"inputform2\">"+dsetls+"</select>"+(isupdate?" (禁止修改)":"")+"</div></div><div title=\"立方体信息\">"+cstr+"</div></div>";
 	$('#pdailog').dialog({
@@ -545,7 +545,7 @@ function addgroup(){
 	$('#dsColumn_div').dialog({
 		title: "创建维度分组",
 		width: 300,
-		height: 220,
+		height: 180,
 		closed: false,
 		cache: false,
 		modal: true,

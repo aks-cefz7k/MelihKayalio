@@ -1350,7 +1350,88 @@ function compevent(compId){
 		}
 	});
 }
+/**
+发布报表到菜单
+**/
+function pushpage(){
+	if(!pageInfo.id || pageInfo.id == ""){
+		msginfo("请先保存报表再发布报表。");
+		return;
+	}
+	var ctx = '<div class="textpanel"><span class=\"inputtext\">名称：</span><input type=\"text\" id=\"name\" class=\"inputform2\"><br/><span class=\"inputtext\">排序：</span><input type=\"text\" id=\"ord\" class=\"inputform2\" value=\"1\"><table><tr><td valign=\"top\"><span class=\"inputtext\">上级菜单：</span></td><td><ul id=\"ggcatatree\" style=\"width:100%\"></ul></td></tr></table></div>';
+	$('#pdailog').dialog({
+		title: '发布报表到菜单',
+		width: 380,
+		height: 300,
+		closed: false,
+		cache: false,
+		modal: true,
+		toolbar:null,
+		content: ctx,
+		buttons:[{
+			text:'确定',
+			iconCls:"icon-ok",
+			handler:function(){
+				var name = $("#pdailog #name").val();
+				var ord = $("#pdailog #ord").val();
+				if(name == ''){
+					msginfo("名称必须填写。");
+					return;
+				}
+				if(ord == ''){
+					msginfo("排序必须填写。");
+					return;
+				}
+				if(isNaN(ord)){
+					msginfo("排序必须是数字类型。");
+					return;
+				}
+				var node = $("#pdailog #ggcatatree").tree("getSelected");
+				if(node == null){
+					msginfo("请选择上级菜单。");
+					return;
+				}
+				var url = "../portal/PortalIndex!show.action?income=menu&pageId=" + pageInfo.id;
+				$.ajax({
+					type:"POST",
+					url:"../control/extControl?serviceid=frame.Menu&methodId=saveMenu&t_from_id=frame.Menu",
+					data:{"name":name,"note":"","order":ord, "url":url, "pid":node.id,urls:"portal/Export.action,portal/PortalIndex!print.action,portal/PortalIndex!show.action"},
+					dataType:"html",
+					success:function(){
+						msginfo("菜单推送成功。", "suc");
+					},
+					error:function(){
+						msginfo("系统出错。");
+					}
+				});
+				$('#pdailog').dialog('close');
+			}
+		},{
+			text:'取消',
+			iconCls:"icon-cancel",
+			handler:function(){
+				$('#pdailog').dialog('close');
+			}
+		}]
+	});
+	//初始化菜单
+	$('#ggcatatree').tree({
+		url:'../control/extControl?serviceid=frame.Menu&methodId=loadData&t_from_id=frame.Menu&t='+Math.random(),
+		dnd:false,
+		animate:true,
+		data: [{id:'0', text:'系统菜单', state:'closed', iconCls:"icon-earth"}],
+		onBeforeLoad: function(node){
+			if(!node || node == null){
+				return false;
+			}
+		}
+	});
+	var node = $('#ggcatatree').tree("getRoot");
+	$('#ggcatatree').tree("expand", node.target);
+
+}
 //设置报表风格样式
+/**
 function setpagestyle(){
 	var s = pageInfo.stylename;
 	var ctx = "<div style='margin:10px;'><br/><span class='rlayout'><div class='pagestyle' tp=\"def\" style='background-color:#eeeeee;'> &nbsp; </div><input type=\"radio\" "+(s&&s=="def"?"checked":"")+" value=\"def\" name=\"selstyle\">默认</span><span class='rlayout'><div class='pagestyle' tp=\"black\" style='background-color:#000000;'> &nbsp; </div><input type=\"radio\" value=\"black\" "+(s&&s=="black"?"checked":"")+" name=\"selstyle\">黑色</span><span class='rlayout'><div class='pagestyle' style='background-color:#00F;' tp=\"blue\"> &nbsp; </div><input type=\"radio\"  value=\"blue\" name=\"selstyle\" "+(s&&s=="blue"?"checked":"")+">蓝色</span><span class='rlayout'><div class='pagestyle' style='background-color:#F00;' tp=\"red\"> &nbsp; </div><input type=\"radio\" "+((s&&s=="red"?"checked":""))+"  value=\"red\" name=\"selstyle\">红色</span><span class='rlayout'><div class='pagestyle' style='background-color:#FF3;' tp=\"yellow\"> &nbsp; </div><input type=\"radio\" value=\"yellow\" name=\"selstyle\" "+((s&&s=="yellow"?"checked":""))+">黄色</span></div>";
@@ -1385,6 +1466,7 @@ function setpagestyle(){
 		s.attr("checked","checked");
 	});
 }
+**/
 function msginfo(input, tp){
 	var str = null;
 	if(tp && tp == 'suc'){

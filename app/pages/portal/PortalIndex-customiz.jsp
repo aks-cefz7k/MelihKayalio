@@ -78,6 +78,7 @@ jQuery(function(){
                 <%if(VDOPUtils.isShowMenu("print", request)){%>
              <a href="javascript:printpage()" id="mb10" class="easyui-linkbutton" plain="true" iconCls="icon-print">打印</a>
              <%}%>
+			 <a href="javascript:pushpage()" id="mb10" class="easyui-linkbutton" plain="true" iconCls="icon-push">发布</a>
              <a href="javascript:helper()" id="mb10" class="easyui-linkbutton" plain="true" iconCls="icon-help">帮助</a>
    </div>
    
