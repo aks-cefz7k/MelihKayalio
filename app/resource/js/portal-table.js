@@ -379,7 +379,7 @@ function setGridProperty(comp){
 			curTmpInfo.isupdate = true;
 			if(col == "name"){
 				comp.name = val;
-				$("#c_"+comp.id + " div.ctit").text(val);
+				$("#c_"+comp.id + " div.ctit h5").text(val);
 			}else{
 				if(comp[col] == val){
 					return; //值未变
@@ -433,7 +433,7 @@ function setBoxProperty(comp){
 			
 			if(col == "name"){
 				comp.name = val;
-				$("#c_"+comp.id + " div.ctit").text(val);
+				$("#c_"+comp.id + " div.ctit h5").text(val);
 			}else{
 				if(comp.kpiJson[col] == val){ //值未改变
 					return;
@@ -536,7 +536,7 @@ function editBoxData(compId){
 			$("#dataProperty #boxData").html("<span id=\"k_"+node.attributes.col_id+"\" class=\"boxcol\"><span class=\"text\">"+node.text+"</span></span>");
 			//设置title
 			comp.name = node.text;
-			$("#c_" + comp.id + " div.ctit").html(comp.name);
+			$("#c_" + comp.id + " div.ctit h5").html(comp.name);
 			curTmpInfo.isupdate = true;
 			boxView(comp);
 		}

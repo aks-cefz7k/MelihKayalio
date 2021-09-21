@@ -363,7 +363,7 @@ function chgcompname(ts, compId){
 	$.messager.prompt('组件标题', '请输入新的组件标题：', function(msg){
 		if(msg){
 			comp.name = msg;
-			$("#c_"+compId+" .ctit").text(msg);
+			$("#c_"+compId+" .ctit h5").text(msg);
 			curTmpInfo.isupdate = true;
 		}
 	});
@@ -738,7 +738,7 @@ function setTableProperty(comp){
 			curTmpInfo.isupdate = true;
 			if(col == "name"){
 				comp.name = val;
-				$("#c_"+comp.id + " div.ctit").text(val);
+				$("#c_"+comp.id + " div.ctit h5").text(val);
 			}else if(col == "showtitle"){
 				comp.showtitle = val;
 			}else if(col == "lockhead" || col == "height"){
@@ -863,7 +863,7 @@ function setTextProperty(comp){
 			
 			if(col == "name"){
 				comp.name = val;
-				$("#c_"+comp.id + " div.ctit").text(val);
+				$("#c_"+comp.id + " div.ctit h5").text(val);
 			}else if(col == "showtitle"){
 				comp.showtitle = val;
 			}else{

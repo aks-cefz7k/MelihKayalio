@@ -620,7 +620,7 @@ function setChartProperty(comp){
 				chartview(comp, comp.id);
 			}else if(col == "title"){
 				comp.name = val;
-				$("#c_"+comp.id + " div.ctit").text(val);
+				$("#c_"+comp.id + " div.ctit h5").text(val);
 			}else{
 				s[col] = val;
 			}
