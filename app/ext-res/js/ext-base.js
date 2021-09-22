@@ -365,3 +365,65 @@ function tableBodyscroll(id){
 		$("#"+id+" .lock-dg-header").css("margin-left", "-"+left+"px");
 	});
 }
+/**
+* 图形,表格连接
+**/
+function chartComp_Link(x, xval, url, pms, compId, tps){
+	if(url == null || url == 'null'){
+		alert("未定义接收组件。");
+		return;
+	}
+	pms = pms + x+"="+xval;
+	var pp = {};
+	var p = pms.split("&");
+	for(i=0; i<p.length; i++){
+		var tmp = p[i].split("=");
+		var k = tmp[0];
+		var v = tmp[1];
+		pp[k] = v;
+	}
+	for(i=0; i<url.length; i++){
+		var u = url[i];
+		var d = compId[i];
+		__showLoading();
+		jQuery("#"+(tps[i]=="chart"?"p":"")+d).load(u, pp, function(){
+			__hideLoading();
+		});
+	}
+}
+/**
+ * 维度钻取
+ * @return
+ */
+function fieldDirll(config){
+	var fields = jQuery('#' + config.table + " td[drillid='"+config.pid+"'] .crossDirll").bind('click', function(e){
+		var thiz = jQuery(this);
+		if(thiz.attr('isopen') == 0){
+			var tabTr = thiz.parent().css('font-weight', 'bold').parents("tr.tr-row1,tr.tr-row2");
+			//获取内容
+			__showLoading();
+			var parms = thiz.attr('parms');
+			if(config.text != undefined && config.text != ""){
+				parms = parms + '&text=' + jQuery.fn.toJSON(config.text);
+			}
+			
+			jQuery.ajax({url: config.url, data: parms, type:'POST', dataType:'html', success: function(resp){
+				jQuery(resp).insertAfter(tabTr);
+				__hideLoading();
+			}});
+			thiz.addClass('crossDirll-open');
+			thiz.attr('isopen', '1');
+		}else{
+			__nodeRemove(thiz.parent().css('font-weight', 'normal'), config);
+			thiz.removeClass('crossDirll-open');
+			thiz.attr('isopen', '0');
+		}
+	});
+}
+function __nodeRemove(target, config){
+	var pid = target.children('.crossDirll').attr('pid');
+	jQuery('#' + config.table+' td[drillid="'+pid+'"]').each(function(a, b){
+			__nodeRemove(jQuery(b), config);
+			jQuery(b).parent().remove();
+	});
+}

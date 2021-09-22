@@ -108,10 +108,15 @@ public class PortalTableService {
 				String txt = (String)dim.get("tableColName");
 				String tname = (String)dim.get("tableName");
 				String t = (String)dim.get("tname");
+				int iscalc = (Integer)dim.get("calc");
 				if(key != null && txt != null && key.length() >0 && txt.length() >0){
 					sql.append(tableAlias.get(tname)+"."+key+", "+ tableAlias.get(tname) +"." + txt + ",");
 				}else{
-					sql.append(tableAlias.get(t)+"."+dim.get("colname")+" "+dim.get("code")+", ");
+					if(iscalc == 1){
+						sql.append(dim.get("colname")+" "+dim.get("code")+", ");
+					}else{
+						sql.append(tableAlias.get(t)+"."+dim.get("colname")+" "+dim.get("code")+", ");
+					}
 				}
 			}
 			
@@ -173,9 +178,9 @@ public class PortalTableService {
 			String valType = row.getValType();
 			String tname = row.getTname();
 			if("String".equalsIgnoreCase(valType)){
-				sql.append(" and "+tableAlias.get(tname)+"." + row.getColName()+" = '$"+row.getAlias()+"'");
+				sql.append(" and "+ (row.getCalc() == 1 ?"":tableAlias.get(tname)+".") + row.getColName()+" = '$"+row.getAlias()+"'");
 			}else{
-				sql.append(" and " + tableAlias.get(tname) + "." + row.getColName()+" = $"+row.getAlias());
+				sql.append(" and " + (row.getCalc() == 1 ?"":tableAlias.get(tname)+".") + row.getColName()+" = $"+row.getAlias());
 			}
 		}
 		
@@ -214,7 +219,6 @@ public class PortalTableService {
 					sql.append(",");
 				}
 			}
-			/**
 			//钻取的group by
 			if(drillDim != null && drillDim.size() >= drillLevel){
 				for(int i=0; i<drillLevel; i++){
@@ -223,15 +227,14 @@ public class PortalTableService {
 					String txt = (String)dim.get("tableColName");
 					String tname = (String)dim.get("tableName");
 					String t = (String)dim.get("tname");
-					//int calc = dim.get
+					int iscalc = (Integer)dim.get("calc");
 					if(key != null && txt != null && key.length() >0 && txt.length() >0){
-						sql.append("," +  tableAlias.get(tname) + "." + key);
+						sql.append("," + (iscalc == 1 ? "":tableAlias.get(tname) + ".") + key);
 					}else{
-						sql.append("," + tableAlias.get(t) + "." + dim.get("code"));
+						sql.append("," + (iscalc == 1 ?"":tableAlias.get(t) + ".") + dim.get("code"));
 					}
 				}
 			}
-			**/
 		}
 		//处理指标过滤
 		/**

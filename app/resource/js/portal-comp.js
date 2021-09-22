@@ -778,7 +778,7 @@ function crossdrill(compId){
 	$.ajax({
 		type:"post",
 		url:"../bireport/Dim!queryDims.action",
-		data: {tableId: comp.tid},
+		data: {cubeId: comp.cubeId},
 		dataType:"json",
 		async:false,
 		success: function(resp){
@@ -814,13 +814,14 @@ function crossdrill(compId){
 			content:ctx,
 			buttons:[{
 				text:'确定',
+				iconCls:"icon-ok",
 				handler:function(){
 					var dimid = $("#pdailog #drillDim").val();
 					if(dimid == ''){
 						delete comp.tableJson.drillDim;
 					}else{
 						var dim = findDim(dimid);
-						comp.tableJson.drillDim[0] = {name:dim.dim_desc,code:dim.alias,type:dim.dim_type,tableColKey:dim.tableColKey,tableColName:dim.tableColName,dimord:dim.dim_ord,colname:dim.col_name};
+						comp.tableJson.drillDim[0] = {name:dim.dim_desc,code:dim.alias,type:dim.dim_type,tableColKey:dim.tableColKey,tableColName:dim.tableColName,dimord:dim.dim_ord,colname:dim.col_name,calc:dim.calc};
 						
 					}
 					tableView(comp, comp.id);
@@ -829,6 +830,7 @@ function crossdrill(compId){
 				}
 			},{
 				text:'取消',
+				iconCls:"icon-cancel",
 				handler:function(){
 					$('#pdailog').dialog("close");
 				}

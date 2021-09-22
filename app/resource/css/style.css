@@ -8141,3 +8141,6 @@ TABLE.lockgrid div.dg-cell {
 	border:solid 1px #ddd;
 	border-top:none;
 }
+.crossDirll-level {
+	float: left;
+}

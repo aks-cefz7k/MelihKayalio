@@ -1234,24 +1234,24 @@ function compevent(compId){
 		}
 	}
 	str = str + "</select>";
-	var findCubeCols = function(tid){
+	var findCubeCols = function(cubeId){
 		var ret = "";
 		$.ajax({
 			type:"post",
 			url:"../bireport/Dim!queryDims.action",
-			data: {tableId: tid},
+			data: {cubeId: cubeId},
 			dataType:"json",
 			async:false,
 			success: function(resp){
 				for(k=0; k<resp.length; k++){
-					ret = ret + "<option value=\""+resp[k].col_name+"@"+resp[k].alias+"@"+resp[k].dim_type+"\" "+(linkaccept&&linkaccept.col==resp[k].col_name?"selected":"")+">"+resp[k].dim_desc+"</option>";
+					ret = ret + "<option value=\""+resp[k].col_name+"@@"+resp[k].alias+"@@"+resp[k].dim_type+"\" "+(linkaccept&&linkaccept.col==resp[k].col_name?"selected":"")+">"+resp[k].dim_desc+"</option>";
 				}
 			}
 		});
 		return ret;
 	};
 	var str2 = "<select id=\"acceptCol\" name=\"acceptCol\" class=\"inputform2\"><option value=\"\"></option>";
-	str2 = str2 + findCubeCols(comp.tid);
+	str2 = str2 + findCubeCols(comp.cubeId);
 	str2 = str2 + "</select>";
 	var ctx = "<div id=\"compevent_tab\" style=\"height:auto; width:auto;\"><div title=\"事件发起\"><div class=\"textpanel\"><span class=\"inputtext\">联动组件：</span>"+str+"<br/> &nbsp; &nbsp; ->或-> <br/><span class=\"inputtext\">链接到URL：</span><input type=\"text\" name=\"linkurl\" id=\"linkurl\" class=\"inputform2\" value=\""+(clink&&clink.url?clink.url:"")+"\"><br/><a href=\"javascript:;\" id=\"cleanPostEvent\">清除事件发起</a></div></div><div title=\"事件接收\"><div class=\"textpanel\"><span class=\"inputtext\">接收字段：</span>"+str2+"<br/><span class=\"inputtext\">默认值：</span><input type=\"text\" name=\"dftval\" id=\"dftval\" class=\"inputform2\" value=\""+(linkaccept&&linkaccept.dftval?linkaccept.dftval:"")+"\"><br/><span class=\"inputtext\">默认值类型：</span><select name=\"valtype\" id=\"valtype\" class=\"inputform2\"><option value=\"\"></option><option value=\"number\" "+(linkaccept&&linkaccept.valType=="number"?"selected":"")+">数字类型</option><option value=\"string\" "+(linkaccept&&linkaccept.valType=="string"?"selected":"")+">字符类型</option></select><br/><a href=\"javascript:;\" id=\"cleanAcceptEvent\">清除事件接收</a></div></div></div>";
 	$('#pdailog').dialog({
@@ -1291,7 +1291,7 @@ function compevent(compId){
 					
 				}else{
 					var colandtype = $("#compevent_tab #acceptCol").val();
-					var tmp = colandtype.split("@");
+					var tmp = colandtype.split("@@");
 					var col = tmp[0];
 					var type = tmp[2];
 					var alias = tmp[1];

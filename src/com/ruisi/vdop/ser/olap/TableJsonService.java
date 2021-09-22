@@ -116,7 +116,7 @@ public class TableJsonService {
 			RowDimContext dim = new RowDimContext();
 			dim.setCode(obj.getString("code"));
 			dim.setName(obj.getString("name"));
-			dim.setCodeDesc(dim.getCode()+"_desc");
+			dim.setCodeDesc(dim.getCode());
 			dim.setType("frd");
 			ret.add(dim);
 		}
