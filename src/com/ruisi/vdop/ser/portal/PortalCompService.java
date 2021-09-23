@@ -60,8 +60,11 @@ public class PortalCompService {
 	}
 	
 	public void createBox(Element td, JSONObject compJson) throws IOException{
-		String dsetId = compJson.getString("dsetId");
-		String dsid = compJson.getString("dsid");
+		String dsetId = (String)compJson.get("dsetId");
+		String dsid = (String)compJson.get("dsid");
+		if(dsetId == null || dsid == null){
+			return;
+		}
 		if(!pageSer.getDsids().contains(dsid)){
 			pageSer.getDsids().add(dsid);
 		}

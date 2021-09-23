@@ -1118,7 +1118,7 @@ function crtLayoutHTML(json, isbind){
 		onDragLeave:function(e,source){
 			$(source).draggable('proxy').find("span").addClass("tree-dnd-no");
 			$(source).draggable('proxy').find("span").removeClass("tree-dnd-yes");
-			//$(".indicator").hide();
+			delete curTmpInfo.id;
 		},
 		onDrop:function(e,source){
 			$(".indicator").hide();
