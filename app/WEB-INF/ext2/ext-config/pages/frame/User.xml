@@ -22,8 +22,7 @@
 				<button action="frame.User" method="" desc="搜索" checkParam="false"/>
 			
 			
-			<div align="right" style="padding:3px;">
-		
+			<div align="left" style="padding:3px;">
 				<button action="frame.User" desc="新建" method="preAdd" checkParam="false" submit="get"></button>
 				<button action="frame.User" method="preMod" submit="get" desc="修改">
 				</button>

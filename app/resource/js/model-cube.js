@@ -151,12 +151,49 @@ function newCube(isupdate, cubeId){
 	$("#crtfz,#crtcalckpi,#dim_editbtn,#dim_delbtn,#adddynacol").linkbutton({});
 	$("#crtdataset").tabs({});
 	//初始化左边树形状
-	var leftTreeView = function(c){
-		  var dt = [{id:'leftroot',text:(isupdate?c.dsetName:c.name),iconCls:'icon-table', children:[]}];
+	var leftTreeView = function(dset, cube){
+		 // var cld = [];
+		 // var dt = [{id:'leftroot',text:dset.master,iconCls:'icon-table', children:cld}];
+		  //获取表
+		  var tbs = [];
+		  var tabExist = function(tname){
+			  var ret = false;
+			  for(k=0; k<tbs.length; k++){
+				  if(tbs[k] == tname){
+					  ret = true;
+					  break;
+				  }
+			  }
+			  return ret;
+		  }
+		  var c = dset;
 		  for(i=0; i<c.cols.length; i++){
 			  var r = c.cols[i];
-			  var node = {id:r.name,text:r.name,iconCls:'icon-dscol',attributes:{tp:'node', vtype:r.type, col:r.name, tname:r.tname, expression:r.expression}}
-			  dt[0].children.push(node);
+			  if(!tabExist(r.tname)){
+				tbs.push(r.tname);
+			  }
+		  }
+		  var findcols = function(tname){
+			  var ret = [];
+			  for(j=0; j<c.cols.length; j++){
+				  if(c.cols[j].tname == tname){
+					  ret.push(c.cols[j]);
+				  }
+			  }
+			  return ret;
+		  }
+		  //获取表
+		  var dt = [];
+		  for(i=0; i<tbs.length; i++){
+			  var ccld = [];
+			  var nd = {id:tbs[i],text:tbs[i],iconCls:'icon-table', children:ccld};
+			  dt.push(nd);
+			  var cols = findcols(tbs[i]);
+			  for(l=0; l<cols.length; l++){
+				   var r = cols[l];
+				  var node = {id:r.name,text:r.name,iconCls:'icon-dscol',attributes:{tp:'node', vtype:r.type, col:r.name, tname:r.tname, expression:r.expression}}
+				  ccld.push(node);
+			  }
 		  }
 		  //动态字段
 		  if(c.dynamic && c.dynamic != null && c.dynamic.length > 0){
@@ -169,7 +206,46 @@ function newCube(isupdate, cubeId){
 			  }
 		  }
 		  $("#cubelefttree").tree({
-			  data:dt
+			  data:dt,
+			  onLoadSuccess:function(){
+				  if(isupdate){
+				   //隐藏已选择的维度和指标 列
+					var cubeObj = c;
+					var findcol = function(cid){
+						var ret = null;
+						for(j=0;j<cubeObj.dims.length;j++){
+							if(cubeObj.dims[j].alias == cid){
+								ret = cubeObj.dims[j];
+								break;
+							}
+						}
+						if(ret == null){
+							for(j=0;j<cubeObj.kpis.length;j++){
+								if(cubeObj.kpis[j].alias == cid){
+									ret = cubeObj.kpis[j];
+									break;
+								}
+							}
+						}
+						return ret;
+					};
+					window.setTimeout(function(){
+						 var nodes = [];
+							var roots = $("#cubelefttree").tree("getRoots");
+							for(j=0; j<roots.length; j++){
+								var r = roots[j];
+								nodes = nodes.concat($("#cubelefttree").tree("getChildren", r.target));
+							}
+							for(i=0; i<nodes.length; i++){
+								var id = nodes[i].id;
+								if(findcol(id) != null){
+									$(nodes[i].target).attr("hide", "y").hide();
+								}
+							}
+					}, 200);
+				  
+				  }
+			  }
 		  });
 	};
 	var initlefttree = function(){
@@ -179,7 +255,8 @@ function newCube(isupdate, cubeId){
 			dataType:"JSON",
 			data:{dsetId:$("#pdailog #dsetId").val()},
 			success:function(resp){
-				  leftTreeView(resp);
+				var dset = resp;
+				  leftTreeView(dset);
 			}
 		});
 	};
@@ -193,42 +270,6 @@ function newCube(isupdate, cubeId){
 	});
 	//初始化右边树形状
 	initRightCubeTree(cube);
-	//隐藏已选择的维度和指标 列
-	var cubeObj = cube;
-	var findcol = function(cid){
-		var ret = null;
-		for(j=0;j<cubeObj.dims.length;j++){
-			if(cubeObj.dims[j].alias == cid){
-				ret = cubeObj.dims[j];
-				break;
-			}
-		}
-		if(ret == null){
-			for(j=0;j<cubeObj.kpis.length;j++){
-				if(cubeObj.kpis[j].alias == cid){
-					ret = cubeObj.kpis[j];
-					break;
-				}
-			}
-		}
-		return ret;
-	};
-	var nodes = [];
-	var roots = $("#cubelefttree").tree("find","leftroot");
-	if(roots != null){
-		nodes = nodes.concat($("#cubelefttree").tree("getChildren", roots.target));
-	}
-	var dytar = $("#cubelefttree").tree("find","dynaroot");
-	if(dytar != null){
-		var dynas = $("#cubelefttree").tree("getChildren", dytar.target);
-		nodes = nodes.concat(dynas);
-	}
-	for(i=0; i<nodes.length; i++){
-		var id = nodes[i].id;
-		if(findcol(id) != null){
-			$(nodes[i].target).attr("hide", "y").hide();
-		}
-	}
 }
 function initRightCubeTree(cube){
 	//加载立方体字段
@@ -414,15 +455,20 @@ function editcubecol(){
 	var ctx = "";
 	var atp = ["sum","avg","count", "max", "min"];
 	if(right.attributes.tp == 'dim'){
-		var cols = $("#cubelefttree").tree("getChildren", $("#cubelefttree").tree("find", "leftroot").target);
+		var cols = $("#cubelefttree").tree("getRoots");
 		var tabstr = "<option value=\"\"></option>";
 		var keystr = "<option value=\"\"></option>";
 		var txtstr = "<option value=\"\"></option>";
 		var ordstr = "<option value=\"\"></option>";
 		var tables = [];
 		for(i=0; i<cols.length; i++){
-			var tname = cols[i].attributes.tname;
-			tables.push(tname);
+			var clds = cols[i].children;
+			for(j=0; j<clds.length; j++){
+				if(clds[j].attributes){
+					var tname = clds[j].attributes.tname;
+					tables.push(tname);
+				}
+			}
 		}
 		tables = tables.uniqueArray();
 		for(i=0; i<tables.length; i++){
@@ -513,16 +559,19 @@ function editcubecol(){
 	});
 	if(right.attributes.tp == 'dim'){
 		var upcolfunc = function(tname, colkey, coltext, ordcol){
-			var keystr = "";
-			var txtstr = "";
-			var ordstr = "";
-			var cols = $("#cubelefttree").tree("getChildren", $("#cubelefttree").tree("find", "leftroot").target);
+			var keystr = "<option value=\"\"></option>";
+			var txtstr = "<option value=\"\"></option>";
+			var ordstr = "<option value=\"\"></option>";
+			var cols = $("#cubelefttree").tree("getRoots");
 			for(i=0; i<cols.length; i++){
 				var c = cols[i];
-				if(c.attributes.tname == tname){
-					keystr = keystr + "<option value=\""+c.id+"\" "+(colkey==c.id?"selected":"")+">"+c.id+"</option>";
-					txtstr = txtstr + "<option value=\""+c.id+"\" "+(coltext==c.id?"selected":"")+">"+c.id+"</option>";
-					ordstr = ordstr + "<option value=\""+c.id+"\" "+(ordcol==c.id?"selected":"")+">"+c.id+"</option>";
+				for(j =0; c.children&&j<c.children.length; j++){
+					var t = c.children[j];
+					if(t.attributes && t.attributes.tname == tname){
+						keystr = keystr + "<option value=\""+t.id+"\" "+(colkey==t.id?"selected":"")+">"+t.id+"</option>";
+						txtstr = txtstr + "<option value=\""+t.id+"\" "+(coltext==t.id?"selected":"")+">"+t.id+"</option>";
+						ordstr = ordstr + "<option value=\""+t.id+"\" "+(ordcol==t.id?"selected":"")+">"+t.id+"</option>";
+					}
 				}
 			}
 			$("#dsColumn_div #colkey").html(keystr);
