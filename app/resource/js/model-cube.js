@@ -640,7 +640,14 @@ function editCalcKpi(update, kpiId){
 	}
 	//查询已选指标
 	var kpiStr = "";
-	var ls = $("#cubelefttree").tree("getChildren", $("#cubelefttree").tree("find", "leftroot").target);
+	var ls = [];
+	var roots = $("#cubelefttree").tree("getRoots");
+	for(i=0; i<roots.length; i++){
+		var c = roots[i].children;
+		for(j=0; j<c.length; j++){
+			ls.push(c[j]);
+		}
+	}
 	for(i=0; i<ls.length; i++){
 		var k = ls[i].attributes;
 		kpiStr = kpiStr + "<button name=\""+k.col+"\" class=\"btn btn-primary btn-xs\">"+ k.col+"</button> ";
@@ -747,12 +754,13 @@ function cube2ds(){
 	}
 	if(right.attributes.tp != 'group'){ //分组删除不用关联左边树
 		var id = right.attributes.alias;   //通过 refId 引用s数据集的字段ID
-		//var root = $("#cubelefttree").tree("getRoot");
-		var cld = $("#cubelefttree").tree("getChildren", $("#cubelefttree").tree("find", "leftroot").target);
-		var dynaroot = $("#cubelefttree").tree("find", "dynaroot");
-		if(dynaroot != null){
-			var cld2 = $("#cubelefttree").tree("getChildren", dynaroot.target);
-			cld = cld.concat(cld2);
+		var cld = [];
+		var ls = $("#cubelefttree").tree("getRoots");
+		for(i=0; i<ls.length; i++){
+			var c = ls[i].children;
+			for(j=0; j<c.length; j++){
+				cld.push(c[j]);
+			}
 		}
 		for(i=0; i<cld.length; i++){
 			if(cld[i].id == id){
