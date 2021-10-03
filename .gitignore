@@ -1,3 +1,4 @@
 *.mv
 *.class
 bin/ruisi-bi.jar
+app/WEB-INF/classes
