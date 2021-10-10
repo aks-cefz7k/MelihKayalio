@@ -111,7 +111,21 @@
 							<ul class="nav nav-second-level">
 								<s:iterator var="child" value="#attr.children">
 									 <li>
-										<a class="J_menuItem" href="${child.menu_url}">${child.menu_name}</a>
+										<a <s:if test="#attr.child.children.size() == 0">class="J_menuItem" href="${child.menu_url}" </s:if>>
+											<span class="nav-label">${child.menu_name}</span>
+											<s:if test="#attr.child.children.size() > 0"><span class="fa arrow"></span></s:if>
+										</a>
+										<s:if test="#attr.child.children.size() > 0">
+											<ul class="nav nav-third-level">
+												<s:iterator var="sub" value="#attr.child.children">
+													 <li>
+														<a class="J_menuItem" href="${sub.menu_url}">
+															<span class="nav-label">${sub.menu_name}</span>
+														</a>
+													</li>
+												</s:iterator>
+											</ul>
+										</s:if>
 									</li>
 								</s:iterator>
 							</ul>

@@ -6,8 +6,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.ruisi.ext.engine.dao.DaoHelper;
-import com.ruisi.ext.engine.init.XmlParser;
-import com.ruisi.ext.engine.view.context.ExtContext;
 import com.ruisi.ispire.dc.grid.GridDataUtils;
 import com.ruisi.vdop.bean.User;
 import com.ruisi.vdop.util.VDOPUtils;
@@ -27,7 +25,15 @@ public class Frame3Action {
 		for(int i=0; i<roots.size(); i++){
 			Map root = (Map)roots.get(i);
 			Double id = GridDataUtils.getKpiData(root, "menu_id");
-			root.put("children", findMenuChildren(id, menuList));
+			List subList = findMenuChildren(id, menuList);
+			root.put("children", subList);  //菜单只支持3级
+			//查询第三级
+			for(int j=0; j<subList.size(); j++){
+				Map sub = (Map)subList.get(j);
+				Double subId = GridDataUtils.getKpiData(sub, "menu_id");
+				sub.put("children", findMenuChildren(subId, menuList));
+			}
+			
 		}
 		VDOPUtils.getRequest().setAttribute("menu", roots);
 		

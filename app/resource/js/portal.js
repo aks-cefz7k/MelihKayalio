@@ -1391,6 +1391,18 @@ function pushpage(){
 					msginfo("请选择上级菜单。");
 					return;
 				}
+				//新增只能配置3级菜单
+				var p1 = $("#pdailog #ggcatatree").tree("getParent", node.target);
+				if(p1 != null){
+					var p2 = $("#pdailog #ggcatatree").tree("getParent", p1.target);
+					if(p2 != null){
+						var p3 = $("#pdailog #ggcatatree").tree("getParent", p2.target);
+						if(p3 != null && p3.id == "0"){
+							$.messager.alert("出错了。","菜单只能建3级", "error");
+							return;
+						}
+					}
+				}
 				var url = "../portal/PortalIndex!show.action?income=menu&pageId=" + pageInfo.id;
 				$.ajax({
 					type:"POST",

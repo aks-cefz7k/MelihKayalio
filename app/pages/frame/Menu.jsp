@@ -59,6 +59,21 @@
 				   }
 			});
 		}
+		if(update == false){
+			//新增只能配置3级菜单
+			var p1 = $("#ggcatatree").tree("getParent", node.target);
+			if(p1 != null){
+				var p2 = $("#ggcatatree").tree("getParent", p1.target);
+				if(p2 != null){
+					var p3 = $("#ggcatatree").tree("getParent", p2.target);
+					if(p3 != null && p3.id == "0"){
+						$.messager.alert("出错了。","菜单只能建3级", "error");
+						return;
+					}
+				}
+			}
+			
+		}
 		var ctx = "<div class=\"textpanel\"><span class=\"inputtext\">名称：</span><input type=\"text\" id=\"name\" class=\"inputform\" value=\""+(obj?obj.name:"")+"\"><br/><span class=\"inputtext\">URL：</span><input type=\"text\" id=\"url\" class=\"inputform\" value=\""+((obj?obj.url:""))+"\"><br/><span class=\"inputtext\">排序：</span><input type=\"text\" id=\"order\" class=\"inputform\" value=\""+(obj?obj.order:"1")+"\"><br/><span class=\"inputtext\">备注：</span><input type=\"text\" id=\"desc\" class=\"inputform\" value=\""+(obj?obj.desc:"")+"\"><br/></div>";
 		$('#pdailog').dialog({
 			title: update?'修改菜单':'新建菜单',
