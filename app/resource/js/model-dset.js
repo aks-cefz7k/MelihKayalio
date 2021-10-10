@@ -324,7 +324,9 @@ function newdset(isupdate, dsetId){
 					idx = j;
 				}
 			}
-			transform.joininfo.splice(idx, 1);
+			if(idx != -1){
+				transform.joininfo.splice(idx, 1);
+			}
 		}
 	});
 	//表关联 -- 取消关联按钮
