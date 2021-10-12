@@ -20,16 +20,16 @@
             </select>
 			</div>
         </s:if>
-        <s:if test="#request.dimType == 'day'">
+        <s:elseif test="#request.dimType == 'day'">
 	
 			<div style="margin:20px;">
             <p/>
             开始日期： <input type="text" size="20" value="${dft2}" id="dft2" name="dft2" readonly="true" onclick="WdatePicker({dateFmt:'yyyy-MM-dd', minDate:'${min}', maxDate:'${max}'})" class="inputform2 Wdate"> <p/>
             结束日期： <input type="text" size="20" value="${dft1}" id="dft1" name="dft1" readonly="true" onclick="WdatePicker({dateFmt:'yyyy-MM-dd', minDate:'${min}', maxDate:'${max}'})" class="inputform2 Wdate">
             </div>
-        </s:if>
+        </s:elseif>
 
-<s:if test="#request.dimType == 'frd' || #request.dimType == 'year' || #request.dimType == 'quarter'">
+<s:else>
 <div >
 <input id="dimsearch" style="width:280px;"></input>
 </div>
@@ -46,7 +46,7 @@ if(id != null && id.length() > 0){  //忽略 id 为 null 的
 %>
 </s:iterator>
 </div>
-</s:if>
+</s:else>
 
 <script>
 $(function(){

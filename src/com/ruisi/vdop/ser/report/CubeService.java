@@ -71,7 +71,7 @@ public class CubeService {
 	public void saveCube(){
 		this.cubeId = (Integer)daoHelper.getSqlMapClientTemplate().queryForObject("bi.model.maxcubeId");
 		//插入表数据
-		Map m = new HashMap();
+		Map<String, Object> m = new HashMap<String, Object>();
 		m.put("cubeId", cubeId);
 		m.put("cubeName", cubeJson.get("name"));
 		m.put("cubeDesc", cubeJson.get("note"));

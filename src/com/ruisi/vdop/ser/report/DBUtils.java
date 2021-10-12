@@ -28,7 +28,7 @@ import com.ruisi.vdop.util.VdopConstant;
 public class DBUtils {
 	
 
-	private static void copyData(ResultSet rs, Map m) throws SQLException{
+	private static void copyData(ResultSet rs, Map<String, Object> m) throws SQLException{
 		String tname = rs.getString(1);
 		m.put("id", tname);
 		m.put("text", tname);

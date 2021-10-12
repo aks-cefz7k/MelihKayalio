@@ -739,17 +739,6 @@ public class ChartService {
 		}
 		for(int i=0; i<dims.size(); i++){
 			DimInfo dim = dims.get(i);
-			if(dim.getType().equals("frd")  || "year".equals(dim.getType()) || "quarter".equals(dim.getType())){
-				
-				//限制维度筛选
-				if(dim.getVals() != null && dim.getVals().length() > 0){
-					String  vls = dim.getVals();
-					if("string".equalsIgnoreCase(dim.getValType())){
-						vls = VDOPUtils.dealStringParam(dim.getVals());
-					}
-					sql.append(" and " + dim.getColName() + " in ("+vls+")");
-				}
-			}else
 			//处理日期限制
 			if(dim.getType().equals("day")){
 				if(dim.getDay() != null){
@@ -768,6 +757,15 @@ public class ChartService {
 					String vls = VDOPUtils.dealStringParam(dim.getVals());
 					sql.append(" and " + dim.getColName() + " in ("+vls+")");
 					//isDealDate = true;
+				}
+			}else{
+				//限制维度筛选
+				if(dim.getVals() != null && dim.getVals().length() > 0){
+					String  vls = dim.getVals();
+					if("string".equalsIgnoreCase(dim.getValType())){
+						vls = VDOPUtils.dealStringParam(dim.getVals());
+					}
+					sql.append(" and " + dim.getColName() + " in ("+vls+")");
 				}
 			}
 		
@@ -794,25 +792,26 @@ public class ChartService {
 			String colname = param.getString("colname");
 			String alias = param.getString("alias");
 			String dateformat = (String)param.get("dateformat");
+			String tname = (String)param.get("tname");
 			//只有参数和组件都来源于同一个表，才能进行参数拼装
-			if((tp.equals("frd") || "year".equals(tp) || "quarter".equals(tp))){
+			if((tp.equals("day") || tp.equals("month"))){
+				if(release == 0 && param.get("st") != null && param.getString("st").length() > 0 ){
+					sql.append(" and " + colname + " between '"+ param.getString("st") + "' and '" +  param.getString("end") + "'");
+				}else if(release == 1){
+					sql.append(" and " + colname + " between '$s_"+alias+"' and '$e_"+alias+"'");
+				}else if(release == 2){
+					sql.append(" #if($"+alias+" != '') and " + tableAlias.get(tname) + "." +colname + " = $"+alias + " #end");   //仪表盘发布，日期,月份只有一个参数
+				}
+			}else{
 				if(release == 0 && param.get("vals") != null && param.getString("vals").length() > 0){
 					//字符串特殊处理
 					String  vls = param.getString("vals");
 					if("string".equalsIgnoreCase(param.getString("valType"))){
 						vls = VDOPUtils.dealStringParam(param.getString("vals"));
 					}
-					sql.append(" and " + colname + " in ("+vls+")");
+					sql.append(" and " + tableAlias.get(tname) + "." + colname + " in ("+vls+")");
 				}else if(release == 1 || release == 2){
-					sql.append(" #if($"+alias+" != '') and " + colname + " in ($extUtils.printVals($"+alias+", '"+param.getString("valType")+"')) #end");
-				}
-			}else if((tp.equals("day") || tp.equals("month"))){
-				if(release == 0 && param.get("st") != null && param.getString("st").length() > 0 ){
-					sql.append(" and " + colname + " between '"+ param.getString("st") + "' and '" +  param.getString("end") + "'");
-				}else if(release == 1){
-					sql.append(" and " + colname + " between '$s_"+alias+"' and '$e_"+alias+"'");
-				}else if(release == 2){
-					sql.append(" #if($"+alias+" != '') and " + colname + " = $"+alias + " #end");   //仪表盘发布，日期,月份只有一个参数
+					sql.append(" #if($"+alias+" != '') and " + tableAlias.get(tname) + "." + colname + " in ($extUtils.printVals($"+alias+", '"+param.getString("valType")+"')) #end");
 				}
 			}
 		}

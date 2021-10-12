@@ -242,6 +242,7 @@ public class PortalPageService {
 			String vtp = (String)param.get("valtype");
 			String dtformat = (String)param.get("dtformat");
 			String hiddenprm = (String)param.get("hiddenprm");
+			//String refds = (String)param.get("dsource");
 			
 			InputField input = null;
 			if("y".equals(hiddenprm)){
@@ -258,6 +259,11 @@ public class PortalPageService {
 						String sql = this.createDimSql(param);
 						String template = TemplateManager.getInstance().createTemplate(sql);
 						target.setTemplateName(template);
+						String dsid = param.getJSONObject("option").getString("dsource");
+						target.setRefDsource(dsid);  //获取数据源
+						if(!dsids.contains(dsid)){
+							dsids.add(dsid);
+						}
 					}
 					target.setAddEmptyValue(true);
 					input = target;
@@ -269,6 +275,11 @@ public class PortalPageService {
 						String sql = this.createDimSql(param);
 						String template = TemplateManager.getInstance().createTemplate(sql);
 						target.setTemplateName(template);
+						String dsid = param.getJSONObject("option").getString("dsource");
+						target.setRefDsource(dsid);  //获取数据源
+						if(!dsids.contains(dsid)){
+							dsids.add(dsid);
+						}
 					}
 					input = target;
 				}else if("dateselect".equals(type) || "monthselect".equals(type) || "yearselect".equals(type)){  //日历框
@@ -389,9 +400,9 @@ public class PortalPageService {
 	
 	public String createDimSql(JSONObject dim){
 		JSONObject opt = dim.getJSONObject("option");
-		Map p = new HashMap();
+		Map<String, Object> p = new HashMap<String, Object>();
 		p.put("dimId", opt.get("dimId"));
-		p.put("tid", opt.get("tableId"));
+		p.put("cubeId", opt.get("tableId"));
 		//查询事实表
 		Map dimCOl = (Map)VDOPUtils.getDaoHelper().getSqlMapClientTemplate().queryForObject("bi.olap.queryDimCol", p);
 		String col = (String)dimCOl.get("col");

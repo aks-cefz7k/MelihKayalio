@@ -153,28 +153,6 @@ public class TableService {
 		
 		for(int i=0; i<dims.size(); i++){
 			DimInfo dim = dims.get(i);
-			if(dim.getType().equals("frd") || "year".equals(dim.getType()) || "quarter".equals(dim.getType())){
-				
-				//限制维度筛选
-				if(dim.getVals() != null && dim.getVals().length() > 0){
-					String vls = null;
-					if(("year".equals(dim.getType()) || "quarter".equals(dim.getType())) && jstype != 0){  //有计算指标，需要从写时间值
-						vls = resetVals(dim.getVals(), dim.getType(), dim.getDateFormat(), jstype);
-						GridFilterContext filter = new GridFilterContext();
-						filter.setColumn(dim.getAlias());
-						filter.setFilterType(GridFilter.in);
-						filter.setValue(dim.getVals());
-						this.filters.add(filter);
-					}else{
-						vls = dim.getVals();
-					}
-					//处理字符串
-					if("string".equalsIgnoreCase(dim.getValType())){
-						vls = VDOPUtils.dealStringParam(vls);
-					}
-					sql.append(" and " + (dim.getCalc() == 1 ? dim.getColName() : tableAlias.get(dim.getTname()) + "." + dim.getColName()) + " in ("+vls+")");
-				}
-			}
 			
 			//处理日期限制
 			if(dim.getType().equals("day")){
@@ -210,7 +188,7 @@ public class TableService {
 				}
 			}
 			//处理月份
-			if(dim.getType().equals("month")){
+			else if(dim.getType().equals("month")){
 				if(dim.getMonth() != null){
 					//如果有计算指标，需要重写数据区间
 					String start = dim.getMonth().getStartMonth();
@@ -243,6 +221,26 @@ public class TableService {
 					ret = VDOPUtils.dealStringParam(ret);
 					sql.append(" and " + dim.getColName() + " in ("+ret+")");
 				}
+			} else {
+				//限制维度筛选
+				if(dim.getVals() != null && dim.getVals().length() > 0){
+					String vls = null;
+					if( jstype != 0){  //有计算指标，需要从写时间值
+						vls = resetVals(dim.getVals(), dim.getType(), dim.getDateFormat(), jstype);
+						GridFilterContext filter = new GridFilterContext();
+						filter.setColumn(dim.getAlias());
+						filter.setFilterType(GridFilter.in);
+						filter.setValue(dim.getVals());
+						this.filters.add(filter);
+					}else{
+						vls = dim.getVals();
+					}
+					//处理字符串
+					if("string".equalsIgnoreCase(dim.getValType())){
+						vls = VDOPUtils.dealStringParam(vls);
+					}
+					sql.append(" and " + (dim.getCalc() == 1 ? dim.getColName() : tableAlias.get(dim.getTname()) + "." + dim.getColName()) + " in ("+vls+")");
+				}
 			}
 		}
 		
@@ -254,35 +252,9 @@ public class TableService {
 			String alias = param.getString("alias");
 			String valType = param.getString("valType");
 			String dateformat = (String)param.get("dateformat");
+			String tname = (String)param.get("tname");
 			//只有参数和组件都来源于同一个表，才能进行参数拼装
-			if((tp.equals("frd") || tp.equals("year") || tp.equals("quarter"))){
-				if(release == 0 && param.get("vals") != null && ((String)param.get("vals")).length() > 0){
-					//字符串特殊处理
-					String  vls = param.getString("vals");
-					if(jstype != 0 && ("year".equals(tp) || "quarter".equals(tp))){
-						vls = resetVals(vls, tp, param.getString("dateformat"), jstype);
-					}
-					if("string".equalsIgnoreCase(valType)){
-						vls = VDOPUtils.dealStringParam(vls);
-					}
-					sql.append(" and " + colname + " in ("+vls+")");
-				}else if(release == 1 || release == 2){
-					sql.append(" #if($"+alias+" != '') and " + colname + " in ($extUtils.printVals($myUtils.resetVals($"+alias+",'"+tp+"','"+dateformat+"', "+jstype+"), '"+valType+"')) #end");
-				}
-				//生成filter
-				if(jstype != 0 && ("year".equals(tp) || "quarter".equals(tp))){
-					GridFilterContext filter = new GridFilterContext();
-					filter.setColumn(param.getString("alias"));
-					filter.setFilterType(GridFilter.in);
-					if(release == 0 && param.get("vals") != null && ((String)param.get("vals")).length() > 0){
-						filter.setValue(param.getString("vals"));
-					}else if(release == 1 || release == 2){
-						filter.setValue("${"+colname+"}");
-					}
-					this.filters.add(filter);
-				}
-				
-			}else if((tp.equals("day") || tp.equals("month"))){
+			if((tp.equals("day") || tp.equals("month"))){
 				if(release == 0 && param.get("st") != null && param.getString("st").length() > 0 ){
 					String ostart = param.getString("st");
 					String oend = param.getString("end");
@@ -297,7 +269,7 @@ public class TableService {
 				}else if(release == 1){
 					sql.append(" #if($s_"+alias+" != '' && $e_"+alias+" != '') and " + colname + " between $myUtils.resetBetween($s_"+alias+", $e_"+alias+", '"+tp+"', '"+dateformat+"', "+jstype+") #end");
 				}else if(release == 2){
-					sql.append(" #if($"+alias+" != '') and "+colname+" = $"+alias+" #end");
+					sql.append(" #if($"+alias+" != '') and "+tableAlias.get(tname) + "." + colname+" = $"+alias+" #end");
 				}
 				//生成filter
 				if(jstype != 0){
@@ -315,6 +287,32 @@ public class TableService {
 						filter.setValue2("${e_"+alias+"}");
 					}else if(release == 2){
 						filter.setValue("${"+alias+"}");
+					}
+					this.filters.add(filter);
+				}
+			}else{
+				if(release == 0 && param.get("vals") != null && ((String)param.get("vals")).length() > 0){
+					//字符串特殊处理
+					String  vls = param.getString("vals");
+					if(jstype != 0 && ("year".equals(tp) || "quarter".equals(tp))){
+						vls = resetVals(vls, tp, param.getString("dateformat"), jstype);
+					}
+					if("string".equalsIgnoreCase(valType)){
+						vls = VDOPUtils.dealStringParam(vls);
+					}
+					sql.append(" and " + tableAlias.get(tname) + "." + colname + " in ("+vls+")");
+				}else if(release == 1 || release == 2){
+					sql.append(" #if($"+alias+" != '') and " + tableAlias.get(tname) + "." +colname + " in ($extUtils.printVals($myUtils.resetVals($"+alias+",'"+tp+"','"+dateformat+"', "+jstype+"), '"+valType+"')) #end");
+				}
+				//生成filter
+				if(jstype != 0){
+					GridFilterContext filter = new GridFilterContext();
+					filter.setColumn(param.getString("alias"));
+					filter.setFilterType(GridFilter.in);
+					if(release == 0 && param.get("vals") != null && ((String)param.get("vals")).length() > 0){
+						filter.setValue(param.getString("vals"));
+					}else if(release == 1 || release == 2){
+						filter.setValue("${"+colname+"}");
 					}
 					this.filters.add(filter);
 				}

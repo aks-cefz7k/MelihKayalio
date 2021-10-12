@@ -487,7 +487,7 @@ public class PortalTableService {
 			String linkparam = (String)param.get("linkparam");
 			String linkparam2 = (String)param.get("linkparam2");
 			String tname = (String)param.get("tname");
-			//String ntype = (String)param.get("nodetype");
+			col = tableAlias.get(tname)+"." + col;  //加上别名
 			
 			if(type.equals("like")){
 				if(val != null){

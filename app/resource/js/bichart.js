@@ -737,7 +737,7 @@ function chartfilterDims(){
 	var dimtp = dim.type;
 	var curDim = dim;
 	var filtertype = dim.filtertype == undefined ? "" : dim.filtertype;
-	var url =  "DimFilter.action?tid="+comp.tid+"&dimType="+dimtp+"&filtertype="+filtertype+"&dimId="+dimid;
+	var url =  "DimFilter.action?dsid="+comp.dsid+"&cubeId="+comp.cubeId+"&dimType="+dimtp+"&filtertype="+filtertype+"&dimId="+dimid;
 	if(dimtp == 'month'){
 		url = url + "&dfm2="+(curDim.startmt == undefined ? "" : curDim.startmt);
 		url = url + "&dfm1="+(curDim.endmt == undefined ? "" : curDim.endmt);

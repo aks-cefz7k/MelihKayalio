@@ -120,13 +120,13 @@ function newparam(tp, paramType, pid){
 		//获取所有用户的表
 		$.ajax({
 			type:"post",
-			url:"../report/SubjectManager!list.action",
+			url:"../model/Cube!list.action",
 			data: {t: Math.random()},
 			dataType:"json",
 			async:false,
 			success: function(resp){
 				for(k=0; k<resp.length; k++){
-					tmp = tmp + "<option value='"+resp[k].tid+"@"+resp[k].tname+"' "+(param != null && param.option && resp[k].tid == param.option.tableId ?"selected":"" )+">"+resp[k].tdesc+"("+resp[k].tname+")"+"</option>";
+					tmp = tmp + "<option value='"+resp[k].cubeId+"@"+resp[k].cubeName+"@"+resp[k].dsId+"' "+(param != null && param.option && resp[k].cubeId == param.option.tableId ?"selected":"" )+">"+resp[k].cubeName+"</option>";
 				}
 			}
 		});
@@ -138,7 +138,7 @@ function newparam(tp, paramType, pid){
 		$.ajax({
 			type:"post",
 			url:"../bireport/Dim!queryDims.action",
-			data: {tableId: param.option.tableId},
+			data: {cubeId: param.option.tableId},
 			dataType:"json",
 			async:false,
 			success: function(resp){
@@ -233,8 +233,9 @@ function newparam(tp, paramType, pid){
 							var vls = val.split("@");
 							var ts = $("#pdailog #dataset").val();
 							var tss = ts.split("@");
-							obj.option = {"tableId":tss[0], "tname":tss[1],"dimId":vls[0], "alias":vls[1]};
+							obj.option = {"tableId":tss[0], "tname":tss[1],"dsource":tss[2],"dimId":vls[0], "alias":vls[1]};
 						}
+						
 					}
 					var str = "<span id=\"p"+obj.id+"\" class=\"pppp\"><span class=\"text\" onclick=\"newparam('update','"+paramType+"','"+obj.id+"')\" >"+name+"("+tpname+")</span><div class=\"ibox-tools\" style=\"margin-top:3px;\"><button class=\"btn btn-outline btn-success btn-xs\"  onclick=\"optParam(this,'"+obj.id+"', '"+obj.type+"')\" title=\"设置\"><i class=\"fa fa-wrench\"></i></button> <button class=\"btn btn-outline btn-danger btn-xs\" onclick=\"deleteParam('"+obj.id+"')\" title=\"删除\"><i class=\"fa fa-times\"></i></button></div></span>";
 					$("#optparam").append(str);
@@ -262,7 +263,7 @@ function newparam(tp, paramType, pid){
 							var vls = val.split("@");
 							var ts = $("#pdailog #dataset").val();
 							var tss = ts.split("@");
-							param.option = {"tableId":tss[0], "tname":tss[1],"dimId":vls[0], "alias":vls[1]};
+							param.option = {"tableId":tss[0], "tname":tss[1],"dsource":tss[2],"dimId":vls[0], "alias":vls[1]};
 							delete param.values;
 						}
 					}
@@ -305,7 +306,7 @@ function newparam(tp, paramType, pid){
 		$.ajax({
 			type:"post",
 			url:"../bireport/Dim!queryDims.action",
-			data: {tableId: tid},
+			data: {cubeId: tid},
 			dataType:"json",
 			success: function(resp){
 				for(k=0; k<resp.length; k++){

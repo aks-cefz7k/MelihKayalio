@@ -18,7 +18,7 @@ public class DimAction {
 		List dims = daoHelper.getSqlMapClientTemplate().queryForList("bi.report.listDims", this);
 		//设置维度的 lvlend 属性，在层次维度中判断维度是属于层次维度的最后一级
 		for(int i=0; i<dims.size(); i++){
-			Map m = (Map)dims.get(i);
+			Map<String, Object> m = (Map)dims.get(i);
 			String grouptype = (String)m.get("grouptype");
 			if(m.get("dim_ord") == null){
 				m.put("dim_ord", "");

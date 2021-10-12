@@ -56,7 +56,7 @@
 	</select>
 	
 	<select id="listCube" resultClass="java.util.HashMap">
-		select cube_id "cubeId", cube_name "cubeName", cube_desc "desc", b.name "dsetName", b.dset_Id "dsetId" 
+		select cube_id "cubeId", cube_name "cubeName", cube_desc "desc", b.name "dsetName", b.dset_Id "dsetId" , b.ds_id "dsId"
 		from olap_cube_meta a, etl_dataset b where a.dset = b.dset_id 
 	</select>
 	

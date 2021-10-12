@@ -56,10 +56,10 @@ function initparam(){
 		for(i=0; i<pageInfo.params.length; i++){
 			var obj = $("#p_param");
 			var str = "<span class=\"pppp\" id=\"pa_"+pageInfo.params[i].id+"\"><span title=\"筛选\" onclick=\"paramFilter('"+pageInfo.params[i].id+"', '"+pageInfo.params[i].type+"', '"+pageInfo.params[i].name+"')\" class=\"text\">"+pageInfo.params[i].name+"(";
-			if(pageInfo.params[i].type == 'frd' || pageInfo.params[i].type == 'year' || pageInfo.params[i].type == 'quarter'){
-				str = str  + (!pageInfo.params[i].valStrs || pageInfo.params[i].valStrs == ''?"无":pageInfo.params[i].valStrs);
-			}else {
+			if(pageInfo.params[i].type == 'day' || pageInfo.params[i].type == 'month'){
 				str = str + pageInfo.params[i].st + " 至 " + pageInfo.params[i].end;
+			}else{
+				str = str  + (!pageInfo.params[i].valStrs || pageInfo.params[i].valStrs == ''?"无":pageInfo.params[i].valStrs);
 			}
 			str = str + ")</span><button title=\"删除\" class=\"btn btn-default btn-xs\" onclick=\"deleteParam('"+pageInfo.params[i].id+"')\"><i class=\"fa fa-remove\"></i></button></span>";
 			obj.append(str);
@@ -133,7 +133,25 @@ function paramFilter(id, type, name){
 				handler:function(){
 					var vals = "";
 					var valStrs = "";
-					if(param.type == 'frd' || param.type == 'year' || param.type == 'quarter'){
+					if(param.type == 'month'){
+						param.st =  $("#pdailog #dfm2").val();
+						param.end =  $("#pdailog #dfm1").val();
+						//判断是否st < ed
+						if(Number(param.st) > Number(param.end)){
+							msginfo("您选择的开始月份不能大于结束月份。", "error");
+							return;
+						}
+						$("#p_param #pa_"+id+" span.text").text(name + "("+ param.st + " 至 " + param.end+")");
+					}else if(param.type == 'day'){
+						param.st =  $("#pdailog #dft2").val();
+						param.end =  $("#pdailog #dft1").val();
+						//判断是否st < ed
+						if(Number(param.st.replace(/-/g, "")) > Number(param.end.replace(/-/g, ""))){
+							msginfo("您选择的开始日期不能大于结束日期。", "error");
+							return;
+						}
+						$("#p_param #pa_"+id+" span.text").text(name + "("+ param.st + " 至 " + param.end+")");
+					}else{
 						var seles = $("#pdailog input[name='dimval']:checkbox:checked");
 						seles.each(function(a, b){
 								if(a >= 10){  //只能最多选10个
@@ -155,24 +173,6 @@ function paramFilter(id, type, name){
 						$("#p_param #pa_"+id+" span.text").text(name+"("+(valStrs == '' ? '无':valStrs)+")");
 						param.vals = vals;
 						param.valStrs = valStrs;
-					}else if(param.type == 'month'){
-						param.st =  $("#pdailog #dfm2").val();
-						param.end =  $("#pdailog #dfm1").val();
-						//判断是否st < ed
-						if(Number(param.st) > Number(param.end)){
-							msginfo("您选择的开始月份不能大于结束月份。", "error");
-							return;
-						}
-						$("#p_param #pa_"+id+" span.text").text(name + "("+ param.st + " 至 " + param.end+")");
-					}else if(param.type == 'day'){
-						param.st =  $("#pdailog #dft2").val();
-						param.end =  $("#pdailog #dft1").val();
-						//判断是否st < ed
-						if(Number(param.st.replace(/-/g, "")) > Number(param.end.replace(/-/g, ""))){
-							msginfo("您选择的开始日期不能大于结束日期。", "error");
-							return;
-						}
-						$("#p_param #pa_"+id+" span.text").text(name + "("+ param.st + " 至 " + param.end+")");
 					}
 					$('#pdailog').dialog('close');
 					curTmpInfo.isupdate = true;
