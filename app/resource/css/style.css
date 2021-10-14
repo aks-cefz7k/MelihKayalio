@@ -7812,6 +7812,7 @@ body.skin-3 {
 
 ::-webkit-scrollbar {
     width: 6px;
+	height: 10px;
     background-color: #F5F5F5;
 }
 
@@ -8128,6 +8129,9 @@ TABLE.lockgrid div.dg-cell {
 }
 .lock-dg-body TABLE.lockgrid tr:hover {
 	background-color:#FFFFD2;
+}
+.lock-dg {
+	overflow:hidden;
 }
 .lock-dg .lock-dg-header {
 	background-color:#f5f5f5;

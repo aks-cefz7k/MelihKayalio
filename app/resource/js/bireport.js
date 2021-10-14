@@ -684,22 +684,16 @@ function printComp(compId){
 }
 //打印页面
 function printData(){
-	for(i=0; i<pageInfo.comps.length; i++){
-		if(pageInfo.comps[i].type != 'text' && (!pageInfo.comps[i].kpiJson || pageInfo.comps[i].kpiJson.length == 0)){
-			msginfo("表或图中还未添加数据","error");
-			return;
-		}
-		if(pageInfo.comps[i].type == 'table'){
-			pageInfo.comps[i].tableJson.cols.push({"type":"kpiOther","id":"kpi"});
-		}
-	}
-	var json =  JSON.stringify(pageInfo);
-	//移除kpiOther
-	for(i=0; i<pageInfo.comps.length; i++){
-		if(pageInfo.comps[i].type == 'table'){
-			pageInfo.comps[i].tableJson.cols.pop();
+	var tabId = $("div.tabs-container li.active a").attr("idx");
+	var info = JSON.parse(JSON.stringify(pageInfo));  //复制对象
+	var comp = findCompById(tabId, info);
+	info.comps = [comp];
+	for(i=0; i<info.comps.length; i++){
+		if(info.comps[i].type == 'table' && info.comps[i].tableJson && info.comps[i].tableJson.cols){
+			info.comps[i].tableJson.cols.push({"type":"kpiOther","id":"kpi"});
 		}
 	}
+	var json =  JSON.stringify(info);
 	var url2 = "about:blank";
 	var name = "printwindow";
 	window.open(url2, name);
@@ -844,25 +838,17 @@ function exportPage(tp){
 	if($("#expff").size() == 0){
 		$(ctx).appendTo("body");
 	}
-	//给表格组件添加kpiOther
-	for(i=0; i<pageInfo.comps.length; i++){
-		if(pageInfo.comps[i].type != 'text' && pageInfo.comps[i].kpiJson == undefined){
-			msginfo("组件中无数据，请先添加度量。", "error");
-			$('#pdailog').dialog('close');
-			return;
-		}
-		if(pageInfo.comps[i].type == 'table'){
-			pageInfo.comps[i].tableJson.cols.push({"type":"kpiOther","id":"kpi"});
+	var tabId = $("div.tabs-container li.active a").attr("idx");
+	var info = JSON.parse(JSON.stringify(pageInfo));  //复制对象
+	var comp = findCompById(tabId, info);
+	info.comps = [comp];
+	for(i=0; i<info.comps.length; i++){
+		if(info.comps[i].type == 'table' && info.comps[i].tableJson && info.comps[i].tableJson.cols){
+			info.comps[i].tableJson.cols.push({"type":"kpiOther","id":"kpi"});
 		}
 	}
 	$("#expff #type").val(tp);
-	$("#expff #json").val(JSON.stringify(pageInfo));
-	//移除kpiOther
-	for(i=0; i<pageInfo.comps.length; i++){
-		if(pageInfo.comps[i].type == 'table'){
-			pageInfo.comps[i].tableJson.cols.pop();
-		}
-	}
+	$("#expff #json").val(JSON.stringify(info));
 	//把图形转换成图片
 	var strs = "";
 	if(tp == "pdf" || tp == "excel" || tp == "word"){

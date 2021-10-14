@@ -66,11 +66,24 @@ function exportPage(tp){
 }
 </script>
 <style>
+table.r_layout {
+	table-layout:fixed;
+	width:100%;
+}
 table.r_layout td.layouttd {
 	padding:10px;
 }
 .ibox {
 	margin-bottom:20px;
+}
+.ibox-content {
+	overflow:auto;
+}
+.inputform2 {
+	width:120px;
+}
+.inputtext {
+	width:90px;
 }
 </style>
 <body class="gray-bg">
